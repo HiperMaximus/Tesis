@@ -1,0 +1,29 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{Resumen}{1}{Doc-Start}%
+\contentsline {section}{Abstract}{2}{Doc-Start}%
+\contentsline {chapter}{\numberline {1}Introducción}{3}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Fundamentos y Trabajos Previos}{6}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Patología digital}{6}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Tipos de aprendizaje de máquina}{8}{section.2.2}%
+\contentsline {paragraph}{\nonumberline Aprendizaje supervisado:}{8}{paragraph*.2}%
+\contentsline {paragraph}{\nonumberline Aprendizaje no supervisado:}{8}{paragraph*.5}%
+\contentsline {paragraph}{\nonumberline Aprendizaje semi-supervisado:}{9}{paragraph*.9}%
+\contentsline {section}{\numberline {2.3}Redes neuronales profundas}{10}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Redes neuronales convolucionales equivariantes}{14}{section.2.4}%
+\contentsline {paragraph}{\nonumberline Grupo}{17}{paragraph*.17}%
+\contentsline {paragraph}{\nonumberline Grupo de Simetría}{17}{paragraph*.19}%
+\contentsline {paragraph}{\nonumberline Mapas equivariantes o funciones equivariantes}{18}{paragraph*.21}%
+\contentsline {paragraph}{\nonumberline Convolución en grupos}{18}{paragraph*.23}%
+\contentsline {section}{\numberline {2.5}Trabajos Previos}{19}{section.2.5}%
+\contentsline {chapter}{\numberline {3}Planteamiento del problema y justificación}{22}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Objetivos}{25}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Objetivo General}{25}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Objetivos Específicos}{25}{section.4.2}%
+\contentsline {chapter}{\numberline {5}Metodología}{26}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Etapa 1. Selección de imágenes histopatológicas anotadas que hayan sido recopiladas para la clasificación y segmentación de estructuras microscópicas}{26}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Etapa 2. Formulación e implementación del modelo semi-supervisado basado en una arquitectura de red neuronal convolucional equivariante para la segmentación y clasificación de imágenes histopatológicas}{26}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Etapa 3. Evaluación del desempeño del modelo de redes neuronales convolucionales equivariantes sobre un conjunto de validación de imágenes histopatológicas a través de métricas para la clasificación y segmentación de imágenes}{27}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Etapa 4. Elaboración del informe final}{27}{section.5.4}%
+\contentsline {chapter}{\numberline {6}Aspectos éticos}{28}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Cronograma}{29}{chapter.7}%
+\contentsline {chapter}{\numberline {8}Presupuesto}{30}{chapter.8}%

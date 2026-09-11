@@ -1,0 +1,367 @@
+# Figures copied from the research repository and thesis-native figures derived
+# from its executable architecture both belong here.
+- file: figures/architecture/normal_vae.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/non_equivariant_vae.py
+  purpose: Document the final conventional VAE architecture.
+- file: figures/architecture/so2_vae.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/so2_vae.py
+  purpose: Document the final continuous-SO(2) VAE architecture.
+- file: figures/architecture/downstream_heads.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/local_global_mil.py
+  additional_source_paths:
+    - src/eqvae/models/supervised.py
+  purpose: Document the tissue-grid and WSI-level supervised architectures.
+- file: figures/architecture/residual_block.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/non_equivariant_vae.py
+  additional_source_paths:
+    - src/eqvae/models/so2_vae.py
+  literature_source: he_deep_2016
+  purpose: Explain the learned and shortcut branches shared by the residual VAEs.
+- file: figures/architecture/equivariant_convolution.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/so2_architecture_probe.py
+  purpose: Explain fixed F0/F1 bases, learned coefficients, dense expansion and convolution.
+- file: figures/architecture/kernel_parameter_sharing.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/so2_architecture_probe.py
+  purpose: Explain coefficient-to-basis parameter sharing and dense-kernel expansion.
+- file: figures/architecture/field_types.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/so2_architecture_probe.py
+  purpose: Explain F0/F1 transformation laws and physical channel packing.
+- file: figures/architecture/dataset_atlas_pipeline.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: docs/specs/0017-masked-holdout-test-dataset.md
+  additional_source_paths:
+    - docs/specs/0018-shared-masked-wsi-evaluation-split.md
+  purpose: Explain thumbnail, mask, atlas and WSI-split construction.
+- file: figures/architecture/dataset_task_views.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: docs/specs/0019-task-consumption-manifests-and-kaggle-work-plan.md
+  additional_source_paths:
+    - docs/specs/0020-fp32-latent-shard-format-and-io.md
+    - docs/specs/0025-full-foreground-logical-mil-dataset.md
+  purpose: Explain task-specific logical populations and paired latent storage.
+- file: figures/architecture/wsi_patch_storage.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/data/dataloaders.py
+  additional_source_paths:
+    - kaggle/generate_ubc_ocean_test.py
+    - docs/specs/0021-dual-model-wsi-latent-inference.md
+  purpose: Explain strip-wise WSI reads, the pre-shuffled RGB binary, mmap access and direct latent writing.
+- file: figures/architecture/transformer_window_attention.tex
+  literature_source: vaswani_attention_2017; liu_swin_2021; hassani_neighborhood_2023
+  purpose: Contrast dense attention maps with block-sparse window attention.
+- file: figures/architecture/local_attention_computation.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/local_global_mil.py
+  purpose: Connect the radius-two WSI graph to gathered PyTorch tensor operations.
+- file: figures/dataset/wsi_11557_thumbnail.png
+  sha256: 277588f13d6be9bf775a5fe69aaca747677ad0fdcdbe1bf39d32fdca22df647c
+  source_url: https://www.kaggle.com/competitions/UBC-OCEAN/data
+  transport_mirror: https://www.kaggle.com/datasets/motono0223/ubc-ocean-thumbnails
+  source_file: train_thumbnails/11557_thumbnail.png
+  derivation: Lanczos reduction to 1200 pixels wide by scripts/render_wsi_mask_example.py.
+  purpose: Show the real WSI appearance used to explain patch-grid segmentation.
+- file: figures/dataset/wsi_11557_mask.png
+  sha256: c0c27d106f1369d382483abbc9428de3799e5728486c93335fdc5ee44d148b20
+  source_url: https://www.kaggle.com/competitions/UBC-OCEAN/data
+  transport_mirror: https://www.kaggle.com/datasets/sohier/ubc-ovarian-cancer-competition-supplemental-masks
+  source_file: 11557.png
+  derivation: Row-streamed nearest-neighbor reduction to 1200 pixels wide by scripts/render_wsi_mask_example.py.
+  purpose: Show the real non-exhaustive RGB annotation corresponding to WSI 11557.
+- file: figures/dataset/wsi_11557_patch_overlay.png
+  sha256: 878580e687a584a77335d58181cae627337162cba1dd94cc2f83a3d0bc1415de
+  source_url: https://www.kaggle.com/competitions/UBC-OCEAN/data
+  source_files: train_thumbnails/11557_thumbnail.png; supplemental_masks/11557.png
+  derivation: Reproduction of the 10 percent coverage and 95 percent purity rule, overlaid on a faded WSI by scripts/render_wsi_mask_example.py.
+  purpose: Visualize the actual patch-resolution reference cells used by the tissue task.
+- file: figures/architecture/mil_local_global_detail.tex
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/local_global_mil.py
+  additional_source_paths:
+    - docs/specs/0026-local-global-sigmoid-mil.md
+    - docs/specs/0032-amp-fixed26-mil.md
+  literature_source: vaswani_attention_2017; lee_settransformer_2019; ramapuram_sigmoid_2025
+  purpose: Document tensor shapes, local null attention, CLS/REG summary and the final CLS-only read.
+- file: figures/experiments/vae_training_dashboard.png
+  sha256: d6ad1a2d090cbb0f0de4b481ba0204b8f3f1cef0b2d0f3d161d568c7277478b9
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/professor_metrics_v1/figures/training_dashboard.png
+  evidence_class: accepted-development-diagnostic
+- file: figures/experiments/vae_training_loss_panels.png
+  sha256: 80d93380d3c8c2bd7684234d6ae4e649ef4b04f30acfaaf01781fb96f5389273
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/professor_metrics_v1/figures/training_dashboard.png
+  derivation: Lossless crop and vertical reassembly by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/vae_training_quality_panels.png
+  sha256: f30f8723c83f706d3b6d322bfa575e70cc86a803bc566fde220fd96a21b6c573
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/professor_metrics_v1/figures/training_dashboard.png
+  derivation: Lossless crop and vertical reassembly by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/vae_training_control_panels.png
+  sha256: 8df7a1c8b65a1ee4a6b18be1526681639bad0e7686c4efd437ad99c16398be54
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/professor_metrics_v1/figures/training_dashboard.png
+  derivation: Lossless crop and vertical reassembly by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/vae_reconstructions_fixed25.png
+  sha256: 2eb022f3272563b9630dd035e996b9e9a7f10c24c34a5e14c594378637209c29
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/professor_metrics_v1/figures/reconstructions_fixed25.png
+  evidence_class: accepted-development-diagnostic
+- file: figures/experiments/reconstruction_zoom_original.png
+  sha256: 477440c8a1755327ef38656173c5cd4c44c1c84cb57a13636b86c92718c3e454
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/selected_images_uint8.npz
+  source_key: normal_vae_rank12_angle0_input
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/reconstruction_zoom_normal.png
+  sha256: e6235b5574672e320999065d6a555115556cc7fb3e1498eed91faddf202bae46
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/selected_images_uint8.npz
+  source_key: normal_vae_rank12_angle0_base
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/reconstruction_zoom_so2.png
+  sha256: 1509861020e4668185ee9a956f9e094c9afb39adb8d0b5b07e80d9c9b2f13dab
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/selected_images_uint8.npz
+  source_key: so2_vae_rank12_angle0_base
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/vae_test_patch_metrics.png
+  sha256: 530dbc600d41e95333c5d4f16406ea2c83b8593dc7ee3d1c72d2de8fe42ea362
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/vae_test_reconstruction_scored_v1/figures/patch_metric_boxplots.png
+  evidence_class: accepted-sealed-test
+- file: figures/experiments/vae_test_patch_mae.png
+  sha256: 53ccade90d0f4f158702fedbab63711fbb2d262d9c91c61cf3f583988ff792b3
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/vae_test_reconstruction_scored_v1/figures/patch_metric_boxplots.png
+  derivation: Lossless MAE-panel crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/vae_test_patch_mse.png
+  sha256: e6da2c69d999163cb6b7e79469c364636d568165d85da150dab7e6f3b9bb4a5e
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/vae_test_reconstruction_scored_v1/figures/patch_metric_boxplots.png
+  derivation: Lossless MSE-panel crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/vae_test_patch_psnr.png
+  sha256: 667353c482b96914ea45c4de4f3faabfb4603231de0f0d556d1fe168b9856226
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/vae_test_reconstruction_scored_v1/figures/patch_metric_boxplots.png
+  derivation: Lossless PSNR-panel crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/vae_test_patch_ssim.png
+  sha256: cd15417dad592ac824c44923d6af9dab3001793bf83b4204bfa63db1d2bdd616
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/vae_test_reconstruction_scored_v1/figures/patch_metric_boxplots.png
+  derivation: Lossless SSIM-panel crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/vae_test_paired_wsi_mae.png
+  sha256: 17691acf1895bc4f7b275c019ef7c43048176338250e363dd95f07341801602f
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/vae_test_reconstruction_scored_v1/figures/paired_wsi_mae.png
+  evidence_class: accepted-sealed-test
+- file: figures/experiments/vae_test_paired_wsi_mae_readable.png
+  sha256: 87c5ec4abd7b77a76ec0dfd2672a0664b53b1675a0839badb1beb9bc06438934
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/vae_test_reconstruction_scored_v1/metrics/per_wsi_metrics.csv
+  derivation: Print-readable rendering of the accepted per-WSI means by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/vae_rotated_input_vs_latent.png
+  sha256: 232631a22a3f7a95aed7997519692393af4ad982d1892a1f34a2340950aef385
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/professor_metrics_v1/figures/rotated_input_vs_latent.png
+  evidence_class: accepted-development-diagnostic
+- file: figures/experiments/latent_action_zoom_target.png
+  sha256: 75015d2d20b2998af5d1310e2027c6762215651608bbc84c25104118c7a85b40
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/selected_images_uint8.npz
+  source_key: normal_vae_rank12_angle90_action_target
+  evidence_class: accepted-exploratory-view
+- file: figures/experiments/latent_action_zoom_normal.png
+  sha256: 6e4ea0ad855d67f9860189c12ea498679c70a834e92b9fd4356b92b20cf99f11
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/selected_images_uint8.npz
+  source_key: normal_vae_rank12_angle90_action
+  evidence_class: accepted-exploratory-view
+- file: figures/experiments/latent_action_zoom_so2.png
+  sha256: 0752bfbc06264c91b6d7757e3eb0ebcf55fd11b0102a9dd3cd0132ef02eba4de
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/selected_images_uint8.npz
+  source_key: so2_vae_rank12_angle90_action
+  evidence_class: accepted-exploratory-view
+- file: figures/experiments/latent_population_ratios.png
+  sha256: 20036cd9e6d23616f518359824e70bacf37250d5042a8823bdc574fe52e0fbad
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/figures/01-population-ratios.png
+  evidence_class: accepted-exploratory
+- file: figures/experiments/latent_exact_d4.png
+  sha256: 468e2e91fcf44da2a0558ffe8f55d49a9f86878551a19d2f3fd85525c3e099da
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/figures/04-exact-d4.png
+  evidence_class: accepted-exact-control
+- file: figures/experiments/latent_spatial_pca.png
+  sha256: 792d95f4aee76204b3880cac3ae30f9dc1a6deb42c63f8a4732b1923ec89d45f
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/frozen_vae_rotation_orbits/04-spatial-latent-pca.png
+  evidence_class: accepted-exploratory
+- file: figures/experiments/latent_orbit_single_patch.png
+  sha256: 44abf7dc64932393b5bc521d08566501c3c0bf64bca5ecbf32d6fef265ae7090
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/frozen_vae_rotation_orbits/01-latent-orbits.png
+  evidence_class: accepted-exploratory
+- file: figures/experiments/latent_spatial_pca_maps.png
+  sha256: ae24e2cd67121b24fd6ca93026bd082c13707aee2d09e5cbecd22df197754f17
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/frozen_vae_rotation_orbits/04-spatial-latent-pca.png
+  derivation: Lossless crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-exploratory-view
+- file: figures/experiments/latent_spatial_pca_paired.png
+  sha256: 02a5ee8ec496fdff43a62c35cb79b75618fd9a905818df0ebb484dfca1d80eab
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/frozen_vae_rotation_orbits/04-spatial-latent-pca.png
+  derivation: Lossless crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-exploratory-view
+- file: figures/experiments/latent_spatial_pca_delta.png
+  sha256: 99cfa4a21d7ba1b6856e6a19cfaa20c059977055fc0d554fde4b5c2cb667014d
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/frozen_vae_rotation_orbits/04-spatial-latent-pca.png
+  derivation: Lossless crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-exploratory-view
+- file: figures/experiments/so2_stem_kernel_f1.png
+  sha256: 9c6cbfe98d21bb82aee1cd0845b5e9f33f34061bc5e46489ccb37857c5fec03d
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/frozen_vae_rotation_orbits/03-kernel-mechanism.png
+  evidence_class: accepted-architecture-diagnostic
+- file: figures/experiments/mil_training_development.png
+  sha256: 08a3ddc6fd7fb7583c0254ef51e5e8c2efb28a39b0d02a4e35c608a3b1cb85f5
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image18.png
+  source_document_sha256: c4c3cf292212830960dad6015bea518902f704a893875d407c27bc5b892ed98d
+  evidence_class: accepted-development-diagnostic
+- file: figures/experiments/mil_training_f1.png
+  sha256: 0e69ed146c6a6ea3c4a1274d87d9ea953590b46e1d30b12a16f2ac51d07a315d
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image18.png
+  derivation: Lossless crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/mil_training_loss.png
+  sha256: ca5c4afb3f5a475549eba2a61692f354ee388f4aeedf6f74ae988ca12e693674
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image18.png
+  derivation: Lossless crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/tissue_training_f1.png
+  sha256: c9bf9f6d1cd7e6bfdcd7a184294fcb5da289adc4c8d9e1f4f4308ab2e766de84
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image18.png
+  derivation: Lossless crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/mil_test_metrics.png
+  sha256: fd17eaaff47e7dc135eae4fa2281ce190c9400dd2ab4011c50625e95d3919603
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image19.png
+  source_document_sha256: c4c3cf292212830960dad6015bea518902f704a893875d407c27bc5b892ed98d
+  evidence_class: accepted-sealed-test
+- file: figures/experiments/mil_test_confusion_per_class.png
+  sha256: d3e696e45664916d1f266f2e95dd3e87ac791caceddde88e46556b28def5bcc4
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image20.png
+  source_document_sha256: c4c3cf292212830960dad6015bea518902f704a893875d407c27bc5b892ed98d
+  evidence_class: accepted-sealed-test
+- file: figures/experiments/mil_test_confusions.png
+  sha256: 156f2920aee20bb3dcdc38b38349fa4cf6047f8d0bbca3a62f1dcc053c739049
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image20.png
+  derivation: Lossless confusion-matrix crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/mil_test_confusion_normal.png
+  sha256: 688f43fef5171f2acfe343ec909daf0e5c0399faec527e82c21737466ff92b19
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image20.png
+  source_document_sha256: c4c3cf292212830960dad6015bea518902f704a893875d407c27bc5b892ed98d
+  derivation: Lossless VAE-base confusion-matrix crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/mil_test_confusion_so2.png
+  sha256: 00676f515cb2dc9a6eac783dac067d33b1ae4f15c05d6972419b9d2cf4b48682
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image20.png
+  source_document_sha256: c4c3cf292212830960dad6015bea518902f704a893875d407c27bc5b892ed98d
+  derivation: Lossless VAE-SO(2) confusion-matrix crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/mil_test_per_class_f1.png
+  sha256: c12443a408f3463a14e82dd3898a5b2c4d506a2d0c59703e59a7c42d87ae8760
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image20.png
+  derivation: Lossless per-class-F1 crop by scripts/export_accepted_figure_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/tissue_label_efficiency.png
+  sha256: 2220d76af227b212c711e38c81a183ca3d19f468b9251222cbc82ccdc0b32902
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image21.png
+  source_document_sha256: c4c3cf292212830960dad6015bea518902f704a893875d407c27bc5b892ed98d
+  evidence_class: accepted-sealed-test
+- file: figures/experiments/tissue_test_per_class.png
+  sha256: 296eb667f436ecd696fbbbd5edb2e3da90fdb634459f7214fc657698b3ffe465
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image22.png
+  source_document_sha256: c4c3cf292212830960dad6015bea518902f704a893875d407c27bc5b892ed98d
+  evidence_class: accepted-sealed-test

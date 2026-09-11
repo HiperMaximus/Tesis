@@ -1,0 +1,31 @@
+\begin{tikzpicture}[
+    font=\sffamily\scriptsize,
+    >={Latex[length=2.2mm]},
+    flow/.style={->,thick,draw=black!65},
+    operation/.style={
+        draw=black!65,rounded corners=2pt,align=center,
+        minimum height=12mm,minimum width=29mm,fill=blue!8
+    },
+    skip/.style={
+        draw=black!55,rounded corners=2pt,align=center,
+        minimum height=9mm,minimum width=27mm,fill=orange!13
+    },
+    sum/.style={circle,draw=black!70,fill=green!12,minimum size=7mm,inner sep=0pt}
+]
+\node[operation] (input) {Entrada\\\(\mathbf{x}\)};
+\node[operation,right=9mm of input] (conv1) {Convolución\\normalización + compuerta};
+\node[operation,right=8mm of conv1] (conv2) {Convolución\\normalización};
+\node[sum,right=10mm of conv2] (sum) {\(+\)};
+\node[operation,right=9mm of sum] (output) {Salida\\\(\mathbf{y}\)};
+\node[skip,below=13mm of conv1] (skip) {Identidad o proyección\\si cambia forma/resolución};
+
+\draw[flow] (input) -- (conv1);
+\draw[flow] (conv1) -- node[above,font=\sffamily\scriptsize] {$\mathcal{F}(\mathbf{x})$} (conv2);
+\draw[flow] (conv2) -- (sum);
+\draw[flow] (sum) -- (output);
+\draw[flow] (input.south) |- (skip.west);
+\draw[flow] (skip.east) -| node[pos=0.72,right,font=\sffamily\scriptsize] {$W_s\mathbf{x}$} (sum.south);
+
+\node[draw=black!30,dashed,rounded corners=2pt,fit=(conv1)(conv2),
+      inner sep=3mm,label={[font=\sffamily\scriptsize]above:Rama residual aprendida}] {};
+\end{tikzpicture}

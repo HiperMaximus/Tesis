@@ -1,0 +1,77 @@
+\begin{tikzpicture}[
+    font=\sffamily\scriptsize,
+    >={Latex[length=2.8mm]},
+    flow/.style={->,very thick,draw=black!70},
+    title/.style={font=\sffamily\small\bfseries,align=center},
+    note/.style={align=center,text=black!75}
+]
+% Spatial tokens and a fixed two-window partition.
+\node[title] at (2.0,2.85) {cuadrícula de tokens};
+\foreach \row in {0,1}{
+  \foreach \col in {0,1,2,3}{
+    \pgfmathtruncatemacro{\token}{4*\row+\col+1}
+    \ifnum\col<2
+      \def\cellcolor{blue!18}
+    \else
+      \def\cellcolor{orange!20}
+    \fi
+    \draw[fill=\cellcolor,draw=black!55,line width=0.7pt]
+      (\col,1-\row) rectangle ++(1,1);
+    \node at (\col+0.5,1.5-\row) {$x_{\token}$};
+  }
+}
+\draw[red!75!black,line width=2.1pt] (0,1) rectangle ++(1,1);
+\node[note] at (2.0,-0.48) {dos ventanas de cuatro tokens;\\$x_1$ es la consulta señalada};
+
+\draw[flow] (4.45,1.0) -- (5.25,1.0);
+
+% Dense attention matrix.
+\node[title] at (7.05,2.85) {atención global};
+\foreach \i in {0,...,7}{
+  \foreach \j in {0,...,7}{
+    \pgfmathtruncatemacro{\shade}{12+mod(17*\i+23*\j,72)}
+    \draw[fill=blue!\shade,draw=white,line width=0.45pt]
+      (5.55+0.38*\j,2.22-0.38*\i) rectangle ++(0.38,-0.38);
+  }
+}
+\draw[red!75!black,line width=1.4pt] (5.55,2.22) rectangle ++(3.04,-0.38);
+\node[rotate=90,anchor=south] at (5.18,0.70) {consultas};
+\node at (7.07,-1.06) {claves};
+\node[note] at (7.07,-1.55) {$8\times8$: cada token compara\\con todos los demás};
+
+\draw[flow] (9.05,1.0) -- (9.85,1.0);
+
+% Block-diagonal window attention map.
+\node[title] at (11.68,2.85) {atención por ventanas};
+\foreach \i in {0,...,7}{
+  \foreach \j in {0,...,7}{
+    \pgfmathtruncatemacro{\blocki}{int(\i/4)}
+    \pgfmathtruncatemacro{\blockj}{int(\j/4)}
+    \ifnum\blocki=\blockj
+      \pgfmathtruncatemacro{\shade}{18+mod(19*\i+29*\j,70)}
+      \def\cellcolor{blue!\shade}
+    \else
+      \def\cellcolor{black!8}
+    \fi
+    \draw[fill=\cellcolor,draw=white,line width=0.45pt]
+      (10.16+0.38*\j,2.22-0.38*\i) rectangle ++(0.38,-0.38);
+  }
+}
+\draw[red!75!black,line width=1.4pt] (10.16,2.22) rectangle ++(3.04,-0.38);
+\draw[black!65,line width=1pt] (10.16,2.22) rectangle ++(1.52,-1.52);
+\draw[black!65,line width=1pt] (11.68,0.70) rectangle ++(1.52,-1.52);
+\node[rotate=90,anchor=south] at (9.79,0.70) {consultas};
+\node at (11.68,-1.06) {claves};
+\node[note] at (11.68,-1.55) {bloques activos: pesos locales;\\gris: conexiones enmascaradas};
+
+% Weight legend.
+\foreach \k in {0,...,7}{
+  \pgfmathtruncatemacro{\shade}{8+11*\k}
+  \fill[blue!\shade] (13.75+0.24*\k,1.34) rectangle ++(0.24,0.28);
+}
+\draw[black!45] (13.75,1.34) rectangle ++(1.92,0.28);
+\node[anchor=north west] at (13.70,1.22) {peso bajo};
+\node[anchor=north east] at (15.72,1.22) {alto};
+\node[note,text width=2.2cm] at (14.72,0.10)
+    {cada fila se normaliza por separado};
+\end{tikzpicture}

@@ -1,0 +1,91 @@
+\begin{tikzpicture}[
+    x=1cm,y=1cm,
+    font=\sffamily\small,
+    >={Latex[length=3mm]},
+    flow/.style={->,very thick,draw=black!72},
+    box/.style={draw=black!60,rounded corners=2pt,align=center,
+        minimum height=14mm,fill=black!2,inner xsep=5pt},
+    local/.style={box,fill=blue!9},
+    global/.style={box,fill=violet!10},
+    output/.style={box,fill=green!11},
+    note/.style={draw=black!22,rounded corners=1.5pt,fill=white,
+        align=center,inner xsep=4pt,inner ysep=3pt,font=\sffamily\footnotesize}
+]
+% Stage 1: one patch reads its real spatial neighbours.
+\node[font=\sffamily\bfseries,anchor=west] at (-0.2,10.75)
+    {(a) Cada parche incorpora información de su vecindario};
+\foreach \row in {0,...,4}{
+  \foreach \col in {0,...,4}{
+    \pgfmathsetmacro{\xx}{0.15+0.52*\col}
+    \pgfmathsetmacro{\yy}{9.95-0.52*\row}
+    \def\cellcolor{blue!16}
+    \ifnum\row=0
+      \ifnum\col=4 \def\cellcolor{black!13}\fi
+    \fi
+    \ifnum\row=1
+      \ifnum\col=4 \def\cellcolor{black!13}\fi
+    \fi
+    \ifnum\row=4
+      \ifnum\col=0 \def\cellcolor{black!13}\fi
+    \fi
+    \ifnum\row=2
+      \ifnum\col=2 \def\cellcolor{orange!60}\fi
+    \fi
+    \draw[fill=\cellcolor,draw=white,line width=0.6pt]
+       (\xx,\yy) rectangle ++(0.52,-0.52);
+  }
+}
+\draw[orange!80!black,line width=1.6pt]
+    (1.19,8.91) rectangle ++(0.52,-0.52);
+\node[font=\sffamily\bfseries] at (1.45,8.65) {$i$};
+\node[font=\sffamily\footnotesize,align=center] at (1.45,7.05)
+    {ventana $5\times5$\\gris: no hay tejido};
+
+\node[local,minimum width=31mm] (query) at (4.55,8.85)
+    {consulta del parche $i$\\$\mathbf q_i:[6,32]$};
+\node[local,minimum width=38mm] (localattn) at (8.35,8.85)
+    {atención \emph{softmax}\\hasta 25 vecinos $+\varnothing$};
+\node[local,minimum width=35mm] (localout) at (12.65,8.85)
+    {contexto $+$ residual\\$\mathbf x_i^{(1)}:[192]$};
+\draw[flow] (2.85,8.65) -- (query);
+\draw[flow] (query) -- (localattn);
+\draw[flow] (localattn) -- (localout);
+\node[note,text width=8.3cm] at (7.45,6.85)
+    {La operación se ejecuta en paralelo para los $N$ parches y se repite en
+     dos bloques. Cada fila conserva la identidad y la coordenada de su parche.};
+
+% Stage 2: learned global tokens read all contextualised patches.
+\node[font=\sffamily\bfseries,anchor=west] at (-0.2,5.85)
+    {(b) Los $N$ parches alimentan los resúmenes globales};
+\node[local,minimum width=36mm] (patches) at (12.55,5.20)
+    {$\mathbf X_2=[\mathbf x_1^{(2)};\ldots;\mathbf x_N^{(2)}]$\\$[N,192]$: claves y valores};
+\node[global,minimum width=38mm] (tokens) at (2.0,3.45)
+    {$\mathbf T_0=[\mathrm{CLS};\mathrm{REG}_{1:16}]$\\$[17,192]$: consultas};
+\node[global,minimum width=44mm] (summary) at (7.35,3.45)
+    {atención cruzada sigmoidal\\17 consultas $\times$ $N$ parches};
+\node[global,minimum width=32mm] (t1) at (12.55,3.45)
+    {17 resúmenes\\$\mathbf T_1:[17,192]$};
+\draw[flow] (patches.west) -- (summary.north east);
+\draw[flow] (tokens) -- (summary);
+\draw[flow] (summary) -- (t1);
+\draw[flow] (localout.south) -- (patches.north);
+\node[note,text width=6.6cm] at (8.0,1.65)
+    {Los pesos sigmoidales son independientes: varios parches pueden aportar
+     evidencia alta a un mismo resumen sin competir por una suma unitaria.};
+
+% Stage 3: the consumed CLS row reads the 17 summaries.
+\node[font=\sffamily\bfseries,anchor=west] at (-0.2,0.55)
+    {(c) CLS integra los resúmenes y produce el diagnóstico};
+\node[global,minimum width=43mm] (clsread) at (12.35,-0.85)
+    {CLS consulta los 17 tokens\\atención \emph{softmax}};
+\node[output,minimum width=27mm] (cls) at (8.55,-0.85)
+    {$\mathbf c:[192]$\\residual SwiGLU};
+\node[output,minimum width=27mm] (linear) at (5.35,-0.85)
+    {LayerNorm\\$+$ lineal};
+\node[output,minimum width=24mm] (logits) at (2.45,-0.85)
+    {5 \emph{logits}\\de la WSI};
+\draw[flow] (t1.south) -- (clsread.north);
+\draw[flow] (clsread) -- (cls);
+\draw[flow] (cls) -- (linear);
+\draw[flow] (linear) -- (logits);
+\end{tikzpicture}

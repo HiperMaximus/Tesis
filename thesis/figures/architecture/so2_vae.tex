@@ -1,0 +1,58 @@
+\begin{tikzpicture}[
+    font=\sffamily\scriptsize,
+    >={Latex[length=2.2mm]},
+    flow/.style={->,thick,draw=black!65},
+    field/.style={
+        draw=black!65,rounded corners=2pt,align=center,
+        minimum height=12mm,minimum width=27mm,fill=violet!9
+    },
+    latent/.style={
+        draw=black!70,rounded corners=2pt,align=center,
+        minimum height=13mm,minimum width=30mm,fill=orange!18
+    },
+    io/.style={
+        draw=black!70,rounded corners=2pt,align=center,
+        minimum height=10mm,minimum width=22mm,fill=green!10
+    }
+]
+\node[io] (input) {RGB \(R=3F_0\)\\\(256\times256\)};
+\node[field,right=5mm of input] (a) {Stem \(9\times9\)\\2 bloques \(A\)\\
+    \(16F_0+16F_1\)};
+\node[field,right=5mm of a] (b) {\(\downarrow2\) + 2 bloques \(B\)\\
+    \(24F_0+24F_1\)};
+\node[field,right=5mm of b] (c) {\(\downarrow2\) + 2 bloques \(C\)\\
+    \(32F_0+32F_1\)};
+\node[field,right=5mm of c] (d) {\(\downarrow2\) + 2 bloques \(D\)\\
+    \(48F_0+48F_1\)};
+\node[latent,right=5mm of d] (posterior) {Posterior escalar\\
+    \(L=16F_0\), \(32\times32\)};
+
+\node[latent,below=15mm of posterior] (z) {\(\mathbf z:16F_0\)\\
+    \(32\times32\)};
+\node[field,left=5mm of z] (dd) {Proyección + 2 bloques \(D\)\\
+    \(48F_0+48F_1\)};
+\node[field,left=5mm of dd] (dc) {\(\uparrow2\) + 2 bloques \(C\)\\
+    \(32F_0+32F_1\)};
+\node[field,left=5mm of dc] (db) {\(\uparrow2\) + 2 bloques \(B\)\\
+    \(24F_0+24F_1\)};
+\node[field,left=5mm of db] (da) {\(\uparrow2\) + 2 bloques \(A\)\\
+    \(16F_0+16F_1\)};
+\node[io,left=5mm of da] (output) {RGB \(R=3F_0\)\\\(256\times256\)};
+
+\draw[flow] (input) -- (a);
+\draw[flow] (a) -- (b);
+\draw[flow] (b) -- (c);
+\draw[flow] (c) -- (d);
+\draw[flow] (d) -- (posterior);
+\draw[flow] (posterior) -- (z);
+\draw[flow] (z) -- (dd);
+\draw[flow] (dd) -- (dc);
+\draw[flow] (dc) -- (db);
+\draw[flow] (db) -- (da);
+\draw[flow] (da) -- (output);
+
+\node[draw=black!35,dashed,rounded corners=2pt,fit=(input)(posterior),
+      inner sep=3mm,label={[font=\sffamily\scriptsize]above:Codificador equivariante}] {};
+\node[draw=black!35,dashed,rounded corners=2pt,fit=(z)(output),
+      inner sep=3mm,label={[font=\sffamily\scriptsize]below:Decodificador equivariante}] {};
+\end{tikzpicture}

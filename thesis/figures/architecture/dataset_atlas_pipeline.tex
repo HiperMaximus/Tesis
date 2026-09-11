@@ -1,0 +1,32 @@
+\begin{tikzpicture}[
+    font=\small,
+    >=Latex,
+    source/.style={draw=blue!55!black, fill=blue!6, rounded corners=2pt,
+        align=center, text width=2.8cm, minimum height=1.05cm},
+    process/.style={draw=orange!70!black, fill=orange!9, rounded corners=2pt,
+        align=center, text width=2.9cm, minimum height=1.05cm},
+    output/.style={draw=green!45!black, fill=green!8, rounded corners=2pt,
+        align=center, text width=3.0cm, minimum height=1.05cm},
+    note/.style={align=center, font=\scriptsize, text width=3.1cm},
+    edge label/.style={fill=white, draw=black!18, rounded corners=1.5pt,
+        inner xsep=3pt, inner ysep=2pt, font=\scriptsize, text=black},
+    flow/.style={->, very thick, draw=black!65}
+]
+\node[source] (wsi) at (0,1.25) {WSI RGB\\dimensiones reales};
+\node[source] (mask) at (0,-1.25) {Máscara RGB suplementaria\\anotación incompleta};
+\node[process] (thumb) at (4.0,1.25) {Miniatura\\HSV + Otsu en saturación};
+\node[process] (fractions) at (4.0,-1.25) {Lectura por franjas\\fracciones por clase};
+\node[output] (atlas) at (8.1,0) {Atlas de coordenadas\\grilla de $256\times256$};
+\node[output] (split) at (12.1,0) {Partición fija por WSI\\106 / 23 / 23};
+
+\draw[flow] (wsi) -- (thumb);
+\draw[flow] (mask) -- (fractions);
+\draw[flow] (thumb) -- node[edge label, above=1mm, pos=0.55]
+    {tejido $>60\%$} (atlas);
+\draw[flow] (fractions) -- node[edge label, below=1mm, pos=0.55]
+    {píxeles anotados} (atlas);
+\draw[flow] (atlas) -- (split);
+
+\node[note, below=0.45cm of atlas] {Unión sin duplicados de parches Otsu y parches que intersectan máscara; orden WSI, $y$, $x$.};
+\node[note, below=0.45cm of split] {Asignación previa a la inferencia; ninguna WSI cruza particiones.};
+\end{tikzpicture}

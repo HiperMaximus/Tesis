@@ -1,1 +1,33 @@
-Data/
+# LaTeX build products
+/build/
+/.cache/
+/tmp/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# Quarto products
+/.quarto/
+/_site/
+
+# Local tools and editor files
+/.tools/
+/thesis/includeonly.local.tex
+__pycache__/
+*.pyc
+.DS_Store
+*~
+
+# Research data and model weights do not belong in this repository
+/data/
+*.ckpt
+*.pt
+*.pth

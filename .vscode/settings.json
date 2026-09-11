@@ -1,0 +1,55 @@
+{
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.autoBuild.cleanAndRetry.enabled": false,
+  "latex-workshop.latex.autoClean.run": "never",
+  "latex-workshop.formatting.latex": "latexindent",
+  "latex-workshop.latex.outDir": "../build/thesis",
+  "latex-workshop.latex.recipe.default": "first",
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "Tesis: compilación incremental",
+      "tools": ["tesis-incremental"]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "tesis-incremental",
+      "command": "bash",
+      "args": [
+        "%WORKSPACE_FOLDER%/scripts/document.sh",
+        "build",
+        "thesis"
+      ],
+      "cwd": "%WORKSPACE_FOLDER%"
+    }
+  ],
+  "latex-workshop.latex.search.rootFiles.include": ["thesis/main.tex"],
+  "ltex.enabled": ["bibtex", "latex", "markdown", "quarto"],
+  "ltex.language": "es-ES",
+  "ltex.dictionary": {
+    "es-ES": [
+      "autoencoder",
+      "dataset",
+      "datasets",
+      "equivarianza",
+      "equivariante",
+      "equivariantes",
+      "histopatología",
+      "histopatológicas",
+      "SIPAIM",
+      "WSI"
+    ],
+    "es": [
+      "autoencoder",
+      "dataset",
+      "datasets",
+      "equivarianza",
+      "equivariante",
+      "equivariantes",
+      "histopatología",
+      "histopatológicas",
+      "SIPAIM",
+      "WSI"
+    ]
+  }
+}

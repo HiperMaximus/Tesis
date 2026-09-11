@@ -1,0 +1,33 @@
+\begin{tikzpicture}[
+    font=\small,
+    >=Latex,
+    panel/.style={draw=black!55, fill=black!2, rounded corners=3pt,
+        align=center, minimum width=4.25cm, minimum height=3.35cm},
+    flow/.style={->, very thick, draw=purple!70!black}
+]
+\node[panel] (f0) at (0,0) {};
+\node[font=\bfseries, anchor=north] at ([yshift=-0.2cm]f0.north) {$F_0$: campo escalar};
+\node[circle, fill=blue!55, minimum size=0.42cm, inner sep=0pt] at ([xshift=-0.85cm,yshift=-0.15cm]f0.center) {};
+\node[circle, fill=blue!55, minimum size=0.42cm, inner sep=0pt] at ([xshift=0.85cm,yshift=-0.15cm]f0.center) {};
+\draw[flow] ([xshift=-0.48cm,yshift=-0.15cm]f0.center) arc[start angle=180,end angle=15,radius=0.5cm];
+\node[font=\scriptsize,align=center,text width=3.65cm]
+    at ([yshift=-1.05cm]f0.center)
+    {se desplaza en el plano;\\el valor interno permanece igual};
+
+\node[panel, right=0.65cm of f0] (f1) {};
+\node[font=\bfseries, anchor=north] at ([yshift=-0.2cm]f1.north) {$F_1$: campo vectorial};
+\coordinate (a) at ([xshift=-0.9cm,yshift=-0.2cm]f1.center);
+\coordinate (b) at ([xshift=0.9cm,yshift=-0.2cm]f1.center);
+\draw[->, ultra thick, blue!65!black] (a) -- ++(0.7,0.25);
+\draw[->, ultra thick, blue!65!black] (b) -- ++(-0.2,0.7);
+\draw[flow] ([xshift=-0.35cm,yshift=0.2cm]f1.center) arc[start angle=200,end angle=20,radius=0.55cm];
+\node[font=\scriptsize,align=center,text width=3.65cm]
+    at ([yshift=-1.05cm]f1.center)
+    {giran la posición y\\la pareja $(v_x,v_y)$};
+
+\node[panel, right=0.65cm of f1] (pack) {};
+\node[font=\bfseries, anchor=north] at ([yshift=-0.2cm]pack.north) {Disposición mixta};
+\node at ([yshift=0.25cm]pack.center) {$n_0F_0+n_1F_1$};
+\node[font=\Large] at ([yshift=-0.3cm]pack.center) {$\Downarrow$};
+\node at ([yshift=-0.8cm]pack.center) {$n_0+2n_1$ canales físicos};
+\end{tikzpicture}

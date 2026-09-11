@@ -1,0 +1,30 @@
+{
+  "ltex.language": "es-ES",
+  "ltex.enabled": ["bibtex", "latex", "markdown", "quarto"],
+  "ltex.dictionary": {
+    "es-ES": [
+      "autoencoder",
+      "dataset",
+      "datasets",
+      "equivarianza",
+      "equivariante",
+      "equivariantes",
+      "histopatología",
+      "histopatológicas",
+      "SIPAIM",
+      "WSI"
+    ],
+    "es": [
+      "autoencoder",
+      "dataset",
+      "datasets",
+      "equivarianza",
+      "equivariante",
+      "equivariantes",
+      "histopatología",
+      "histopatológicas",
+      "SIPAIM",
+      "WSI"
+    ]
+  }
+}

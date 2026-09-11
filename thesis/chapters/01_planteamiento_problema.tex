@@ -1,0 +1,39 @@
+% !TEX root = ../main.tex
+\chapter{Planteamiento del problema y justificación}
+% Revisar este texto del plan a la luz del alcance realmente ejecutado.
+
+La histología es una de las ramas fundamentales de la medicina ya que esta rama de la ciencia esta encargada en el estudio de la anatomía de los seres humanos desde una perspectiva microscópica. Es así como la histología ha posibilitado avances cruciales para el diagnóstico de enfermedades a través de la identificación de síntomas a nivel microscópico en el campo de la patología médica. Esto se debe a que la capacidad de examinar los tejidos a nivel celular ha ayudado a comprender la naturaleza y el desarrollo de las enfermedades. En el caso específico de patologías asociadas al cáncer, la histología ha desempeñado un papel vital identificando alteraciones morfológicas y celulares asociadas con los diferentes tipos de tumores.
+
+En la actualidad, la digitalización de imágenes histopatológicas ha permitido el desarrollo de la patología digital. La adquisición digital de láminas histológicas completas permite su almacenamiento, análisis y distribución de manera eficiente. Esta transformación tecnológica ha superado las limitaciones tradicionales de la patología facilitando el acceso remoto a las imágenes y promoviendo la colaboración entre profesionales de la salud en diferentes ubicaciones geográficas. Ambos aspectos prometen un avance significativo en el proceso de diagnosis de cáncer.
+
+Entre las herramientas computacionales asociadas a la patología digital, los sistemas de apoyo al diagnóstico prometen mejorar la precisión y la eficiencia en la toma de decisiones médicas. La posibilidad de aplicar herramientas automáticas de análisis ha impulsado la investigación y el desarrollo de enfoques más avanzados para la detección y clasificación de enfermedades usando información microscópica, incluyendo el cáncer. Además, este tipo de herramientas ayudarían a reducir la alta variabilidad inter e intra observador en el diagnóstico de este tipo de imágenes.
+
+El análisis automático de imágenes histopatológicas representa un avance en el futuro en la medicina diagnóstica. Sin embargo, los alcances de la patología digital en la actualidad está limitada por la cantidad reducida de datos anotados por expertos. Esto se debe a que recolectar imágenes histopatológicas y realizar una anotación manual implica el análisis detallado de patólogos expertos - un proceso inherentemente largo y altamente costoso.
+%Por otra parte, a diferencia de otras aplicaciones comerciales, debido a las particularidades del ámbito médico, más que la eficiencia y rapidez en la inferencia de datos, es el entrenamiento y la precisión y exactitud lo que importa, dicho de otra manera, lo esencial es extraer la mayor cantidad de información con los pocos datos anotados que existan, a la vez que el modelo tenga la mayor capacidad de generalización a partir de estas limitaciones anteriormente descritas.
+
+Para realizar el análisis automático de imágenes se han utilizado diferentes tipos algoritmos entre los que han destacado las redes neuronales profundas. Estas redes, en vez de realizar cálculos complejos y computacionalmente exigentes, permiten realizar operaciones simples pero concatenadas de forma profunda y que pueden ser ejecutadas en paralelo, disminuyendo así el tiempo de entrenamiento y de ajuste de parámetros. A cambio, necesitan gran cantidad de datos para tener una precisión adecuada en las predicciones. En general, las redes neuronales no pretenden fijar un proceso de extracción de características, sino aprender una representación adecuada que permita realizar un análisis automático.
+
+Entre las redes neuronales para el procesamiento de imágenes, se destaca el uso de redes neuronales convolucionales que han sido revolucionarias en la medida en que son más eficientes en la cantidad de parámetros a aprender, pues aprovechan la característica de que muchos datos, en particular las imágenes, tienen información que es altamente local (por ejemplo los píxeles en una imagen tienen relación con otros píxeles adyacentes pero no con los píxeles más apartados), esto hace que requieran menos datos comparado con las redes neuronales tradicionales. Si bien el rendimiento es considerablemente mejor usando la información geométrica de estos datos, muchas observaciones son necesarias y, lamentablemente, no se aprovechan todas las simetrías que imágenes en un campo específico puedan ofrecer. Por esa razón se suele utilizar el proceso de “data augmentation”, que implica generar nuevas imágenes a partir del dataset al que se tiene acceso aplicando diversas transformaciones geométricas a las imágenes originales.
+
+Aplicar data augmentation es ineficiente porque aumenta la cantidad de tiempo para realizar el entrenamiento, dado que, se requiere un trabajo adicional en la preparación de dataset o el preprocesamiento. Además, este procedimiento consume mayor cantidad de recursos computacionales.
+
+Por tal motivo, este trabajo estudia redes neuronales equivariantes como una
+forma de incorporar al modelo una propiedad conocida de las imágenes
+histopatológicas: sus estructuras pueden aparecer con cualquier orientación en
+el plano. En particular, se evalúa equivarianza a rotaciones continuas
+$\mathrm{SO}(2)$. Las reflexiones no forman parte del alcance experimental y la
+traslación corresponde a la equivarianza ya presente en la convolución
+convencional.
+
+El diseño combina aprendizaje no supervisado de representaciones sobre
+parches con su evaluación posterior mediante anotaciones limitadas. Esto
+permite comparar el VAE equivariante con un VAE convolucional base bajo los
+mismos protocolos, sin atribuir las diferencias únicamente a una mayor
+cantidad de datos anotados.
+
+Esto nos lleva a formular la siguiente pregunta de investigación:
+
+¿En qué medida las representaciones aprendidas por un VAE con equivarianza
+continua a $\mathrm{SO}(2)$, comparadas con las de un VAE convolucional base,
+resultan útiles para la clasificación a nivel de WSI y la segmentación de WSI a
+resolución de parche cuando se dispone de anotaciones limitadas?

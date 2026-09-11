@@ -1,0 +1,65 @@
+\begin{tikzpicture}[
+    font=\sffamily\scriptsize,
+    >={Latex[length=2.4mm]},
+    flow/.style={->,very thick,draw=black!70},
+    labelbox/.style={fill=white,draw=black!20,rounded corners=1.5pt,
+        inner xsep=3pt,inner ysep=2pt,align=center},
+    store/.style={draw=black!65,rounded corners=2pt,align=center,
+        minimum height=12mm,fill=blue!6},
+    process/.style={draw=black!65,rounded corners=2pt,align=center,
+        minimum height=12mm,fill=orange!10}
+]
+% Panel A: strip-wise WSI access.
+\node[font=\sffamily\small\bfseries,anchor=west] at (0,4.7)
+    {(a) Lectura espacial de una WSI};
+\draw[rounded corners=2pt,fill=black!3,draw=black!55] (0,0.4) rectangle (5.1,4.35);
+\path[fill=pink!30,draw=purple!45!black,line width=0.6pt]
+    (0.55,1.05) .. controls (0.15,2.0) and (0.65,3.65) .. (1.8,3.95)
+    .. controls (2.75,4.2) and (3.15,3.25) .. (4.35,3.45)
+    .. controls (5.0,3.0) and (4.55,2.35) .. (4.8,1.65)
+    .. controls (4.1,0.75) and (3.1,1.35) .. (2.35,0.85)
+    .. controls (1.65,0.4) and (1.15,0.95) .. cycle;
+\foreach \x in {0.85,1.55,2.25,2.95,3.65,4.35}
+    \draw[black!18] (\x,0.4) -- (\x,4.35);
+\foreach \y in {1.1,1.8,2.5,3.2,3.9}
+    \draw[black!18] (0,\y) -- (5.1,\y);
+\fill[blue!35,opacity=0.32] (0.03,1.82) rectangle (5.07,2.48);
+\draw[blue!65!black,line width=1.1pt] (0.03,1.82) rectangle (5.07,2.48);
+\foreach \x in {0.85,2.25,3.65}
+    \draw[orange!90!black,line width=1.5pt] (\x,1.8) rectangle ++(0.7,0.7);
+\node[labelbox,anchor=south west] at (0.12,0.52)
+    {cuadrícula sin solapamiento\\celda $256\times256$};
+
+\draw[fill=blue!10,draw=blue!60!black,rounded corners=1pt]
+    (7.1,1.65) rectangle (12.9,2.65);
+\foreach \x in {7.25,8.15,9.05,9.95,10.85,11.75}
+    \draw[black!25] (\x,1.65) rectangle ++(0.9,1.0);
+\foreach \x in {7.25,9.05,10.85}
+    \draw[orange!90!black,line width=1.5pt] (\x,1.65) rectangle ++(0.9,1.0);
+\node[labelbox,above=3mm] at (10.0,2.65)
+    {recorte de las posiciones seleccionadas\\sin decodificar la WSI completa en memoria};
+% El rótulo se dibuja después de la franja para conservar todo el texto visible.
+\draw[flow] (5.15,2.15) -- node[labelbox,above=1mm]
+    {una franja horizontal\\de 256 píxeles de alto} (7.05,2.15);
+
+% Panel B: the two storage routes.
+\node[font=\sffamily\small\bfseries,anchor=west] at (0,-0.25)
+    {(b) Rutas de almacenamiento};
+\node[process,minimum width=31mm] (trainpatch) at (1.7,-1.4)
+    {Parches RGB de\\preentrenamiento};
+\node[store,minimum width=40mm,right=14mm of trainpatch] (bin)
+    {archivo prebarajado \texttt{.bin}\\cabecera de 64 bytes\\registros CHW \texttt{uint8}};
+\node[process,minimum width=33mm,right=14mm of bin] (mmap)
+    {\texttt{mmap} de solo lectura\\índice $\mapsto$ desplazamiento\\vista sin copia};
+\draw[flow] (trainpatch) -- node[labelbox,above=6mm]{orden fijado} (bin);
+\draw[flow] (bin) -- node[labelbox,above=6mm]{lectura secuencial} (mmap);
+
+\node[process,minimum width=31mm] (evalpatch) at (1.7,-3.25)
+    {Franjas RGB de la\\cohorte de evaluación};
+\node[store,minimum width=40mm,right=14mm of evalpatch] (enc)
+    {dos codificadores congelados\\mismas coordenadas};
+\node[process,minimum width=33mm,right=14mm of enc] (latent)
+    {almacenes FP32 pareados\\$\mu[16,32,32]$\\sin copia RGB intermedia};
+\draw[flow] (evalpatch) -- node[labelbox,above=7mm]{cada parche una vez} (enc);
+\draw[flow] (enc) -- node[labelbox,above=7mm]{escritura directa} (latent);
+\end{tikzpicture}

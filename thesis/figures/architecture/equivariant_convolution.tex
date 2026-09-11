@@ -1,0 +1,61 @@
+\begin{tikzpicture}[
+    font=\sffamily\scriptsize,
+    >={Latex[length=2.2mm]},
+    flow/.style={->,thick,draw=black!65},
+    field/.style={
+        draw=black!65,rounded corners=2pt,align=center,
+        minimum height=13mm,minimum width=31mm,fill=violet!9
+    },
+    basis/.style={
+        draw=black!55,rounded corners=2pt,align=center,
+        minimum height=9mm,minimum width=24mm,fill=blue!8
+    },
+    learned/.style={
+        draw=black!65,rounded corners=2pt,align=center,
+        minimum height=15mm,minimum width=35mm,fill=orange!15
+    },
+    operation/.style={
+        draw=black!65,rounded corners=2pt,align=center,
+        minimum height=14mm,minimum width=39mm,fill=green!10
+    }
+]
+% Two independent ingredients build K: a fixed analytic bank and trainable
+% coefficients. The input feature map does not generate either ingredient.
+\node[basis] (p00) at (0,2.0) {base fija\\\(F_0\!\to F_0\)};
+\node[basis] (p01) at (3.0,2.0) {base fija\\\(F_0\!\to F_1\)};
+\node[basis] (p10) at (0,0.7) {base fija\\\(F_1\!\to F_0\)};
+\node[basis] (p11) at (3.0,0.7) {base fija\\\(F_1\!\to F_1\)};
+
+\node[draw=blue!45,dashed,rounded corners=2pt,fit=(p00)(p01)(p10)(p11),
+      inner sep=3mm,
+      label={[align=center,font=\sffamily\scriptsize,text=blue!65!black]above:
+      Banco analítico fijo\\Gaussianas radiales $\times$ armónicos reales}] (bank) {};
+
+\node[learned] (coeff) at (10.0,1.35)
+      {Parámetros entrenables\\
+       \(\alpha_{ba,m}^{\ell_o\leftarrow\ell_i}\) por pareja\\
+       de copias y tipos de campo};
+
+\node[operation] (expand) at (6.5,-0.55)
+      {Combinación y ensamblaje por bloques\\
+       \(K_{ba}=\sum_m\alpha_{ba,m}B_m\)\\
+       núcleo denso \(K\)};
+
+\node[field] (input) at (0,-3.0)
+      {Campos de entrada\\\(\mathbf{x}:n_0F_0+n_1F_1\)};
+\node[operation] (conv) at (6.5,-3.0)
+      {Convolución 2D\\\(\mathbf{y}=K*\mathbf{x}\)};
+\node[field] (output) at (13.0,-3.0)
+      {Campos de salida\\\(\mathbf{y}:m_0F_0+m_1F_1\)};
+
+\draw[flow] (bank.south) |- (expand.west);
+\draw[flow] (coeff.south) |- (expand.east);
+\draw[flow] (expand.south) -- (conv.north);
+\draw[flow] (input.east) -- (conv.west);
+\draw[flow] (conv.east) -- (output.west);
+
+\node[below=6mm of conv,align=center,font=\sffamily\scriptsize]
+      {Las bases \(B_m\) satisfacen la restricción de equivarianza y no se
+       entrenan;\\el aprendizaje modifica \(\alpha\), expande \(K\) y aplica
+       ese núcleo a \(\mathbf{x}\).};
+\end{tikzpicture}

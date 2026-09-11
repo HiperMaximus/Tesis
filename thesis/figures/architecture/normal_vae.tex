@@ -1,0 +1,50 @@
+\begin{tikzpicture}[
+    font=\sffamily\scriptsize,
+    >={Latex[length=2.2mm]},
+    flow/.style={->,thick,draw=black!65},
+    box/.style={
+        draw=black!65,rounded corners=2pt,align=center,
+        minimum height=10mm,minimum width=24mm,fill=blue!8
+    },
+    latent/.style={
+        draw=black!70,rounded corners=2pt,align=center,
+        minimum height=13mm,minimum width=29mm,fill=orange!18
+    },
+    io/.style={
+        draw=black!70,rounded corners=2pt,align=center,
+        minimum height=10mm,minimum width=21mm,fill=green!10
+    }
+]
+\node[io] (input) {Entrada RGB\\\(3\times256^2\)};
+\node[box,right=6mm of input] (a) {Stem \(7\times7\)\\2 bloques\\\(32\times256^2\)};
+\node[box,right=6mm of a] (b) {\(\downarrow2\) + 2 bloques\\\(48\times128^2\)};
+\node[box,right=6mm of b] (c) {\(\downarrow2\) + 2 bloques\\\(64\times64^2\)};
+\node[box,right=6mm of c] (d) {\(\downarrow2\) + 2 bloques\\\(96\times32^2\)};
+\node[latent,right=6mm of d] (posterior) {Cabezas \(5\times5\)\\
+    \(\boldsymbol{\mu},\boldsymbol{\ell}\in\mathbb{R}^{16\times32^2}\)};
+
+\node[latent,below=15mm of posterior] (z) {Reparametrización\\
+    \(\mathbf z\in\mathbb{R}^{16\times32^2}\)};
+\node[box,left=6mm of z] (dd) {Proyección + 2 bloques\\\(96\times32^2\)};
+\node[box,left=6mm of dd] (dc) {\(\uparrow2\) + 2 bloques\\\(64\times64^2\)};
+\node[box,left=6mm of dc] (db) {\(\uparrow2\) + 2 bloques\\\(48\times128^2\)};
+\node[box,left=6mm of db] (da) {\(\uparrow2\) + 2 bloques\\\(32\times256^2\)};
+\node[io,left=6mm of da] (output) {Salida RGB cruda\\\(3\times256^2\)};
+
+\draw[flow] (input) -- (a);
+\draw[flow] (a) -- (b);
+\draw[flow] (b) -- (c);
+\draw[flow] (c) -- (d);
+\draw[flow] (d) -- (posterior);
+\draw[flow] (posterior) -- (z);
+\draw[flow] (z) -- (dd);
+\draw[flow] (dd) -- (dc);
+\draw[flow] (dc) -- (db);
+\draw[flow] (db) -- (da);
+\draw[flow] (da) -- (output);
+
+\node[draw=black!35,dashed,rounded corners=2pt,fit=(input)(posterior),
+      inner sep=3mm,label={[font=\sffamily\scriptsize]above:Codificador}] {};
+\node[draw=black!35,dashed,rounded corners=2pt,fit=(z)(output),
+      inner sep=3mm,label={[font=\sffamily\scriptsize]below:Decodificador}] {};
+\end{tikzpicture}

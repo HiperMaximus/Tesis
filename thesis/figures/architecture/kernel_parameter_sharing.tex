@@ -1,0 +1,63 @@
+\begin{tikzpicture}[
+    font=\sffamily\scriptsize,
+    >={Latex[length=2.5mm]},
+    flow/.style={->,very thick,draw=black!70},
+    card/.style={draw=black!55,rounded corners=2pt,align=center,
+        minimum width=28mm,minimum height=14mm,fill=black!2},
+    labelbox/.style={fill=white,draw=black!18,rounded corners=1.5pt,
+        inner xsep=3pt,inner ysep=2pt,align=center}
+]
+\node[card] (alpha1) at (0,2.1) {\textcolor{orange!85!black}{$\alpha_{ba,1}$}\\un escalar aprendido};
+\node[card] (alpha2) at (0,0.5) {\textcolor{blue!75!black}{$\alpha_{ba,2}$}\\un escalar aprendido};
+\node[card] (alpham) at (0,-1.1) {\textcolor{green!55!black}{$\alpha_{ba,M}$}\\un escalar aprendido};
+
+\node[card,minimum width=34mm] (basis1) at (4.2,2.1)
+    {\textcolor{orange!85!black}{$B_1(\mathbf u)$}\\plantilla vectorial fija};
+\node[card,minimum width=34mm] (basis2) at (4.2,0.5)
+    {\textcolor{blue!75!black}{$B_2(\mathbf u)$}\\plantilla vectorial fija};
+\node[card,minimum width=34mm] (basism) at (4.2,-1.1)
+    {\textcolor{green!55!black}{$B_M(\mathbf u)$}\\plantilla vectorial fija};
+
+\draw[flow,orange!85!black] (alpha1) -- (basis1);
+\draw[flow,blue!75!black] (alpha2) -- (basis2);
+\draw[flow,green!55!black] (alpham) -- (basism);
+
+\node[card,minimum width=34mm,minimum height=55mm] (sum) at (8.2,0.5)
+    {$K_{ba}(\mathbf u)$\\[1mm]
+     $=\displaystyle\sum_{m=1}^{M}$\\[-1mm]
+     $\alpha_{ba,m}B_m(\mathbf u)$\\[2mm]
+     \textcolor{black!60}{un bloque denso}\\
+     \textcolor{black!60}{$d_o\times d_i\times k\times k$}};
+\draw[flow] (basis1.east) -- ++(5mm,0) |- (sum.west);
+\draw[flow] (basis2.east) -- (sum.west);
+\draw[flow] (basism.east) -- ++(5mm,0) |- (sum.west);
+
+\begin{scope}[shift={(11.6,0.5)}]
+  \draw[fill=black!2,draw=black!55] (-1.55,-1.55) rectangle (1.55,1.55);
+  \foreach \x in {-1.2,-0.6,0,0.6,1.2}
+    \foreach \y in {-1.2,-0.6,0,0.6,1.2}
+      \draw[black!18] (\x-0.3,\y-0.3) rectangle (\x+0.3,\y+0.3);
+  \foreach \x/\y/\dx/\dy in {
+    -1.2/-1.2/-0.22/-0.22,-0.6/-1.2/-0.10/-0.25,0/-1.2/0/-0.28,
+    0.6/-1.2/0.10/-0.25,1.2/-1.2/0.22/-0.22,
+    -1.2/-0.6/-0.25/-0.10,-0.6/-0.6/-0.17/-0.17,0/-0.6/0/-0.25,
+    0.6/-0.6/0.17/-0.17,1.2/-0.6/0.25/-0.10,
+    -1.2/0/-0.28/0,-0.6/0/-0.25/0,0/0/0/0.20,
+    0.6/0/0.25/0,1.2/0/0.28/0,
+    -1.2/0.6/-0.25/0.10,-0.6/0.6/-0.17/0.17,0/0.6/0/0.25,
+    0.6/0.6/0.17/0.17,1.2/0.6/0.25/0.10,
+    -1.2/1.2/-0.22/0.22,-0.6/1.2/-0.10/0.25,0/1.2/0/0.28,
+    0.6/1.2/0.10/0.25,1.2/1.2/0.22/0.22}
+    \draw[-{Latex[length=1.4mm]},line width=0.9pt,purple!70!black]
+      (\x,\y) -- ++(\dx,\dy);
+  \node[font=\sffamily\scriptsize\bfseries] at (0,2.1) {núcleo expandido};
+  \node[labelbox] at (0,2.75) {\texttt{reshape} y empaque de canales};
+\end{scope}
+\draw[flow] (sum.east) -- (10.0,0.5);
+
+\node[labelbox,text width=12.5cm] at (5.8,-2.25)
+    {Un color identifica un coeficiente: el mismo valor multiplica todos los
+     píxeles y componentes de su plantilla. Los píxeles del núcleo no son
+     parámetros independientes. La figura muestra tres términos de una suma
+     de $M$ bases; la implementación usa todos los términos admitidos.};
+\end{tikzpicture}

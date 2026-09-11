@@ -1,0 +1,33 @@
+\begin{tikzpicture}[
+    font=\small,
+    >=Latex,
+    box/.style={draw=black!55, fill=black!2, rounded corners=2pt,
+        align=center, minimum height=0.95cm, text width=3.1cm},
+    select/.style={draw=orange!70!black, fill=orange!8, rounded corners=2pt,
+        align=center, minimum height=1.15cm, text width=3.25cm},
+    model/.style={draw=purple!60!black, fill=purple!7, rounded corners=2pt,
+        align=center, minimum height=0.9cm, text width=2.75cm},
+    task/.style={draw=green!45!black, fill=green!8, rounded corners=2pt,
+        align=center, minimum height=0.95cm, text width=3.1cm},
+    flow/.style={->, very thick, draw=black!65}
+]
+\node[box] (atlas) {Atlas + partición por WSI};
+\node[select, right=1.0cm of atlas, yshift=2.05cm] (recon) {Reconstrucción\\Otsu, máximo 3000/WSI};
+\node[select, right=1.0cm of atlas] (tissue) {Tejido anotado\\$\geq10\%$ y pureza $\geq95\%$\\máximo 1000/WSI/clase};
+\node[select, right=1.0cm of atlas, yshift=-2.05cm] (mil) {Diagnóstico WSI\\todos los parches Otsu};
+\node[box, right=1.15cm of tissue] (crop) {Lectura RGB directa\\parche $256\times256$};
+\node[model, right=1.0cm of crop, yshift=0.75cm] (normal) {Codificador VAE base\\congelado};
+\node[model, right=1.0cm of crop, yshift=-0.75cm] (so2) {Codificador VAE-$\mathrm{SO}(2)$\\congelado};
+\node[task, right=1.0cm of $(normal)!0.5!(so2)$] (views) {Medias posteriores pareadas\\vistas lógicas por tarea};
+
+\draw[flow] (atlas) -- (recon);
+\draw[flow] (atlas) -- (tissue);
+\draw[flow] (atlas) -- (mil);
+\draw[flow] (recon.east) -- (crop.west);
+\draw[flow] (tissue.east) -- (crop.west);
+\draw[flow] (mil.east) -- (crop.west);
+\draw[flow] (crop) -- (normal);
+\draw[flow] (crop) -- (so2);
+\draw[flow] (normal) -- (views);
+\draw[flow] (so2) -- (views);
+\end{tikzpicture}

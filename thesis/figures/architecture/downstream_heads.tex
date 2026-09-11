@@ -1,0 +1,65 @@
+\begin{tikzpicture}[
+    font=\sffamily\scriptsize,
+    >={Latex[length=2.2mm]},
+    flow/.style={->,thick,draw=black!65},
+    common/.style={
+        draw=black!70,rounded corners=2pt,align=center,
+        minimum height=12mm,minimum width=28mm,fill=orange!18
+    },
+    patch/.style={
+        draw=black!65,rounded corners=2pt,align=center,
+        minimum height=12mm,minimum width=31mm,fill=blue!9
+    },
+    mil/.style={
+        draw=black!65,rounded corners=2pt,align=center,
+        minimum height=12mm,minimum width=35mm,fill=violet!9
+    },
+    outputbox/.style={
+        draw=black!70,rounded corners=2pt,align=center,
+        minimum height=12mm,minimum width=31mm,fill=green!12
+    }
+]
+\node[common] (mu) {Codificador VAE congelado\\
+    \(\boldsymbol{\mu}:16\times32\times32\) por parche};
+
+\node[patch,right=11mm of mu,yshift=10mm] (tconv) {Conv + GN + GELU\\
+    \(16\to32\to64\to128\)};
+\node[patch,right=7mm of tconv] (tpool) {Promedio espacial\\
+    + lineal \(128\to3\)};
+\node[outputbox,right=7mm of tpool] (tout) {Tumor / estroma / necrosis\\
+    por celda seleccionada};
+
+\node[mil,right=11mm of mu,yshift=-15mm] (mconv) {Codificador de parche\\
+    \(16\to64\to128\to192\)};
+\node[mil,right=7mm of mconv,minimum height=20mm] (local) {
+    \(\begin{smallmatrix}
+    \circ&\circ&\circ&\circ&\circ\\
+    \circ&\circ&\circ&\circ&\circ\\
+    \circ&\circ&\bullet&\circ&\circ\\
+    \circ&\circ&\circ&\circ&\circ\\
+    \circ&\circ&\circ&\circ&\circ
+    \end{smallmatrix}\)\quad
+    \begin{tabular}{c}2 bloques locales\\radio 2, 6 cabezas\end{tabular}};
+\node[mil,right=7mm of local] (summary) {CLS + 16 registros\\
+    lectura sigmoidal\\\(\sigma(qk/\sqrt{32}+b-\log N)\)};
+\node[mil,below=7mm of summary] (cls) {Atención \emph{softmax}\\
+    CLS sobre 17 tokens};
+\node[outputbox,right=7mm of cls] (mout) {Diagnóstico WSI\\
+    5 subtipos};
+
+\draw[flow] (mu.east) -- ++(5mm,0) |- (tconv.west);
+\draw[flow] (tconv) -- (tpool);
+\draw[flow] (tpool) -- (tout);
+\draw[flow] (mu.east) -- ++(5mm,0) |- (mconv.west);
+\draw[flow] (mconv) -- (local);
+\draw[flow] (local) -- (summary);
+\draw[flow] (summary) -- (cls);
+\draw[flow] (cls) -- (mout);
+
+\node[draw=blue!45,dashed,rounded corners=2pt,fit=(tconv)(tpool)(tout),
+      inner sep=3mm,label={[font=\sffamily\scriptsize,text=blue!65!black]above:
+      Segmentación en cuadrícula dispersa de parches}] {};
+\node[draw=violet!45,dashed,rounded corners=2pt,fit=(mconv)(local)(summary)(cls)(mout),
+      inner sep=3mm,label={[font=\sffamily\scriptsize,text=violet!65!black]below:
+      Clasificación mediante aprendizaje de instancias múltiples}] {};
+\end{tikzpicture}

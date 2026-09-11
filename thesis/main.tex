@@ -1,0 +1,114 @@
+\ifdefined\ThesisDraft
+  \PassOptionsToPackage{draft}{graphicx}
+  \documentclass[12pt,letterpaper,draft,oneside,openany]{scrbook}
+\else
+  \documentclass[12pt,letterpaper,final,oneside,openany]{scrbook}
+\fi
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\graphicspath{{figures/plan/}{figures/experiments/}}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,babel,calc,fit,positioning}
+\usepackage[left=3cm,right=3cm,top=3cm,bottom=2cm]{geometry}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{scrhack}
+\usepackage{listings}
+\usepackage[hang]{footmisc}
+\usepackage[hyperfootnotes=false]{hyperref}
+\hypersetup{bookmarksopen,bookmarksnumbered,colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue}
+\usepackage{setspace}
+\usepackage{xurl}
+
+\setlength{\parindent}{0pt}
+\setlength\footnotemargin{8pt}
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{blue!60!black},
+  commentstyle=\color{green!40!black},
+  stringstyle=\color{orange!55!black},
+  backgroundcolor=\color{black!2},
+  frame=single,
+  rulecolor=\color{black!25},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false
+}
+
+\makeatletter
+\author{Maximiliano Garavito Chtefan}\let\Author\@author
+\title{Modelo semi-supervisado de redes neuronales convolucionales equivariantes para la segmentación y clasificación de imágenes histopatológicas}\let\Title\@title
+\makeatother
+
+\newcommand{\DegreeName}{Ingeniero de Sistemas}
+\newcommand{\DirectorName}{David Romo Bucheli}
+\newcommand{\DirectorDegree}{Ph.D.}
+\newcommand{\FacultyName}{Facultad de Ingenierías Fisicomecánicas}
+\newcommand{\SchoolName}{Escuela de Ingeniería de Sistemas e Informática}
+\newcommand{\ThesisYear}{2026}
+
+\addto\captionsspanish{%
+  \renewcommand{\contentsname}{Contenido}%
+  \renewcommand{\listfigurename}{Lista de figuras}%
+  \renewcommand{\listtablename}{Lista de tablas}%
+  \renewcommand{\tablename}{Tabla}%
+  \renewcommand{\lstlistingname}{Listado}%
+  \renewcommand{\lstlistlistingname}{Lista de listados}%
+}
+
+\begin{document}
+\pagenumbering{arabic}
+\pagestyle{plain}
+
+%% HOJAS PRELIMINARES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{frontmatter/portada}
+\input{frontmatter/portadilla}
+
+% Dedicatoria y agradecimientos son opcionales y se añadirán aquí cuando el
+% autor decida redactarlos.
+
+\cleardoublepage
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\cleardoublepage
+\listoffigures
+
+\cleardoublepage
+\listoftables
+
+\input{frontmatter/resumen}
+\input{frontmatter/abstract}
+
+%% CUERPO DEL DOCUMENTO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{chapters/00_introduccion}
+\include{chapters/01_planteamiento_problema}
+\include{chapters/02_objetivos}
+\include{chapters/03_marco_referencia}
+\include{chapters/04_metodologia}
+\include{chapters/05_resultados}
+\include{chapters/06_discusion}
+\include{chapters/07_conclusiones}
+\include{chapters/08_trabajo_futuro}
+
+%% REFERENCIAS Y APÉNDICES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliografía}
+\bibliographystyle{IEEEtr}
+\bibliography{references}
+
+% Los apéndices reproducibles se incorporarán después de la bibliografía con
+% \appendix e \include cuando estén definidos sus contenidos finales.
+
+\end{document}

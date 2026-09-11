@@ -1,0 +1,4 @@
+% Copy this file to includeonly.local.tex and list the chapters to compile.
+% The local file is ignored by Git. Delete it to compile the complete thesis.
+% The latent-space analysis is a section of the results chapter.
+\includeonly{chapters/05_resultados}

@@ -1,39 +1,60 @@
 % !TEX root = ../main.tex
 \chapter{Planteamiento del problema y justificación}
-% Revisar este texto del plan a la luz del alcance realmente ejecutado.
 
-La histología es una de las ramas fundamentales de la medicina ya que esta rama de la ciencia esta encargada en el estudio de la anatomía de los seres humanos desde una perspectiva microscópica. Es así como la histología ha posibilitado avances cruciales para el diagnóstico de enfermedades a través de la identificación de síntomas a nivel microscópico en el campo de la patología médica. Esto se debe a que la capacidad de examinar los tejidos a nivel celular ha ayudado a comprender la naturaleza y el desarrollo de las enfermedades. En el caso específico de patologías asociadas al cáncer, la histología ha desempeñado un papel vital identificando alteraciones morfológicas y celulares asociadas con los diferentes tipos de tumores.
+La histopatología permite caracterizar enfermedades mediante la observación de
+la morfología microscópica de los tejidos. Su digitalización en forma de WSI
+facilita conservar, consultar y distribuir las láminas, y proporciona una entrada
+estandarizada para desarrollar herramientas de análisis computacional
+~\cite{pallua_future_2020,song_artificial_2023}. Estas herramientas pueden apoyar
+tareas repetitivas, cuantificar patrones y explorar biomarcadores morfológicos,
+pero su adopción clínica exige distinguir el desempeño experimental de la
+validación diagnóstica y considerar limitaciones operativas, regulatorias y de
+generalización~\cite{verghese_computational_2023}.
 
-En la actualidad, la digitalización de imágenes histopatológicas ha permitido el desarrollo de la patología digital. La adquisición digital de láminas histológicas completas permite su almacenamiento, análisis y distribución de manera eficiente. Esta transformación tecnológica ha superado las limitaciones tradicionales de la patología facilitando el acceso remoto a las imágenes y promoviendo la colaboración entre profesionales de la salud en diferentes ubicaciones geográficas. Ambos aspectos prometen un avance significativo en el proceso de diagnosis de cáncer.
+Una dificultad central es la disponibilidad de etiquetas. Las anotaciones
+histológicas detalladas requieren tiempo de especialistas y su costo aumenta con
+el tamaño de la lámina, la complejidad de la estructura y la resolución espacial
+solicitada. En un corpus anotado de colon y piel se observaron tiempos entre 45
+segundos y más de 360 minutos por WSI, según la tarea
+~\cite{lindman_annotations_2019}. En consecuencia, es común disponer de muchas
+regiones de tejido que pueden utilizarse para aprender una representación, pero
+de un número menor de regiones con etiquetas apropiadas para entrenar y evaluar
+un clasificador.
 
-Entre las herramientas computacionales asociadas a la patología digital, los sistemas de apoyo al diagnóstico prometen mejorar la precisión y la eficiencia en la toma de decisiones médicas. La posibilidad de aplicar herramientas automáticas de análisis ha impulsado la investigación y el desarrollo de enfoques más avanzados para la detección y clasificación de enfermedades usando información microscópica, incluyendo el cáncer. Además, este tipo de herramientas ayudarían a reducir la alta variabilidad inter e intra observador en el diagnóstico de este tipo de imágenes.
+Las redes neuronales profundas aprenden representaciones mediante composiciones
+de transformaciones parametrizadas y no requieren que las características se
+definan manualmente de antemano~\cite{goodfellow_deep_2016}. Para imágenes, las
+CNN aprovechan la localidad y la compartición espacial de pesos: un mismo núcleo
+se aplica en diferentes posiciones, lo que reduce el número de parámetros frente
+a una capa densa de dimensiones comparables y produce equivarianza traslacional
+en la operación convolucional. Esta propiedad no implica invariancia completa de
+la red y puede verse afectada por bordes, muestreo, agrupamiento y pasos mayores
+que uno~\cite{cohen_group_2016}.
 
-El análisis automático de imágenes histopatológicas representa un avance en el futuro en la medicina diagnóstica. Sin embargo, los alcances de la patología digital en la actualidad está limitada por la cantidad reducida de datos anotados por expertos. Esto se debe a que recolectar imágenes histopatológicas y realizar una anotación manual implica el análisis detallado de patólogos expertos - un proceso inherentemente largo y altamente costoso.
-%Por otra parte, a diferencia de otras aplicaciones comerciales, debido a las particularidades del ámbito médico, más que la eficiencia y rapidez en la inferencia de datos, es el entrenamiento y la precisión y exactitud lo que importa, dicho de otra manera, lo esencial es extraer la mayor cantidad de información con los pocos datos anotados que existan, a la vez que el modelo tenga la mayor capacidad de generalización a partir de estas limitaciones anteriormente descritas.
+Las rotaciones constituyen una simetría adicional relevante en histopatología,
+pues una orientación distinta de una región no debería cambiar su contenido
+diagnóstico. El aumento de datos mediante rotaciones expone al modelo a ejemplos
+transformados, pero no garantiza una respuesta exactamente equivariante y añade
+un costo que depende de cuántas transformaciones se evalúen. Las convoluciones
+equivariantes incorporan la relación geométrica en la arquitectura mediante
+compartición restringida de parámetros~\cite{veeling_rotation_2018}. Esta
+restricción puede reducir la complejidad estadística bajo supuestos adecuados,
+aunque su utilidad debe comprobarse en la tarea y distribución concretas
+~\cite{elesedy_provably_2021}.
 
-Para realizar el análisis automático de imágenes se han utilizado diferentes tipos algoritmos entre los que han destacado las redes neuronales profundas. Estas redes, en vez de realizar cálculos complejos y computacionalmente exigentes, permiten realizar operaciones simples pero concatenadas de forma profunda y que pueden ser ejecutadas en paralelo, disminuyendo así el tiempo de entrenamiento y de ajuste de parámetros. A cambio, necesitan gran cantidad de datos para tener una precisión adecuada en las predicciones. En general, las redes neuronales no pretenden fijar un proceso de extracción de características, sino aprender una representación adecuada que permita realizar un análisis automático.
+Por tal motivo, este trabajo estudia redes neuronales convolucionales
+equivariantes como parte de un esquema semisupervisado. Primero se entrenaron,
+sin consultar las etiquetas de las tareas posteriores, un VAE convencional y un
+VAE con equivarianza continua a \(\mathrm{SO}(2)\). Después se congelaron ambos
+codificadores y se comparó la utilidad de sus representaciones mediante
+clasificación diagnóstica a nivel de WSI y segmentación de la WSI sobre una
+cuadrícula cuya unidad es un parche de \(256\times256\) píxeles. Esta última
+evaluación se restringió a regiones anotadas de alta pureza; las zonas sin
+anotación no se trataron como una clase negativa.
 
-Entre las redes neuronales para el procesamiento de imágenes, se destaca el uso de redes neuronales convolucionales que han sido revolucionarias en la medida en que son más eficientes en la cantidad de parámetros a aprender, pues aprovechan la característica de que muchos datos, en particular las imágenes, tienen información que es altamente local (por ejemplo los píxeles en una imagen tienen relación con otros píxeles adyacentes pero no con los píxeles más apartados), esto hace que requieran menos datos comparado con las redes neuronales tradicionales. Si bien el rendimiento es considerablemente mejor usando la información geométrica de estos datos, muchas observaciones son necesarias y, lamentablemente, no se aprovechan todas las simetrías que imágenes en un campo específico puedan ofrecer. Por esa razón se suele utilizar el proceso de “data augmentation”, que implica generar nuevas imágenes a partir del dataset al que se tiene acceso aplicando diversas transformaciones geométricas a las imágenes originales.
-
-Aplicar data augmentation es ineficiente porque aumenta la cantidad de tiempo para realizar el entrenamiento, dado que, se requiere un trabajo adicional en la preparación de dataset o el preprocesamiento. Además, este procedimiento consume mayor cantidad de recursos computacionales.
-
-Por tal motivo, este trabajo estudia redes neuronales equivariantes como una
-forma de incorporar al modelo una propiedad conocida de las imágenes
-histopatológicas: sus estructuras pueden aparecer con cualquier orientación en
-el plano. En particular, se evalúa equivarianza a rotaciones continuas
-$\mathrm{SO}(2)$. Las reflexiones no forman parte del alcance experimental y la
-traslación corresponde a la equivarianza ya presente en la convolución
-convencional.
-
-El diseño combina aprendizaje no supervisado de representaciones sobre
-parches con su evaluación posterior mediante anotaciones limitadas. Esto
-permite comparar el VAE equivariante con un VAE convolucional base bajo los
-mismos protocolos, sin atribuir las diferencias únicamente a una mayor
-cantidad de datos anotados.
-
-Esto nos lleva a formular la siguiente pregunta de investigación:
+Esto conduce a la siguiente pregunta de investigación:
 
 ¿En qué medida las representaciones aprendidas por un VAE con equivarianza
-continua a $\mathrm{SO}(2)$, comparadas con las de un VAE convolucional base,
+continua a \(\mathrm{SO}(2)\), comparadas con las de un VAE convolucional base,
 resultan útiles para la clasificación a nivel de WSI y la segmentación de WSI a
 resolución de parche cuando se dispone de anotaciones limitadas?

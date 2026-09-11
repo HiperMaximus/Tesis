@@ -89,6 +89,10 @@ Last updated: 2026-09-11
 - Added `scripts/render_wsi_mask_example.py`, which row-streams the full-size
   mask, reduces it without loading the complete RGB image into memory and
   reproduces the tissue-task coverage and purity thresholds for the overlay.
+- Set the Figure 4.14 export width to 640 pixels. Its three lossless PNG panels
+  now enter the PDF at 331 ppi instead of 621 ppi; together they occupy about
+  1.0 MB rather than 3.4 MB, with the thumbnail, sparse mask and patch grid
+  still legible at their printed size.
 - Expanded the Transformer derivation into a self-contained definition of
   stable row-wise softmax, sigmoid, SiLU, LayerNorm, multi-head attention,
   SwiGLU and pre-normalized residual blocks, with all principal tensor shapes.
@@ -126,12 +130,56 @@ Last updated: 2026-09-11
   beta and learning-rate warmups, the two global MIL attention stages, sparse
   tissue sampling, relative edge RMS, and the still-unexecuted functional
   analysis.
+- Completed an adversarial citation pass over the introduction, problem,
+  reference framework, methodology and results. High-risk numerical and causal
+  claims were either tied to a source that supports their exact scope or
+  rewritten as bounded descriptive statements.
+- Reduced `thesis/references.bib` from the imported Zotero library to the 57
+  works actually cited. Entries now use BibTeX-compatible publication fields,
+  published versions where available, intact URLs and no workstation-local
+  Zotero paths; BibTeX reports no warnings.
+- Rewrote the introduction and problem statement around traceable sources for
+  cancer, Colombian mortality, diagnostic variability, WSI scale and sparse
+  annotation. The reference framework now distinguishes translation,
+  rotation, reflection, invariance and equivariance without attributing those
+  properties to an ordinary CNN indiscriminately.
+- Specified the experimental statistics at reproducible resolution: seeds,
+  WSI-level cluster resampling, stratification, percentile intervals and the
+  simultaneous centered band are explicit. Traceability is explained through
+  fixed whole-WSI partitions, paired ordered manifests, validation-only model
+  selection and sealed test inference, without repository hashes or internal
+  conversation-dependent vocabulary.
+- Defined the current latent-space probes mathematically, including the RGB
+  affine probe, RMS action/canonicalization/end-to-end ratios and normalized
+  cyclic local-linearity measure. The manuscript states explicitly which wider
+  functional analyses remain pending.
+- Standardized the sparse mask and patch-grid task terminology throughout the
+  thesis as `tumor`, `estroma` and `necrosis`.
+- Replaced the Discussion, Conclusions and Future Work outlines with a first
+  evidence-backed draft. It states that the downstream superiority hypothesis
+  is not statistically established, records the suggestive low-label pattern,
+  and identifies the much smaller rotation-action error as the clearest current
+  finding without claiming global latent factorization or perfect continuous
+  end-to-end equivariance.
+- Used Sutton's *Bitter Lesson* as a bounded interpretive lens rather than as a
+  result tested by the experiments. Related the latent analysis to Elphick et
+  al.'s pathology study while keeping rotation invariance distinct from the
+  prescribed equivariant action evaluated here.
+- Reviewed those three chapters against the approved plan's expository style.
+  They now use the same impersonal voice, connected substantial paragraphs,
+  chapter-opening orientation and transitions such as `En este sentido`, `Por
+  otra parte` and `En síntesis`. Modern shorthand such as `embedding`,
+  `regularidad operacional` and `ablación causal` was replaced by explicit
+  Spanish explanations, and the Conclusions now answer the three approved
+  specific objectives in order.
 
 Verification:
 
-- `./scripts/document.sh check-all` passes for both documents;
+- `./scripts/document.sh check thesis` passes;
 - `artifacts/plan.pdf`: 30 pages;
-- `artifacts/thesis.pdf`: 98 pages;
+- `artifacts/thesis.pdf`: 96 pages and 27,401,844 bytes;
+- the optimized Figure 4.14 reduced `artifacts/thesis.pdf` by about 2.56 MB
+  (8.5 percent) without sacrificing its printed legibility;
 - unchanged thesis builds complete in about 0.12 seconds on this host;
 - the draft PDF keeps the same page layout while shrinking from about 20.8 MB to
   about 238 kB by omitting image payloads;
@@ -139,41 +187,45 @@ Verification:
   complete PDF without clearing caches, and never overwrite the final
   artifact;
 - LTeX+ CLI was smoke-tested in Spanish with the shared scientific dictionary;
-- the final 98-page PDF was rendered as a complete contact sheet; the MIL flow,
+- a focused LTeX+ pass over Discussion, Conclusions and Future Work found only
+  dictionary notices for scientific terms, acronyms and author names, with no
+  remaining grammatical finding;
+- the thesis PDF was rendered as a complete contact sheet; the MIL flow,
   local-attention computation, paired WSI comparison, training curves,
   confusion matrices and tissue plots were also inspected page by page at 190
   dpi. Their labels, arrows and continued captions are readable and no diagram
-  element overlaps another;
-- the final thesis log has no overfull boxes, unresolved references or
-  `amsmath` warnings; two inherited float-placement notices and underfull boxes
-  remain non-fatal;
+  element overlaps another. The new Discussion, Conclusions and Future Work
+  pages were inspected after compilation and again after the style pass; their
+  paragraphs remain readable, and Discussion and Conclusions were condensed to
+  avoid isolated continuation pages;
+- the final thesis log and bibliography have no overfull boxes, unresolved
+  citations, BibTeX warnings or `amsmath` warnings; inherited float-placement
+  notices and two underfull table cells remain non-fatal;
 - `shellcheck`, Python byte-compilation and `git diff --check` pass.
 
 ChkTeX and LTeX+ intentionally report findings in the reused proposal prose;
 they are revision tools, not clean gates until that prose is rewritten.
 
-The Git index still contains the earlier repository restructuring, while the
-latest thesis prose, figures and PDF are unstaged. Do not commit the current
-partial index; when a commit is requested, stage the complete tree and review
-the resulting diff first.
+The current thesis prose, bibliography, figures and PDF are unstaged. When a
+commit is requested, stage the complete tree and review the resulting diff
+first.
 
 ## Current frontier
 
-The thesis has an institutionally grounded structure, an executed methodology
-and a first evidence-backed Results chapter. This pass completed structural
-and visual review of the full PDF, not line-by-line editorial revision of all
-inherited prose. The summary, abstract, introduction and older parts of the
-reference framework still come from the approved plan and must be revised for
-tense, current literature and consistency with the final experiments.
+The thesis has an institutionally grounded structure, a revised introduction
+and reference framework, an executed methodology, an evidence-backed Results
+chapter and first full drafts of Discussion, Conclusions and Future Work. The
+citation audit covered every active citation and the current bibliography is
+clean. The final interpretation remains provisional where the functional
+latent-space analysis is incomplete. The summary and abstract still come from
+the approved plan.
 
 Next work:
 
-1. finish the functional latent-space analysis and integrate its accepted
-   methods, figures and results;
-2. write the discussion and conclusions against the completed evidence;
-3. rewrite the introduction and the remaining inherited reference-framework
-   prose for accuracy and currency;
-4. replace the summary and abstract, then complete the administrative annexes.
+1. finish the functional latent-space analysis and revise any affected results,
+   discussion and conclusions;
+2. replace the summary and abstract;
+3. complete the administrative annexes and final institutional review.
 
 ## Overleaf
 

@@ -1,5 +1,51 @@
 % !TEX root = ../main.tex
 \chapter{Conclusiones}
 
-% TODO: redactar una conclusión verificable por cada objetivo específico y una
-% respuesta final, matizada, a la pregunta de investigación.
+Con respecto al primer objetivo específico, se seleccionó UBC-OCEAN y se
+derivaron una población no supervisada de parches, la clasificación de cinco
+subtipos a nivel de WSI y la segmentación de tumor, estroma y necrosis. Las
+particiones por WSI mantuvieron separados el entrenamiento, la validación y la
+prueba. Las máscaras permitieron evaluar la segmentación a resolución de
+parche, pero no de forma exhaustiva porque solo anotan parte de cada lámina.
+
+En cumplimiento del segundo objetivo, se implementaron dos VAE residuales
+comparables: uno ordinario y otro equivariante a \(\mathrm{SO}(2)\) sobre
+campos \(F_0\) y \(F_1\). Ambos conservaron los bloques, no linealidades y
+variables latentes, y alimentaron los mismos clasificadores. La rama
+equivariante empleó menos parámetros libres, pero soportes mayores y más
+cómputo estimado; se compararon, por tanto, dos arquitecturas completas y no
+un experimento en el que solo cambiara una variable.
+
+En relación con el tercer objetivo, la hipótesis de que la representación
+equivariante produciría una mejora general en reconstrucción, clasificación y
+segmentación no pudo validarse con evidencia estadística concluyente. El VAE
+base obtuvo estimaciones puntuales ligeramente mejores en las métricas de
+reconstrucción. El VAE-\(\mathrm{SO}(2)\) obtuvo mejores valores puntuales de
+macro-F1 y exactitud en
+diagnóstico, y mayor macro-F1 en cuatro de los cinco presupuestos reducidos de
+etiquetas de tejido; sin embargo, los intervalos globales de estas
+comparaciones incluyeron cero y solo el presupuesto de 500 etiquetas por clase
+tuvo un intervalo simultáneo que lo excluyó. La inversión de la estimación
+puntual al usar las \(5\,671\) etiquetas disponibles sugiere que cualquier
+beneficio puede concentrarse en el régimen de supervisión muy escasa, pero los
+datos actuales no permiten afirmarlo como una ventaja uniforme de eficiencia
+muestral.
+
+Por otra parte, el resultado más claro apareció en la geometría del espacio
+latente. Para cuartos de vuelta exactos, la mediana de la razón de error de
+acción disminuyó de 0,709453 en el VAE base a \(2,18\times10^{-6}\) en el
+VAE-\(\mathrm{SO}(2)\), y la transformación del latente produjo reconstrucciones
+visualmente coherentes sin los artefactos observados en la rama ordinaria. Las
+razones de acción y canonización también fueron menores bajo rotaciones
+interpoladas, aunque no alcanzaron todos los umbrales predefinidos. La
+arquitectura aprendió y conservó, por tanto, una regularidad rotacional
+controlable en la representación; este resultado no implica todavía una
+factorización global del espacio latente ni una equivarianza continua perfecta
+de extremo a extremo.
+
+En síntesis, el presente trabajo produjo un modelo semisupervisado funcional y
+evaluó sus propiedades predictivas y geométricas. Su principal contribución no
+consiste en demostrar superioridad general, sino en mostrar que una restricción
+continua de rotación puede conservarse de manera mensurable en la
+representación latente. Una posible ventaja bajo pocas etiquetas permanece
+como hipótesis y requiere más evidencia.

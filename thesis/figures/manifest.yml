@@ -72,24 +72,24 @@
   source_path: src/eqvae/models/local_global_mil.py
   purpose: Connect the radius-two WSI graph to gathered PyTorch tensor operations.
 - file: figures/dataset/wsi_11557_thumbnail.png
-  sha256: 277588f13d6be9bf775a5fe69aaca747677ad0fdcdbe1bf39d32fdca22df647c
+  sha256: 43f5294cd3b019f88a4b154215317c7fab9e8df8b7a6357309dd1fda43be1e00
   source_url: https://www.kaggle.com/competitions/UBC-OCEAN/data
   transport_mirror: https://www.kaggle.com/datasets/motono0223/ubc-ocean-thumbnails
   source_file: train_thumbnails/11557_thumbnail.png
-  derivation: Lanczos reduction to 1200 pixels wide by scripts/render_wsi_mask_example.py.
+  derivation: Lanczos reduction to 640 pixels wide by scripts/render_wsi_mask_example.py.
   purpose: Show the real WSI appearance used to explain patch-grid segmentation.
 - file: figures/dataset/wsi_11557_mask.png
-  sha256: c0c27d106f1369d382483abbc9428de3799e5728486c93335fdc5ee44d148b20
+  sha256: ac697deacd5552b3d335ebb6bc5e324ff1a1c5a813796b61efa22d573ae0140a
   source_url: https://www.kaggle.com/competitions/UBC-OCEAN/data
   transport_mirror: https://www.kaggle.com/datasets/sohier/ubc-ovarian-cancer-competition-supplemental-masks
   source_file: 11557.png
-  derivation: Row-streamed nearest-neighbor reduction to 1200 pixels wide by scripts/render_wsi_mask_example.py.
+  derivation: Row-streamed nearest-neighbor reduction to 640 pixels wide by scripts/render_wsi_mask_example.py.
   purpose: Show the real non-exhaustive RGB annotation corresponding to WSI 11557.
 - file: figures/dataset/wsi_11557_patch_overlay.png
-  sha256: 878580e687a584a77335d58181cae627337162cba1dd94cc2f83a3d0bc1415de
+  sha256: b5fbbcec9aba77ec03f11a114a866e8a9ae2ea99fa7abdfa8f8995bba39fced8
   source_url: https://www.kaggle.com/competitions/UBC-OCEAN/data
   source_files: train_thumbnails/11557_thumbnail.png; supplemental_masks/11557.png
-  derivation: Reproduction of the 10 percent coverage and 95 percent purity rule, overlaid on a faded WSI by scripts/render_wsi_mask_example.py.
+  derivation: Reproduction of the 10 percent coverage and 95 percent purity rule, rendered 640 pixels wide over a faded WSI by scripts/render_wsi_mask_example.py.
   purpose: Visualize the actual patch-resolution reference cells used by the tissue task.
 - file: figures/architecture/mil_local_global_detail.tex
   source_repository: equivariant-vae

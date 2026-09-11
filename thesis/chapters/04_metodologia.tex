@@ -48,8 +48,8 @@ conjunto contiene láminas histopatológicas completas y metadatos de diagnósti
 para carcinoma de células claras (CC), endometrioide (EC), seroso de alto grado
 (HGSC), seroso de bajo grado (LGSC) y mucinoso (MC). La fuente distribuye las
 WSI a una magnificación de 20 aumentos y las TMA a 40 aumentos, además de un
-subconjunto de máscaras suplementarias; estas últimas no cubren de manera densa
-todas las láminas.
+subconjunto de máscaras suplementarias con tres categorías: tumor, estroma y
+necrosis. Estas máscaras no cubren de manera densa todas las láminas.
 
 Para el aprendizaje no supervisado se utilizó un conjunto previamente
 barajado de \(300\,000\) parches de entrenamiento provenientes de 322 WSI no
@@ -62,7 +62,8 @@ La evaluación posterior utilizó una cohorte independiente de 152 WSI no TMA
 para las cuales existían máscaras suplementarias. Su construcción comenzó con
 las dimensiones reales de cada WSI y su miniatura distribuida por la fuente.
 Sobre el canal de saturación HSV de esa imagen reducida se calculó un umbral de
-Otsu y se proyectó una cuadrícula de \(256\times256\) píxeles a la resolución
+Otsu~\cite{otsu_threshold_1979} y se proyectó una cuadrícula de
+\(256\times256\) píxeles a la resolución
 completa. Una celda se consideró tejido si más del 60\% de su área proyectada
 quedaba en primer plano. Este criterio, derivado de la imagen y no de la
 anotación, definió la población principal para reconstrucción y diagnóstico.
@@ -197,7 +198,8 @@ prueba físicamente separada del ajuste de modelos y puntos de control.
 
 El VAE se entrenó como un autoencodificador de eliminación de ruido. Con
 probabilidad 0,3 se aplicó al parche de entrada una perturbación de color en el
-espacio de hematoxilina, eosina y residuo, junto con ruido gaussiano, mientras que el
+espacio de hematoxilina, eosina y residuo, obtenido mediante deconvolución de
+color~\cite{ruifrok_color_2001}, junto con ruido gaussiano, mientras que el
 objetivo permaneció limpio. Los factores multiplicativos de hematoxilina y
 eosina se muestrearon en \([0,8;1,2]\), sus desplazamientos en
 \([-0,05;0,05]\), el factor multiplicativo del residuo en \([0,98;1,02]\), su
@@ -281,7 +283,7 @@ campo.
 \begin{figure}[htbp]
     \centering
     \resizebox{0.94\textwidth}{!}{\input{figures/architecture/residual_block}}
-    \caption{Estructura de un bloque residual. La suma combina la rama
+    \caption[Estructura del bloque residual empleado.]{Estructura de un bloque residual. La suma combina la rama
     aprendida con un camino corto de identidad o de proyección. Adaptación
     conceptual de ResNet~\cite{he_deep_2016} a la implementación de esta
     investigación.}
@@ -367,7 +369,8 @@ otras funciones de activación.
 El VAE base utilizó convoluciones bidimensionales ordinarias. Una convolución
 inicial de \(7\times7\) llevó los tres canales RGB a 32 canales; luego, los
 bloques residuales recorrieron anchos de 32, 48, 64 y 96 canales. Cada rama
-principal combinó convoluciones de \(5\times5\), normalización por grupos y la
+    principal combinó convoluciones de \(5\times5\), normalización por grupos
+    ~\cite{wu_groupnorm_2018} y la
 compuerta escalar de la Ecuación~\eqref{eq:compuerta-escalar-vae}. La rama
 residual incorporó proyección cuando cambió el ancho o la resolución. Las
 cabezas de media y log-varianza proyectaron los 96 canales finales a los 16
@@ -944,7 +947,8 @@ El peso \(\beta\) aumentó linealmente desde 0 hasta 0,01 durante las primeras
 \(6\,000\) actualizaciones y permaneció en ese valor durante las nueve épocas
 restantes. De esta manera, la regularización variacional alcanzó su peso final
 después de una época de calentamiento.
-Los modelos se optimizaron con AdamW, coeficientes \((0,9;0,999)\),
+Los modelos se optimizaron con AdamW~\cite{loshchilov_adamw_2019}, coeficientes
+\((0,9;0,999)\),
 \(\epsilon=10^{-8}\), decaimiento de pesos \(10^{-5}\) y recorte de la norma
 del gradiente en 1,0. La tasa de aprendizaje aumentó linealmente durante 600
 actualizaciones hasta \(10^{-3}\) y después descendió con una función coseno
@@ -1048,6 +1052,13 @@ espacial, produjeron
 \(\mathbf X_0\in\mathbb{R}^{N\times192}\). Estos tokens son entrenables a
 partir de los latentes congelados y mantienen una correspondencia uno a uno
 con las coordenadas de los parches.
+
+La notación de consultas, claves, valores y escalamiento por
+\(\sqrt{d_h}\) sigue la atención de producto punto de Vaswani et al.
+~\cite{vaswani_attention_2017}; las normalizaciones LN y las unidades SwiGLU
+son las definidas en el marco de referencia
+~\cite{ba_layernorm_2016,shazeer_glu_2020}. Las ecuaciones siguientes precisan
+la conectividad particular implementada para las WSI.
 
 Se construyó un grafo por WSI. En lo que sigue se usa
 \(D=192\), \(H=6\), \(d_h=D/H=32\) y \(L=25\). Para la posición de
@@ -1462,8 +1473,8 @@ con una lámina real del conjunto. La máscara RGB original se redujo solamente
 para visualización. Después se reprodujeron sobre su resolución completa los
 criterios de al menos 10\% de área anotada y 95\% de pureza dentro del área
 anotada, y las celdas elegibles se proyectaron sobre una versión atenuada de la
-miniatura. El color sigue la codificación de las máscaras suplementarias: rojo
-para tumor, verde para estroma y azul para necrosis. En inferencia, el mismo
+miniatura. En el flujo de datos empleado, el rojo se interpretó como tumor, el
+verde como estroma y el azul como necrosis. En inferencia, el mismo
 procedimiento de proyección utiliza la clase predicha por parche. Las celdas
 sin color no constituyen una predicción de fondo ni de tejido normal; no
 estaban anotadas o no cumplieron los criterios de elegibilidad.
@@ -1478,18 +1489,20 @@ estaban anotadas o no cumplieron los criterios de elegibilidad.
     \hfill
     \subcaptionbox{Celdas elegibles de $256\times256$.\label{fig:wsi-11557-overlay}}[0.315\linewidth]{%
       \includegraphics[width=\linewidth]{figures/dataset/wsi_11557_patch_overlay.png}}
-    \caption{Ejemplo real de la segmentación de WSI a resolución de parche para
+    \caption[Ejemplo de segmentación de WSI a resolución de parche.]{Ejemplo real de la segmentación de WSI a resolución de parche para
     la lámina 11557. El panel (c) no interpola la máscara: cada rectángulo
     representa una unidad de clasificación que satisface los umbrales de
     cobertura y pureza. En esta lámina aparecen regiones de tumor y estroma,
-    pero no de necrosis. Fuente: UBC-OCEAN y sus máscaras
-    suplementarias~\cite{ubc_ocean_2023}; composición propia.}
+    pero no de necrosis. Fuente: UBC-OCEAN, licencia CC BY-NC-ND 4.0
+    ~\cite{ubc_ocean_2023}; miniatura y máscara reducidas, y superposición de
+    cuadrícula elaborada para esta tesis.}
     \label{fig:segmentacion-wsi-esquema}
 \end{figure}
 
 El clasificador de tejido empleó tres convoluciones
 \(16\rightarrow32\rightarrow64\rightarrow128\), normalización por grupos,
-activación GELU, agrupación promedio adaptativa y una capa lineal
+activación GELU~\cite{hendrycks_gelu_2016}, agrupación promedio adaptativa y
+una capa lineal
 \(128\rightarrow3\). Para estudiar eficiencia de etiquetas se entrenaron
 modelos independientes con 250, 500, \(1\,000\), \(2\,500\) y \(5\,671\)
 parches etiquetados por clase. Los subconjuntos fueron balanceados, anidados y
@@ -1507,7 +1520,8 @@ pesos y recibió los mismos índices en cada época.
     \label{fig:arquitecturas-supervisadas}
 \end{figure}
 
-Cada presupuesto se optimizó por un máximo de 30 épocas con AdamW y tasa máxima
+Cada presupuesto se optimizó por un máximo de 30 épocas con AdamW
+~\cite{loshchilov_adamw_2019} y tasa máxima
 de \(1,5\times10^{-3}\). El calentamiento lineal ocupó
 \(\lceil0,1S\rceil\) actualizaciones, donde \(S\) es el número de pasos de una
 época; correspondió a 1, 2, 3, 6 y 11 actualizaciones para los cinco
@@ -1567,6 +1581,17 @@ puede resultar de una representación suavizada o colapsada. Los colores se
 normalizaron por modelo y, por tanto, sirvieron para estudiar organización
 espacial interna, no para alinear canales entre modelos entrenados por separado.
 
+Como sondeo de contenido, la imagen RGB original se redujo de
+\(256\times256\) a \(32\times32\) mediante interpolación bilineal con
+antialiasing. En 20 de los 25 parches se ajustó una transformación afín
+\(\mathbb R^{16}\rightarrow\mathbb R^3\) entre el vector latente de cada
+posición y su color, con estandarización de las 16 variables y regresión
+\emph{ridge} de penalización \(10^{-3}\) sin penalizar el intercepto. Los cinco
+parches restantes, fijados antes del ajuste, se usaron para calcular
+\(R^2=1-\mathrm{SSE}/\mathrm{SST}\); en \(\mathrm{SST}\), la referencia fue la
+media RGB de los 20 parches de ajuste. Este sondeo mide información cromática
+recuperable mediante una lectura lineal local, no calidad diagnóstica.
+
 La respuesta a rotaciones se evaluó sobre 25 parches fijos provenientes de 16
 WSI. Para cada parche se generó una órbita de 360 vistas, con pasos de un
 grado, mediante una transformación bilineal cuya orientación se validó con
@@ -1586,29 +1611,122 @@ En el VAE-\(\mathrm{SO}(2)\) también se evaluó directamente la ley de
 transformación de los campos internos \(F_1\). Para el posterior escalar se
 comparó \(E(R_\theta\mathbf{x})\) con la rotación espacial prescrita de
 \(E(\mathbf{x})\), y se estudió la reconstrucción después de transformar o
-canonizar el latente. Los ángulos son mediciones repetidas de los mismos
-parches y no muestras biológicas independientes. El análisis funcional de la
-geometría latente está planificado, pero aún no se ha ejecutado y permanece
-fuera del alcance de esta versión. Hasta contar con resultados trazables no se
-adelantan conclusiones sobre factorización, topología o una acción global
-aprendida.
+canonizar el latente. Para definir las razones reportadas, sea
+\(\mathbf z_0=E(\mathbf x)\), \(\mathbf y_0=D(\mathbf z_0)\) y
+\(\mathbf z_\theta=E(R_\theta\mathbf x)\). Si
+
+\begin{equation}
+    \lVert\mathbf a\rVert_{\Omega,M}
+    =\left[\frac{1}{|\Omega||M|C}
+      \sum_{\theta\in\Omega}\sum_{u\in M}\sum_{c=1}^{C}
+      a_{\theta c u}^{2}\right]^{1/2},
+    \label{eq:norma-rms-orbita}
+\end{equation}
+
+denota la RMS sobre los ángulos no nulos \(\Omega\), los \(C=3\) canales RGB y
+una máscara espacial central \(M\), se calcularon
+
+\begin{equation}
+\begin{aligned}
+    r_{\mathrm{act}}
+      &=\frac{\lVert D(R_\theta\mathbf z_0)-R_\theta\mathbf y_0
+          \rVert_{\Omega,M}}
+        {\lVert\mathbf y_0-R_\theta\mathbf y_0\rVert_{\Omega,M}+\epsilon},\\
+    r_{\mathrm{can}}
+      &=\frac{\lVert D(R_{-\theta}\mathbf z_\theta)-\mathbf y_0
+          \rVert_{\Omega,M}}
+        {\lVert D(\mathbf z_\theta)-\mathbf y_0\rVert_{\Omega,M}+\epsilon},\\
+    r_{\mathrm{e2e}}
+      &=\frac{\lVert D(\mathbf z_\theta)-R_\theta\mathbf y_0
+          \rVert_{\Omega,M}}
+        {\lVert\mathbf y_0-R_\theta\mathbf y_0\rVert_{\Omega,M}+\epsilon},
+        \qquad \epsilon=10^{-8}.
+\end{aligned}
+\label{eq:razones-transformacion-latente}
+\end{equation}
+
+El denominador es, respectivamente, el error de no transformar o de no
+canonizar el latente. Por tanto, uno significa que la operación candidata no
+reduce ese error y 0,5 que deja como máximo la mitad. Este umbral absoluto se
+fijó antes de observar el resultado. Para los ángulos densos, \(R_\theta\) fue
+bilineal; para 90, 180 y 270 grados se usó una reindexación exacta de la
+cuadrícula. La tercera razón evalúa la composición completa y no solo el
+decodificador.
+
+La regularidad local de una órbita se midió con diferencias cíclicas. Para los
+vectores aplanados \(\mathbf z_\theta\), sean
+\(\Delta\mathbf z_\theta=\mathbf z_{\theta+\delta}-\mathbf z_\theta\) y
+\(\Delta^2\mathbf z_\theta=\Delta\mathbf z_{\theta+\delta}
+-\Delta\mathbf z_\theta\). La razón normalizada fue
+
+\begin{equation}
+\begin{aligned}
+    r_{\mathrm{lin}}(\mathbf z)
+      &=\frac{\sqrt{\operatorname{media}_{\theta,d}
+          (\Delta^2 z_{\theta d})^2}}
+        {\sqrt{\operatorname{media}_{\theta,d}
+          (\Delta z_{\theta d})^2}+\epsilon},\\
+    r_{\mathrm{lin}}(\mathbf x)
+      &=\frac{\sqrt{\operatorname{media}_{\theta,p}
+          (\Delta^2 x_{\theta p})^2}}
+        {\sqrt{\operatorname{media}_{\theta,p}
+          (\Delta x_{\theta p})^2}+\epsilon},\\
+    \widetilde r_{\mathrm{lin}}(\mathbf z)
+      &=\frac{r_{\mathrm{lin}}(\mathbf z)}
+        {r_{\mathrm{lin}}(\mathbf x)+\epsilon}.
+\end{aligned}
+    \label{eq:linealidad-local-corregida}
+\end{equation}
+
+Aquí, \(d\) recorre las coordenadas del latente aplanado y \(p\) las de la
+imagen RGB aplanada. La división por la misma medida en la órbita RGB controla parte de la
+irregularidad introducida por la interpolación de la entrada. Se evaluó con
+\(\delta=1^\circ\) y, como control de robustez, con
+\(\delta=5^\circ\). Los ángulos son mediciones repetidas de los mismos parches
+y no muestras biológicas independientes. Estas medidas constituyen un análisis
+funcional descriptivo del conjunto fijo; siguen pendientes pruebas más amplias
+de factorización, topología o una acción global aprendida.
 
 \section{Análisis estadístico}
 
 Las comparaciones se definieron de forma pareada: una misma lámina, parche o
 presupuesto produjo una observación para cada representación. Cuando la medida
 principal fue calculada por parche, la incertidumbre no se obtuvo
-remuestreando parches como si fueran independientes. Se aplicaron \(10\,000\)
-réplicas de bootstrap por conglomerados de WSI y se conservaron las mismas
-multiplicidades para ambos modelos.
+remuestreando parches como si fueran independientes. Se empleó bootstrap por
+conglomerados~\cite{field_bootstrapping_2007}: la WSI fue la unidad de
+remuestreo, todos sus parches se transportaron conjuntamente y las mismas
+multiplicidades se aplicaron a los dos modelos.
 
-En reconstrucción, las 23 WSI se remuestrearon sin estratificar. Para
-diagnóstico se remuestrearon las WSI dentro de cada subtipo. Para tejido
-se usaron estratos definidos por la disponibilidad de las tres clases y se
-transportaron todos los parches de cada WSI seleccionada. La familia principal
-de tejido incluyó las cinco diferencias de macro-F1 y el área normalizada bajo
-la curva de macro-F1 frente al logaritmo del número de etiquetas; sus
-intervalos simultáneos controlaron la lectura aislada de un presupuesto.
+En reconstrucción se generaron \(10\,000\) réplicas con semilla 4501. Cada
+réplica seleccionó con reemplazo 23 WSI, sin estratificar, y recalculó la
+diferencia entre las medias agrupadas sobre todos los parches transportados;
+por ello, una WSI repetida aportó nuevamente todos sus parches. En diagnóstico
+se generaron \(10\,000\) réplicas con semilla 3601, remuestreando dentro de
+cada uno de los cinco subtipos y conservando el tamaño observado de cada
+estrato. En ambos casos se usó el intervalo percentil, cuyos extremos fueron
+los cuantiles 0,025 y 0,975 de las diferencias bootstrap.
+
+Para tejido se generaron \(10\,000\) réplicas con semilla 3901. Las 23 WSI se
+dividieron según las clases disponibles en 2 láminas con tumor, 16 con tumor y
+estroma, y 5 con tumor, estroma y necrosis; el remuestreo se realizó dentro de
+esos tres estratos. La familia principal estuvo compuesta por seis
+estadísticos: las diferencias de macro-F1 en los cinco presupuestos y la
+diferencia del área normalizada bajo la curva de macro-F1 frente a
+\(\log_{10}\) del número de etiquetas. Además de los intervalos percentiles
+puntuales, se construyó una banda simultánea centrada. Si
+\(\widehat\delta_k\) es la diferencia observada para el estadístico \(k\) y
+\(\delta^*_{rk}\) la réplica \(r\), se calculó
+
+\begin{equation}
+    e_{rk}=\delta^*_{rk}-\widehat\delta_k,\qquad
+    c=Q_{0,95}\!\left(\max_k|e_{rk}|\right),\qquad
+    I_k^{\mathrm{sim}}=[\widehat\delta_k-c,\widehat\delta_k+c].
+    \label{eq:bootstrap-simultaneo-tejido}
+\end{equation}
+
+El cuantil \(Q_{0,95}\) se obtuvo con interpolación lineal. Esta banda controla
+la lectura conjunta de los seis estadísticos; no debe confundirse con seis
+intervalos puntuales independientes.
 
 Los intervalos del 95\% describen la incertidumbre asociada con las WSI
 observadas. No incorporan variación entre inicializaciones, otros selectores de
@@ -1619,21 +1737,27 @@ significancia poblacional.
 
 \section{Reproducibilidad y trazabilidad}
 
-El código, las configuraciones, las especificaciones de datos y los protocolos se
-mantuvieron versionados en el repositorio del experimento. Cada población
-lógica se vinculó con un manifiesto ordenado por identidad de WSI y coordenada;
-los trabajos remotos registraron sus entradas, entorno de ejecución, salidas y
-metadatos de descarga. Los puntos de control finales y las figuras incluidas en
-este documento se conservaron sin modificaciones y su procedencia se verificó
-antes de redactar resultados. Los identificadores técnicos necesarios para
-repetir esa verificación permanecen en los manifiestos del repositorio.
+La trazabilidad se organizó alrededor de la identidad de cada WSI. Las
+particiones se fijaron por lámina completa, antes de calcular representaciones,
+y ninguna WSI apareció en más de un subconjunto. Cada población lógica se
+conservó en un manifiesto ordenado por identificador de WSI y coordenada del
+parche. Las dos ramas consumieron los mismos índices en el mismo orden, de modo
+que toda diferencia se calculó sobre observaciones pareadas y no sobre muestras
+reconstruidas de manera independiente.
 
-Las particiones, los presupuestos de etiquetas y los criterios de selección se
-fijaron antes de abrir la prueba sellada. La inferencia de prueba se ejecutó sin
-etiquetas y sus predicciones se sellaron antes de efectuar la unión local con
-la verdad de referencia. Esta separación permitió verificar que la prueba no se
-utilizó para ajustar modelos, escoger puntos de control o repetir una
-configuración desfavorable.
+El código, las configuraciones, los manifiestos, los puntos de control y los
+arreglos numéricos usados para tablas y figuras se mantuvieron versionados y
+separados de los datos fuente. La selección del punto de control dependió solo
+del conjunto de validación. Los presupuestos de etiquetas y sus subconjuntos
+anidados también quedaron fijados antes de evaluar la prueba.
+
+Finalmente, la inferencia sobre prueba se ejecutó sin acceso a sus etiquetas.
+Primero se guardaron y cerraron las predicciones de ambos modelos; únicamente
+después se unieron localmente con la verdad de referencia para calcular las
+métricas. No se volvió a entrenar, escoger otro punto de control ni repetir una
+configuración a partir del resultado sellado. Estos controles fueron
+suficientes para comprobar la separación entre desarrollo y prueba sin hacer
+depender la exposición de identificadores internos del repositorio.
 
 \section{Consideraciones éticas y manejo de datos}
 
@@ -1645,8 +1769,14 @@ repositorio de trabajo. Los artefactos derivados se identificaron por el
 código de la lámina y se emplearon exclusivamente para los objetivos
 computacionales descritos.
 
-Se respetaron las condiciones de uso de la fuente y no se intentó
-reidentificar a los participantes. Los resultados se presentan como evidencia
+UBC-OCEAN distribuye el material bajo la licencia CC BY-NC-ND 4.0
+~\cite{ubc_ocean_2023}. No se intentó reidentificar a los participantes y el
+uso se restringió a investigación no comercial. Las figuras que contienen
+material del conjunto identifican su procedencia y las transformaciones
+realizadas. Antes del depósito final deberá confirmarse con la instancia
+institucional correspondiente si las composiciones derivadas pueden
+redistribuirse bajo esa licencia o si deben sustituirse por esquemas propios o
+material autorizado. Los resultados se presentan como evidencia
 experimental sobre el conjunto analizado y no como un dispositivo diagnóstico
 ni como recomendación clínica. La determinación institucional de aprobación,
 exención o clasificación ética que corresponda deberá constar en los anexos

@@ -1,19 +1,150 @@
 % !TEX root = ../main.tex
 \chapter{Discusión}
 
-% TODO: interpretar los resultados sin repetir tablas ni figuras del capítulo
-% anterior.
+En el presente capítulo se interpretan conjuntamente los resultados de las
+cuatro líneas experimentales. A partir de ellos se responde la pregunta de
+investigación, se establece su relación con los trabajos previos y se precisan
+las principales limitaciones del estudio.
 
 \section{Respuesta a la pregunta de investigación}
-% TODO: responder con el alcance que permita la evidencia experimental.
+
+La pregunta de investigación planteó si imponer equivarianza a rotaciones
+continuas durante el aprendizaje no supervisado producía representaciones más
+útiles que las de un VAE convolucional comparable. Los resultados no permiten
+responder afirmativamente de manera general. En reconstrucción, las cuatro
+estimaciones puntuales favorecieron ligeramente al VAE base y el intervalo del
+criterio primario incluyó cero. En diagnóstico de WSI, el
+VAE-\(\mathrm{SO}(2)\) obtuvo mejores valores puntuales de macro-F1 y exactitud,
+pero el
+intervalo por WSI de la diferencia primaria también atravesó cero. Finalmente,
+en la segmentación dispersa a resolución de parche, el área bajo la curva de
+eficiencia de etiquetas fue mayor para la rama equivariante, aunque su
+intervalo simultáneo tampoco excluyó cero.
+
+Por tanto, la hipótesis inicial de una mejora estadísticamente concluyente en
+las tareas posteriores no quedó validada. Esta conclusión no equivale a probar
+que ambos modelos sean equivalentes ni a demostrar ausencia de beneficio. La
+prueba sellada incluyó 23 WSI, algunas clases estuvieron representadas por solo
+dos o cinco láminas y cada rama supervisada se entrenó una sola vez. Los
+intervalos reflejan el remuestreo de WSI observadas, pero no la variación entre
+inicializaciones ni entre conjuntos de datos. Con ese alcance, la evidencia
+impide sostener una afirmación fuerte de superioridad, pero no descarta toda
+diferencia posible entre las representaciones.
+
+Sí se verificó una propiedad más específica. Al aplicar al latente la rotación
+prescrita y decodificar, el error fue menor para el VAE-\(\mathrm{SO}(2)\) en
+los 25 parches del conjunto fijo. En cuartos de vuelta, la razón de acción
+descendió de 0,709453 a \(2,18\times10^{-6}\), y las reconstrucciones del
+modelo base mostraron artefactos que no aparecieron en la rama equivariante.
+Para rotaciones interpoladas cada cinco grados, las medianas de acción y
+canonización también disminuyeron, aunque no alcanzaron el umbral absoluto
+predefinido. En consecuencia, los experimentos sí muestran que la restricción
+arquitectónica se conserva como una regularidad verificable en la
+representación latente y en la decodificación; no muestran todavía una
+equivarianza continua perfecta de extremo a extremo.
 
 \section{Comparación entre representaciones}
-% TODO: discutir conjuntamente reconstrucción, tareas posteriores y geometría
-% latente para los modelos base y equivariante.
+
+La reconstrucción revela un primer compromiso. Restringir los núcleos redujo
+el número de parámetros libres, pero amplió sus soportes y aumentó el costo de
+convolución estimado. El VAE base obtuvo un MAE medio ligeramente menor, junto
+con mejores MSE, PSNR y SSIM descriptivos. Esto indica que la restricción
+geométrica no produjo una mejora gratuita de fidelidad. No obstante, la
+diferencia primaria fue pequeña y el experimento no fue una prueba de
+equivalencia o no inferioridad; por ello tampoco puede concluirse que la
+calidad de reconstrucción de una rama sea intercambiable con la de la otra.
+
+Las tareas supervisadas sugieren una interacción con la cantidad de etiquetas.
+En diagnóstico, la diferencia puntual de macro-F1 fue de 0,095 a favor del
+VAE-\(\mathrm{SO}(2)\), pero con un intervalo amplio. En tejido, la rama
+equivariante obtuvo mayor macro-F1 con 250, 500, \(1\,000\) y \(2\,500\)
+etiquetas por clase; solo en el presupuesto de 500 el intervalo simultáneo
+excluyó cero. Con todas las \(5\,671\) etiquetas disponibles, la estimación
+puntual se invirtió y favoreció al VAE base. La secuencia es compatible con la
+posibilidad de que el sesgo geométrico ayude en un régimen de supervisión muy
+escasa y pierda importancia cuando el predictor dispone de más ejemplos. Sin
+embargo, la falta de monotonía, el tamaño de los intervalos y la única
+inicialización impiden presentarla como una conclusión general sobre la
+eficiencia muestral.
+
+En este sentido, la lectura anterior puede relacionarse con la \emph{Bitter
+Lesson} de Sutton~\cite{sutton_bitter_lesson_2019}. Su argumento histórico es
+que, a largo plazo, los métodos generales capaces de aprovechar más cómputo y
+datos suelen superar soluciones que incorporan conocimiento humano específico.
+La equivarianza empleada en esta tesis constituye precisamente un sesgo
+incorporado, pues restringe de antemano cuáles transformaciones puede aprender
+cada capa. La desaparición de la ventaja puntual al usar todas las etiquetas es
+compatible con esa tensión, pero el presente experimento no constituye una
+prueba de la tesis de Sutton. No se variaron de manera sistemática la escala
+del modelo, el cómputo y el volumen de preentrenamiento y, en patología, la
+disponibilidad de etiquetas expertas no crece necesariamente al ritmo del
+cómputo. En un régimen fijo y pequeño, un sesgo adecuado todavía puede ser
+útil; determinar cuándo deja de serlo exige curvas de escalamiento diseñadas
+para responder esa pregunta.
 
 \section{Relación con trabajos previos}
-% TODO: contrastar los resultados con el estado del arte revisado.
+
+Los resultados geométricos deben interpretarse distinguiendo invariancia de
+equivarianza. Una representación invariante intenta conservar el mismo vector
+cuando rota la entrada. Una representación equivariante permite que el vector
+cambie, pero exige que lo haga mediante una acción conocida. Elphick et al.
+evaluaron la invariancia a rotaciones de doce modelos fundacionales de
+patología mediante vecinos mutuos y distancia coseno, y encontraron mayor
+invariancia en los modelos que habían usado aumento por rotación durante el
+preentrenamiento~\cite{elphick_rotation_2024}. Ese estudio y esta tesis no
+miden la misma propiedad: allí se compara la alineación entre representaciones
+globales; aquí se transforma explícitamente un mapa latente y se comprueba su
+decodificación. Ambos resultados coinciden, sin embargo, en que la respuesta a
+la orientación no debe suponerse a partir del desempeño final, sino medirse de
+forma directa.
+
+La disminución del error de acción y la estabilidad visual del
+VAE-\(\mathrm{SO}(2)\) aportan evidencia complementaria a
+EQ-VAE~\cite{kouzelis_eqvae_2025}. En ambos casos se estudia si una transformación
+semánticamente conservativa adquiere una estructura más regular en el espacio
+latente. EQ-VAE induce esa propiedad mediante regularización sobre un
+autoencodificador preentrenado; en esta tesis se incorporó mediante el espacio
+de núcleos direccionables desde el inicio del entrenamiento. La comparación es
+conceptual, pues no se reprodujo su pérdida ni su tarea generativa.
+
+La geometría local ofrece una señal más débil. Con pasos de un grado, la medida
+corregida disminuyó 7,38\% y favoreció al modelo equivariante en los 25 parches,
+pero no alcanzó el margen predefinido de 10\% ni conservó la dirección con
+pasos de cinco grados. Asimismo, la medida espacial y el sondeo RGB no mostraron
+una organización uniformemente más simple. Con el alcance de estas pruebas no
+es posible afirmar que todo el espacio latente sea suave o esté globalmente
+factorizado; lo que sí se observa es que una acción rotacional concreta puede
+ejecutarse con mucho menor error sobre la representación equivariante.
 
 \section{Limitaciones y amenazas a la validez}
-% TODO: incluir tamaño y cobertura de etiquetas, resolución de parche,
-% variabilidad experimental, dominio de los datos y límites de generalización.
+
+La principal limitación estadística es el número de unidades biológicas
+independientes. Aunque la reconstrucción incluyó \(67\,138\) parches, estos
+provenían de solo 23 WSI de prueba y no deben contarse como decenas de miles de
+réplicas independientes. El bootstrap por conglomerados respetó esa estructura,
+pero no compensa la variación biológica que el conjunto no contiene. La baja
+presencia de LGSC, MC y necrosis amplió la incertidumbre y limita las
+conclusiones por clase.
+
+La segunda limitación es la variación experimental. Se comparó una
+inicialización por arquitectura y, por tanto, no fue posible separar el efecto
+del sesgo inductivo de la variación entre entrenamientos. Además de la
+restricción de simetría, las ramas difirieron en parametrización, número de
+parámetros y costo computacional. Las posiciones de las no linealidades y los
+clasificadores posteriores se igualaron, pero la comparación no equivale a un
+experimento controlado en el que solo cambie el sesgo de simetría.
+
+El análisis rotacional también tiene límites propios. Los cuartos de vuelta
+son reindexaciones exactas de la cuadrícula y verifican la compatibilidad con
+\(C_4\), mientras los demás ángulos requieren interpolación de imágenes y
+campos. Las 360 vistas de un parche son mediciones repetidas, no nuevas muestras
+biológicas. El conjunto fijo de 25 parches permitió comparaciones pareadas y
+visuales controladas, pero no basta para generalizar la geometría observada a
+todo UBC-OCEAN ni a otros órganos, tinciones o centros clínicos.
+
+Por último, la segmentación se evaluó solo en regiones anotadas de alta pureza.
+Las máscaras suplementarias no permiten valorar exhaustivamente la WSI y sus
+zonas negras no constituyen negativos. Tampoco se conservaron mapas de atención
+de la inferencia sellada. Quedan pendientes mediciones más amplias de
+factorización, topología y acción global; por ello las conclusiones se
+restringen a lo ya observado.

@@ -193,7 +193,7 @@ def main() -> None:
     parser.add_argument("thumbnail", type=Path)
     parser.add_argument("mask", type=Path)
     parser.add_argument("output_directory", type=Path)
-    parser.add_argument("--width", type=int, default=1200)
+    parser.add_argument("--width", type=int, default=640)
     args = parser.parse_args()
     render(args.thumbnail, args.mask, args.output_directory, args.width)
 

@@ -1,6 +1,44 @@
 % !TEX root = ../main.tex
 \chapter{Trabajo futuro}
 
-% TODO: separar extensiones científicas, mejoras experimentales y posibles
-% aplicaciones. No presentar como futuro tareas necesarias para sustentar las
-% conclusiones actuales.
+La primera extensión científica consiste en completar el análisis funcional
+del espacio latente. Además de las razones de error ya calculadas, conviene
+medir la consistencia de una misma acción entre contenidos, la separación
+entre contenido y orientación, la dimensión tangente de las órbitas y su
+topología local. Las medidas de vecinos mutuos y distancia coseno empleadas por
+Elphick et al.~\cite{elphick_rotation_2024} también podrían adaptarse después
+de canonizar la orientación. Esta adaptación debe conservar la distinción
+entre invariancia, que busca representaciones iguales, y equivarianza, que
+busca una transformación predecible de la representación.
+
+Una segunda extensión consiste en aumentar la potencia de la comparación. Se
+requieren múltiples inicializaciones del VAE y de cada cabeza supervisada, de
+modo que la incertidumbre incorpore tanto el muestreo de WSI como la variación
+del entrenamiento. También sería necesario ampliar el número de láminas,
+centros, tinciones y órganos, y disponer de máscaras más densas. Esto
+permitiría comprobar si la señal observada con pocas etiquetas se mantiene
+fuera de UBC-OCEAN y estimar con mayor precisión las clases actualmente
+representadas por muy pocas láminas.
+
+Por otra parte, una comparación más estricta debería igualar por separado
+parámetros, operaciones y soporte espacial. Entre las pruebas pertinentes se
+encuentran convoluciones ordinarias de \(7\times7\) y \(9\times9\), una
+variante equivariante solo a cuartos de vuelta, aumento explícito por rotaciones
+y modelos ordinarios con capacidad o costo equiparados. Así podría distinguirse
+el efecto de la simetría del efecto producido por un campo receptivo o un
+presupuesto computacional diferente.
+
+En este mismo sentido, la tensión con la \emph{Bitter Lesson} sugiere un
+experimento adicional, no una conclusión del estudio actual. Sería útil
+construir curvas de escalamiento que varíen de manera independiente el número
+de WSI sin etiqueta, las etiquetas por clase, el tamaño del modelo y el cómputo
+de preentrenamiento~\cite{sutton_bitter_lesson_2019}. Esas curvas permitirían
+identificar el punto en que un sesgo geométrico deja de compensar la falta de
+datos, o comprobar si su beneficio persiste al aumentar la escala.
+
+Finalmente, las ejecuciones futuras del clasificador de WSI deberían conservar
+los pesos de atención junto con las coordenadas de cada parche. Esto permitiría
+reconstruir mapas espaciales reproducibles y compararlos con las regiones de
+tumor, estroma y necrosis. Tales mapas servirían para auditar qué tejido aporta
+al diagnóstico y para formular nuevas hipótesis histológicas, pero requerirían
+validación con patólogos antes de atribuirles significado clínico.

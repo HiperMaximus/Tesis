@@ -79,7 +79,7 @@ independiente.
 El mosaico permite revisar diversidad, pero comprime los detalles celulares.
 La Figura~\ref{fig:reconstruccion-ampliada} muestra a resolución mayor el
 parche fijo 12, que también se utilizó en los análisis de rotación. La
-comparación ampliada confirma que las diferencias entre modelos son sutiles en
+comparación ampliada ilustra, para este parche, que las diferencias entre modelos son sutiles en
 la reconstrucción sin transformar y que ambas ramas suavizan parte de la
 textura fina respecto de la entrada.
 
@@ -146,10 +146,11 @@ La Figura~\ref{fig:reconstruccion-sellada-parches} muestra por separado las
 cuatro distribuciones por parche, mientras la
 Figura~\ref{fig:reconstruccion-sellada-wsi} presenta la comparación pareada por
 WSI. PSNR y SSIM, definidos como medidas secundarias, también tuvieron mejores
-valores descriptivos para el VAE base. En conjunto, la restricción de
-equivarianza y la reducción de 70,2\% en parámetros no ocasionaron una
-degradación grande de reconstrucción, pero tampoco mejoraron su fidelidad en
-esta prueba.
+valores descriptivos para el VAE base. En conjunto, se observó una diferencia
+pequeña en la medida principal de esta prueba. El experimento no fue diseñado
+como prueba de equivalencia o no inferioridad, ni permite atribuir causalmente
+la diferencia a la equivarianza porque también cambiaron la parametrización y
+el costo de cómputo.
 
 \begin{figure}[p]
     \centering
@@ -554,8 +555,9 @@ ajustaron por modelo, los colores no alinean canales entre redes.
 \end{figure}
 
 En síntesis, los resultados latentes separan una propiedad verificada de una
-hipótesis aún abierta. La acción exacta del decodificador
-VAE-\(\mathrm{SO}(2)\) en cuartos de vuelta quedó verificada, y a un grado se
+hipótesis aún abierta. La compatibilidad numérica del decodificador
+VAE-\(\mathrm{SO}(2)\) con la acción discreta \(C_4\) en cuartos de vuelta
+quedó verificada, y a un grado se
 observó una mejora local descriptiva. No quedó demostrada una organización
 global más simple, una ventaja continua de extremo a extremo ni una mejora
 uniforme de las tareas posteriores. El análisis funcional planificado deberá

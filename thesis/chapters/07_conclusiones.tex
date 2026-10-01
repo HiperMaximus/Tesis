@@ -25,11 +25,8 @@ macro-F1 y exactitud en
 diagnóstico, y mayor macro-F1 en cuatro de los cinco presupuestos reducidos de
 etiquetas de tejido; sin embargo, los intervalos globales de estas
 comparaciones incluyeron cero y solo el presupuesto de 500 etiquetas por clase
-tuvo un intervalo simultáneo que lo excluyó. La inversión de la estimación
-puntual al usar las \(5\,671\) etiquetas disponibles sugiere que cualquier
-beneficio puede concentrarse en el régimen de supervisión muy escasa, pero los
-datos actuales no permiten afirmarlo como una ventaja uniforme de eficiencia
-muestral.
+tuvo un intervalo simultáneo que lo excluyó. Con las \(5\,671\) etiquetas
+disponibles, la estimación puntual favoreció al VAE base.
 
 Por otra parte, el resultado más claro apareció en la geometría del espacio
 latente. Para cuartos de vuelta exactos, la mediana de la razón de error de
@@ -37,14 +34,6 @@ acción disminuyó de 0,709453 en el VAE base a \(2,18\times10^{-6}\) en el
 VAE-\(\mathrm{SO}(2)\), y la transformación del latente produjo reconstrucciones
 visualmente coherentes sin los artefactos observados en la rama ordinaria. Las
 razones de acción y canonización también fueron menores bajo rotaciones
-interpoladas, aunque no alcanzaron todos los umbrales predefinidos. La
+interpoladas. La
 arquitectura aprendió y conservó, por tanto, una regularidad rotacional
-controlable al transformar el latente y decodificar. La comparación continua
-de extremo a extremo favoreció al VAE base, mientras que la factorización
-global del espacio latente queda pendiente de evaluación.
-
-El trabajo implementó y evaluó un modelo semisupervisado con convoluciones
-direccionables para rotaciones continuas. La menor razón de error de acción
-del latente fue el resultado más claro de la comparación. Una posible ventaja
-predictiva bajo pocas etiquetas permanece como hipótesis y requiere más
-evidencia.
+controlable al transformar el latente y decodificar. La comparación continua de extremo a extremo favoreció al VAE base.

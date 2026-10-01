@@ -21,8 +21,7 @@ Las WSI permiten entrenar modelos que reconocen patrones morfológicos,
 cuantifican regiones y relacionan la apariencia tisular con variables
 diagnósticas o pronósticas. Estas herramientas se han estudiado en múltiples
 órganos y tareas, desde la detección de lesiones hasta la predicción de
-biomarcadores; sin embargo, su adopción clínica también depende de validación,
-interoperabilidad, calidad de los datos y supervisión humana
+biomarcadores
 ~\cite{niazi_digital_2019,song_artificial_2023,verghese_computational_2023}.
 
 Una WSI puede contener miles de millones de píxeles y regiones extensas sin
@@ -141,14 +140,12 @@ Figura~\ref{fig:convolution}.
 \label{fig:convolution}
 \end{figure}
 
-
 Para funciones \(f,g:\mathbb R\rightarrow\mathbb R\), la convolución continua
 se define por
 
 \begin{equation}
 (f * g)(x) = \int_{-\infty}^{\infty} f(t)g(x-t)\,dt .
 \end{equation}
-
 
 Para secuencias \(f,g:\mathbb Z\rightarrow\mathbb R\), la integral se
 reemplaza por una suma:
@@ -166,7 +163,6 @@ en bordes o cuando se introducen relleno, submuestreo o agrupamiento
 ~\cite{cohen_group_2016}. La misma distinción entre equivarianza e invariancia
 será utilizada para las rotaciones.
 
-
 \section{Aprendizaje de instancias múltiples y atención espacial}
 
 En una WSI, la etiqueta clínica describe la lámina completa, aunque el tejido
@@ -181,11 +177,19 @@ débil~\cite{lu_dataefficient_2021}, mientras DSMIL combina evidencia de una
 instancia crítica con una representación agregada de la bolsa
 ~\cite{li_dualstream_2021}.
 
-La operación central de un transformador (\emph{Transformer}) es la atención de producto punto
+Un transformador (\emph{Transformer}) actualiza cada elemento de una secuencia
+recuperando información de otros elementos mediante atención. Para ello,
+representa qué información busca mediante una consulta (\emph{query}), qué
+información ofrece cada elemento mediante una clave (\emph{key}) y qué contenido
+se recupera mediante un valor (\emph{value}). La similitud entre una query y las
+keys determina los pesos con que se combinan los values. Así, cada elemento
+puede incorporar contexto sin recorrer la secuencia de manera recurrente.
+La operación central es la atención de producto punto
 escalado~\cite{vaswani_attention_2017}. Sean una secuencia de consultas
 \(\mathbf X_q\in\mathbb R^{n_q\times d}\) y una secuencia que aporta claves y
 valores \(\mathbf X_{kv}\in\mathbb R^{n_k\times d}\). Para una cabeza de
-atención, tres transformaciones afines producen
+atención, tres transformaciones afines producen las matrices de queries
+\(\mathbf Q\), keys \(\mathbf K\) y values \(\mathbf V\):
 
 \begin{equation}
     \begin{aligned}
@@ -203,8 +207,10 @@ donde, por ejemplo, \(\mathbf W_Q\in\mathbb R^{d\times d_k}\) y
 \(\mathbf b_Q\in\mathbb R^{d_k}\). La atención propia toma
 \(\mathbf X_q=\mathbf X_{kv}\); la atención cruzada conserva las dos secuencias
 distintas. Cada fila de \(\mathbf Q\mathbf K^{\mathsf T}\) compara una consulta
-con todas las claves. Para un vector \(\mathbf s\in\mathbb R^{m}\), la
-normalización exponencial (\emph{softmax}) se define como
+con todas las claves. La normalización exponencial (\emph{softmax}) convierte
+estas puntuaciones en una distribución de pesos: sus componentes son no
+negativas y suman uno. Para un vector \(\mathbf s\in\mathbb R^{m}\), se define
+como
 
 \begin{equation}
     \operatorname{softmax}(\mathbf s)_j
@@ -214,9 +220,14 @@ normalización exponencial (\emph{softmax}) se define como
     \label{eq:definicion-softmax}
 \end{equation}
 
-La resta de \(s_{\max}\) no cambia el resultado y evita exponenciales
-innecesariamente grandes. Aplicada a cada fila, esta función produce pesos no
-negativos cuya suma es uno. La salida de una cabeza es
+Restar \(s_{\max}\) equivale a dividir el numerador y el denominador por
+\(\exp(s_{\max})\); por ello, conserva los pesos y el gradiente de softmax
+respecto a las puntuaciones. Además, todos los argumentos de la exponencial
+quedan menores o iguales a cero, lo que evita desbordamientos numéricos. Las
+bibliotecas de aprendizaje profundo realizan esta estabilización dentro de su
+operador softmax~\cite{pytorch_softmax}. Aplicada por filas, la distribución
+permite formar una combinación ponderada de los values. La salida de una
+cabeza es
 
 \begin{equation}
     \operatorname{Attn}(\mathbf Q,\mathbf K,\mathbf V;\mathbf M)
@@ -249,6 +260,12 @@ ancho \(Hd_h=d\), \(\mathbf W_O\in\mathbb R^{d\times d}\) y
 \(\mathbf b_O\in\mathbb R^d\). Para simplificar la notación se escribe
 \(\operatorname{MHA}(\mathbf X)\) cuando se trata de atención propia.
 
+El bloque Transformer contiene dos ramas residuales consecutivas. La primera
+mezcla información entre tokens mediante MHA; la segunda transforma el contenido
+de cada token mediante una red con compuerta SwiGLU. Cada rama suma su resultado
+al estado que recibió. En la variante pre-normalizada, la normalización se
+aplica antes de MHA o de SwiGLU~\cite{xiong_layernorm_2020}.
+
 La normalización por capas (LN, \emph{layer normalization}) se aplica a cada
 elemento de la secuencia (\emph{token}) por separado~\cite{ba_layernorm_2016}. Para la fila
 \(\mathbf x_i\in\mathbb R^d\),
@@ -265,10 +282,9 @@ elemento de la secuencia (\emph{token}) por separado~\cite{ba_layernorm_2016}. P
 \end{equation}
 
 Los vectores \(\boldsymbol\gamma\) y \(\boldsymbol\beta\) son aprendidos y
-\(\epsilon>0\) evita dividir por cero. En los bloques pre-normalizados, LN se
-evalúa antes de cada rama y su salida se suma al estado que entró a la rama
-~\cite{xiong_layernorm_2020}.
-La segunda rama emplea una unidad lineal con compuerta Swish
+\(\epsilon>0\) evita dividir por cero. La salida normalizada alimenta la
+operación de la rama; es el resultado de esa operación el que se suma al estado
+anterior. La segunda rama emplea una unidad lineal con compuerta Swish
 (SwiGLU)~\cite{shazeer_glu_2020}, basada en la unidad lineal ponderada por
 sigmoide (SiLU, \emph{sigmoid-weighted linear unit})
 ~\cite{elfwing_silu_2018}. Si
@@ -298,7 +314,23 @@ bloque Transformer pre-normalizado completo queda entonces
     \label{eq:bloque-transformer-prenorm}
 \end{equation}
 
-Las dos sumas residuales conservan la forma \(n\times d\). Cuando no se
+Las dos sumas residuales conservan la forma \(n\times d\). La
+Figura~\ref{fig:bloque-transformer} muestra el recorrido completo, incluidas las
+proyecciones de atención y los dos caminos cortos.
+
+\begin{figure}[htbp]
+    \centering
+    \begingroup\setstretch{1}
+    \resizebox{\textwidth}{!}{\input{figures/architecture/transformer_block}}
+    \endgroup
+    \caption{Bloque Transformer pre-normalizado. La atención combina values
+    según la similitud entre queries y keys; la concatenación y la proyección
+    devuelven el ancho \(d\). La segunda rama aplica SwiGLU a cada token. Cada
+    suma recibe tanto la salida de su rama como el estado anterior.}
+    \label{fig:bloque-transformer}
+\end{figure}
+
+Cuando no se
 agregan posiciones absolutas y todas las filas se permutan conjuntamente, la
 atención es equivariante a esa permutación. Una o varias consultas aprendidas
 pueden entonces resumir el conjunto en un número fijo de vectores, idea
@@ -339,14 +371,13 @@ entre la matriz global y la máscara local.
     peso después de \emph{softmax}. Al restringir la atención, las entradas
     fuera de la ventana reciben \(-\infty\) antes de normalizar y quedan en
     cero. La consulta marcada en la cuadrícula solo combina los valores de su
-    región local. Elaboración propia.}
+    región local.}
     \label{fig:atencion-ventanas-mapa}
 \end{figure}
 
 Otros modelos introducen convoluciones en la formación de tokens y en las
 proyecciones de atención para recuperar sesgos locales propios de las
-imágenes~\cite{wu_cvt_2021}. Estas ideas no determinan una única arquitectura,
-pero motivan separar una etapa local, que relaciona parches vecinos, de otra
+imágenes~\cite{wu_cvt_2021}. Estas ideas motivan separar una etapa local, que relaciona parches vecinos, de otra
 global, que resume la WSI completa.
 
 La forma habitual de atención normaliza las puntuaciones mediante
@@ -357,9 +388,6 @@ normalizada puede igualar el comportamiento de \emph{softmax} en diversos
 dominios y destaca la necesidad de estabilizar su masa inicial
 ~\cite{ramapuram_sigmoid_2025}. Esta distinción resulta relevante para bolsas
 de WSI cuyo número de parches puede variar en varios órdenes de magnitud.
-
-
-
 
 \section{Redes neuronales convolucionales equivariantes}
 
@@ -377,7 +405,6 @@ natural y a un recorte histológico.}
 \label{fig:cat}
 \end{figure}
 
-
 La salida deseada determina si la transformación debe producir invariancia o
 equivarianza. En clasificación, la clase puede permanecer fija; en
 segmentación, la máscara debe transformarse junto con la entrada, como se
@@ -393,7 +420,6 @@ resume en la Figura~\ref{fig:cat_segmentation}.
     En \textbf{(b)} se muestra cómo la segmentación puede ser equivariante.}
 \label{fig:cat_segmentation}
 \end{figure}
-
 
 En histopatología, la clase del tejido no depende de un ángulo fijo de
 observación de sus estructuras microscópicas. Esta observación ha motivado modelos que comparten
@@ -416,9 +442,7 @@ y permite compartir parámetros sobre las transformaciones consideradas
 ofrece otra forma de exponer el modelo a transformaciones geométricas. Bajo
 supuestos específicos sobre la distribución, la función objetivo y la clase
 de modelos, se han demostrado beneficios de generalización para imponer
-equivarianza directamente \cite{elesedy_provably_2021}; esto no garantiza una
-ventaja en todo conjunto de datos y debe contrastarse empíricamente en el
-presente estudio.
+equivarianza directamente~\cite{elesedy_provably_2021}.
 \paragraph{Grupos y acciones.}
 
 Un grupo \(G\) es un conjunto dotado de una operación interna. Para
@@ -474,7 +498,7 @@ vector.
     rutas de un mapa equivariante a rotaciones. Rotar la entrada antes de
     aplicar \(F\) produce el mismo resultado que aplicar la acción de salida
     a \(F(\mathbf x)\). Esquema conceptual de la rotación de las posiciones
-    y las componentes de un campo vectorial. Elaboración propia.}
+    y las componentes de un campo vectorial.}
     \label{fig:equivarianza-rotacional}
 \end{figure}
 \paragraph{Convolución en grupos.}
@@ -529,7 +553,6 @@ Figura~\ref{fig:conv_equivariant} ilustra las dos rutas equivalentes.
 
 \section{Trabajos relacionados}
 
-
 Los trabajos relacionados pueden agruparse en tres líneas: convoluciones
 equivariantes generales, aplicaciones en imágenes médicas y regularización de
 espacios latentes. Cohen y Welling introdujeron redes convolucionales sobre
@@ -543,9 +566,7 @@ de filtros orientables de Freeman y Adelson~\cite{freeman_design_1991}.
 Por otra parte, Elesedy \& Zaidi estudian garantías teóricas de generalización
 para modelos equivariantes y caracterizan condiciones bajo las cuales imponer
 la simetría produce un beneficio estricto frente a estimadores no restringidos
-o basados en aumento de datos \cite{elesedy_provably_2021}. La garantía depende
-de los supuestos del análisis y no implica que cualquier arquitectura
-equivariante supere empíricamente a cualquier línea base. En imágenes, la
+o basados en aumento de datos \cite{elesedy_provably_2021}. En imágenes, la
 equivarianza traslacional conduce a la estructura de las convoluciones
 usuales.
 
@@ -553,10 +574,8 @@ La relación entre equivarianza y organización del espacio latente también ha
 sido estudiada en autoencodificadores. Kouzelis et al. propusieron EQ-VAE, una
 regularización aplicada a autoencodificadores preentrenados para favorecer que
 transformaciones semánticamente conservativas, entre ellas la rotación, tengan
-una respuesta más sencilla en el latente~\cite{kouzelis_eqvae_2025}. Su método
-no emplea convoluciones direccionables y su objetivo final es acelerar modelos
-generativos; por tanto, no es equivalente al VAE-\(\mathrm{SO}(2)\) de esta
-tesis. Sin embargo, su hipótesis de que un latente equivariante puede tener una
+una respuesta más sencilla en el latente~\cite{kouzelis_eqvae_2025}. Su método emplea regularización sobre un autoencodificador preentrenado
+y su objetivo final es acelerar modelos generativos. Su hipótesis de que un latente equivariante puede tener una
 geometría menos compleja motivó parte de las visualizaciones y mediciones
 geométricas utilizadas en este trabajo.
 

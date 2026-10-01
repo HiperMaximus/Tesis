@@ -5,7 +5,7 @@
   \documentclass[12pt,letterpaper,final,oneside,openany]{scrbook}
 \fi
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[english,spanish]{babel}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -46,6 +46,7 @@
 }
 
 \makeatletter
+\renewcommand*{\@pnumwidth}{2em}
 \author{Maximiliano Garavito Chtefan}\let\Author\@author
 \title{Modelo semi-supervisado de redes neuronales convolucionales equivariantes para la segmentación y clasificación de imágenes histopatológicas}\let\Title\@title
 \makeatother

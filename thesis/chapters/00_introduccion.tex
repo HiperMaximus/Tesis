@@ -16,9 +16,7 @@ el periodo 2007--2013, con aproximadamente 33.538 defunciones anuales, equivalen
 al 17,1\% de la mortalidad del país~\cite{pardo_c_atlas_2017}.
 
 En muchos procesos diagnósticos se extrae una biopsia, se prepara el tejido sobre
-un portaobjetos y un patólogo examina sus características microscópicas; sin
-embargo, la biopsia no es el único procedimiento diagnóstico y su necesidad
-depende del caso clínico~\cite{nci_cancer_diagnosis}. La interpretación
+un portaobjetos y un patólogo examina sus características microscópicas~\cite{nci_cancer_diagnosis}. La interpretación
 histopatológica tampoco es completamente uniforme. En carcinoma de ovario, la
 comparación entre el grado consignado en registros poblacionales y una revisión
 central de 664 tumores produjo un coeficiente kappa de 0,25
@@ -62,9 +60,7 @@ celulares no tienen una orientación fija en la imagen. En esta escala, rotar
 un parche cambia su orientación de observación, pero conserva la identidad del
 tejido y su información diagnóstica. Esta regularidad motiva el uso de la
 simetría rotacional como sesgo inductivo en el aprendizaje de representaciones
-~\cite{veeling_rotation_2018}. Los beneficios teóricos de imponer una simetría
-dependen, no obstante, de que la distribución y la tarea satisfagan los supuestos
-correspondientes~\cite{elesedy_provably_2021}. Su utilidad se evaluó mediante
+~\cite{veeling_rotation_2018}. Su utilidad se evaluó mediante
 la comparación experimental de ambos modelos. El estudio se centró en
 rotaciones continuas del plano, sin incorporar reflexiones.
 
@@ -74,3 +70,8 @@ a resolución de parche, clasificación a nivel de WSI y respuesta del espacio l
 a rotaciones continuas. La segmentación no se interpreta como una cobertura
 exhaustiva de la lámina porque las máscaras disponibles contienen regiones sin
 anotar que no pueden utilizarse como etiquetas negativas.
+
+El VAE base obtuvo estimaciones puntuales ligeramente mejores en reconstrucción.
+La representación equivariante alcanzó mayor macro-F1 en cuatro de los cinco
+presupuestos de etiquetas de tejido y en diagnóstico de WSI; la mayoría de los
+intervalos principales incluyó cero.

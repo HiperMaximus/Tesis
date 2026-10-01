@@ -1,0 +1,39 @@
+\begin{tikzpicture}[
+ font=\sffamily\small, >=Latex,
+ op/.style={draw=black!55,fill=blue!5,rounded corners=2pt,align=center,
+             inner sep=6pt},
+ add/.style={circle,draw=black!65,fill=white,inner sep=3pt},
+ flow/.style={->,thick,draw=black!70}]
+\node (x) at (0,0) {$\mathbf X$};
+\node[op] (ln1) at (2,0) {$\mathrm{LN}_1$};
+\node[op,text width=4.2cm] (attn) at (6,0) {
+  \textbf{MHA}\\[2mm]
+  Proyecciones $\mathbf Q,\mathbf K,\mathbf V$\\[1mm]
+  $\mathbf Q\mathbf K^{\mathsf T}/\sqrt{d_k}+\mathbf M$\\[1mm]
+  softmax por fila\\[1mm]
+  pesos $\times\,\mathbf V$ en cada cabeza\\[1mm]
+  concatenación $\to$ proyección $\mathbf W_O$};
+\node[add] (add1) at (9.5,0) {$+$};
+\node (u) at (11,0) {$\mathbf U$};
+\draw[flow] (x) -- (ln1);
+\draw[flow] (ln1) -- (attn);
+\draw[flow] (attn) -- (add1);
+\draw[flow] (add1) -- (u);
+\draw[flow] (x.north) -- (0,3) -- (9.5,3) -- (add1.north);
+\node[fill=white] at (4.7,3) {camino residual: $\mathbf X$};
+\node[op] (ln2) at (9,-5) {$\mathrm{LN}_2$};
+\node[op,text width=4.2cm] (ff) at (6,-5) {
+  \textbf{SwiGLU por token}\\[1mm]
+  proyecciones $\mathbf W_g,\mathbf W_v$\\[1mm]
+  SiLU y producto elemento a elemento\\[1mm]
+  proyección $\mathbf W_2$};
+\node[add] (add2) at (2,-5) {$+$};
+\node (y) at (0,-5) {$\mathbf Y$};
+\draw[flow] (u.south) -- (11,-3.4) -| (ln2.north);
+\draw[flow] (ln2) -- (ff);
+\draw[flow] (ff) -- (add2);
+\draw[flow] (add2) -- (y);
+\draw[flow] (u.east) -- (12,-0) -- (12,-7) -- (2,-7) -- (add2.south);
+\node[fill=white] at (6.5,-7) {camino residual: $\mathbf U$};
+\node[align=center,text=black!65] at (0,-2.5) {estados\\$n\times d$};
+\end{tikzpicture}

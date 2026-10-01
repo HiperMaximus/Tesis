@@ -12,7 +12,7 @@ La pregunta de investigación planteó si imponer equivarianza a rotaciones
 continuas durante el aprendizaje no supervisado producía representaciones más
 útiles que las de un VAE convolucional comparable. Los resultados no permiten
 responder afirmativamente de manera general. En reconstrucción, las cuatro
-estimaciones puntuales favorecieron ligeramente al VAE base y el intervalo del
+estimaciones puntuales favorecieron ligeramente al VAE base, pero el intervalo del
 criterio primario incluyó cero. En diagnóstico de WSI, el
 VAE-\(\mathrm{SO}(2)\) obtuvo mejores valores puntuales de macro-F1 y exactitud,
 pero el
@@ -22,8 +22,7 @@ eficiencia de etiquetas fue mayor para la rama equivariante, aunque su
 intervalo simultáneo tampoco excluyó cero.
 
 Por tanto, la hipótesis inicial de una mejora estadísticamente concluyente en
-las tareas posteriores no quedó validada. Esta conclusión no equivale a probar
-que ambos modelos sean equivalentes ni a demostrar ausencia de beneficio. La
+las tareas posteriores no quedó validada. La
 prueba sellada incluyó 23 WSI, algunas clases estuvieron representadas por solo
 dos o cinco láminas y cada rama supervisada se entrenó una sola vez. Los
 intervalos reflejan el remuestreo de WSI observadas; la variación entre
@@ -35,11 +34,15 @@ los 25 parches del conjunto fijo. En cuartos de vuelta, la razón de acción
 descendió de 0,709453 a \(2,18\times10^{-6}\), y las reconstrucciones del
 modelo base mostraron artefactos que no aparecieron en la rama equivariante.
 Para rotaciones interpoladas cada cinco grados, las medianas de acción y
-canonización también disminuyeron, aunque no alcanzaron el umbral absoluto
-predefinido. Estos resultados muestran una regularidad rotacional verificable
+canonización también disminuyeron. Estos resultados muestran una regularidad rotacional verificable
 al transformar el latente y decodificar. En la comparación continua de extremo
 a extremo, que también incluye al codificador, el error fue menor para el VAE
 base.
+
+La restricción rotacional reduce la libertad de las convoluciones para aprender
+filtros independientes asociados a orientaciones arbitrarias del conjunto de
+entrenamiento. Esta propiedad puede ser útil cuando la identidad del tejido
+debe conservarse al cambiar su orientación.
 
 \section{Comparación entre representaciones}
 
@@ -48,10 +51,10 @@ el número de parámetros libres, pero amplió sus soportes y aumentó el costo 
 convolución estimado. Graham et al. igualaron el número de parámetros en
 comparaciones de clasificadores histológicos equivariantes
 ~\cite{graham_dense_2020}; aquí las dos arquitecturas no se igualaron en
-ese número. El VAE base obtuvo un MAE medio ligeramente menor, junto
-con mejores MSE, PSNR y SSIM descriptivos. La diferencia primaria fue pequeña
-y el experimento estimó esa diferencia, sin incluir una prueba de equivalencia
-o no inferioridad.
+ese número: el VAE base dispuso de \(3\,958\,435\) parámetros, frente a
+\(1\,180\,035\) en el VAE-\(\mathrm{SO}(2)\), un presupuesto 3,35 veces mayor.
+El VAE base obtuvo un MAE medio ligeramente menor, junto
+con mejores MSE, PSNR y SSIM descriptivos. La diferencia primaria fue pequeña.
 
 Las tareas supervisadas sugieren una interacción con la cantidad de etiquetas.
 En diagnóstico, la diferencia puntual de macro-F1 fue de 0,095 a favor del
@@ -73,11 +76,9 @@ datos suelen superar soluciones que incorporan conocimiento humano específico.
 La equivarianza empleada en esta tesis constituye un sesgo
 incorporado, pues restringe de antemano cuáles transformaciones puede aprender
 cada capa. La desaparición de la ventaja puntual al usar todas las etiquetas es
-compatible con esa tensión, pero el presente experimento no constituye una
-prueba de la tesis de Sutton. No se variaron de manera sistemática la escala
-del modelo, el cómputo y el volumen de preentrenamiento y, en patología, la
-disponibilidad de etiquetas expertas no crece necesariamente al ritmo del
-cómputo. En un régimen fijo y pequeño, un sesgo adecuado todavía puede ser
+compatible con esa tensión. La comparación se realizó a una escala fija de
+modelo, cómputo y volumen de preentrenamiento y, en patología, la disponibilidad
+de etiquetas expertas no crece necesariamente al ritmo del cómputo. En un régimen fijo y pequeño, un sesgo adecuado todavía puede ser
 útil; determinar cuándo deja de serlo exige curvas de escalamiento diseñadas
 para responder esa pregunta.
 
@@ -102,16 +103,12 @@ EQ-VAE~\cite{kouzelis_eqvae_2025}. En ambos casos se estudia si una transformaci
 semánticamente conservativa adquiere una estructura más regular en el espacio
 latente. EQ-VAE induce esa propiedad mediante regularización sobre un
 autoencodificador preentrenado; en esta tesis se incorporó mediante el espacio
-de núcleos direccionables desde el inicio del entrenamiento. La comparación es
-conceptual, pues no se reprodujo su pérdida ni su tarea generativa.
+de núcleos direccionables desde el inicio del entrenamiento.
 
 La geometría local ofrece una señal más débil. Con pasos de un grado, la medida
 corregida disminuyó 7,38\% y favoreció al modelo equivariante en los 25 parches,
-pero no alcanzó el margen predefinido de 10\% ni conservó la dirección con
-pasos de cinco grados. Asimismo, la medida espacial y el sondeo RGB no mostraron
-una organización uniformemente más simple. Estas medidas describen la
-geometría local de las órbitas muestreadas; la suavidad y la factorización
-global del espacio latente quedan pendientes de caracterización.
+pero la dirección no se conservó con pasos de cinco grados. Asimismo, la medida espacial y el sondeo RGB no mostraron
+una organización uniformemente más simple. Estas medidas describen la geometría local de las órbitas muestreadas.
 
 \section{Limitaciones del estudio}
 
@@ -142,5 +139,4 @@ muestra.
 Por último, la segmentación se evaluó solo en regiones anotadas de alta pureza.
 Las máscaras suplementarias cubren parte de la WSI y sus zonas negras
 corresponden a regiones sin anotación. Los mapas de atención de la inferencia
-sellada no se conservaron. También quedan pendientes mediciones más amplias
-de factorización, topología y acción global.
+sellada no se conservaron.

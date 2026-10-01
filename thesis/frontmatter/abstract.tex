@@ -1,4 +1,5 @@
 \cleardoublepage
+\begin{otherlanguage}{english}
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
@@ -12,13 +13,57 @@
 
 \begingroup\small
 
-% TODO: translate the approved final Spanish abstract; do not maintain two
-% independently edited scientific claims.
-Digital pathology represents a paradigm shift in the traditional approach to medical diagnosis. Within contemporary medicine, ongoing technological advances are constantly reshaping healthcare practices. Therefore, the development of digital pathology is a transformative achievement that allows for the introduction of a combination of cutting-edge electronic devices, such as histology slide scanners, data analytics, and clinical expertise that can significantly transform the way patient care is delivered.
+Digital pathology enables the preservation and computational analysis of
+histopathological images, whose morphological information is essential for
+characterizing tissues and studying diseases such as cancer. Developing models for this
+analysis depends on annotations that require pathologists' time and specialized
+knowledge. Their limited availability motivates semi-supervised learning, which uses
+unlabeled regions to learn representations subsequently used in supervised tasks. At the
+microscopic scale, the same cellular structure can appear in different orientations.
+Exploiting this symmetry through parameter sharing allows features common to those
+orientations to be learned with fewer parameters, motivating the study of its usefulness
+when annotations are scarce. This study investigated how equivariance to continuous
+rotations affects reconstruction, predictive performance, and the organization of a
+variational autoencoder's latent space.
 
-Among the applications of digital pathology, one of the most popular and interesting has been that regarding cancer. This is because it is one of the leading causes of death globally. The burden of cancer will increase by approximately 60\% over the next two decades, further affecting healthcare systems, individuals, and communities.
+Two residual variational autoencoders (VAEs) were compared: a conventional convolutional
+VAE and a VAE with steerable convolutions constrained by the \(\mathrm{SO}(2)\) group,
+using scalar and vector fields. Both models received the same \(256\times256\) RGB
+patches, shared the overall structure, and produced \(16\times32\times32\) latent maps.
+Training used 300,000 unlabeled patches from UBC-OCEAN and 60,000 updates per model. The
+objective combined mean absolute error (MAE), structural similarity, and variational
+regularization. Color perturbations and noise were applied to the input, while the clean
+patch remained the reconstruction target. The equivariant model used 70.2\% fewer
+learned parameters but had a higher estimated convolutional cost.
 
-Given this, a new approach is required, such as the use of artificial intelligence (AI) models, which optimize and accelerate current methods. Although machine learning projects have been developed within the field of digital pathology, the limited availability of annotated and segmented images hinders deep learning processes, since performing these annotation processes requires a great deal of time and effort from pathologists. Until now, traditional deep learning methods have addressed these problems by using data augmentation, which consists of generating new data from existing data, but this project aims to show the use of equivariant representations in deep learning models, which would allow a stable and effective representation of images in digital pathology.
+The 513 whole-slide images (WSIs) were divided into disjoint populations for
+unsupervised development, supervised development, and testing. After VAE training, their
+parameters were frozen, and classifiers with the same architecture were trained on the
+posterior mean. The downstream tasks comprised diagnosis of five ovarian carcinoma
+subtypes through multiple-instance learning and segmentation of tumor, stroma, and
+necrosis on a patch grid. Segmentation was evaluated in annotated regions of high
+purity, using five per-class label budgets. One initialization was evaluated per model
+and classifier. The shared test set included 23 WSIs; confidence intervals were
+estimated through paired resampling at the slide level.
 
-For this reason, a semi-supervised deep learning model of equivariant neural networks is proposed to optimize preprocessing time and resources, while reducing the limitations that pathologists face when implementing automatic analysis projects.
+\newpage
+
+The baseline VAE achieved a mean absolute error of 0.0629, compared with 0.0642 for the
+equivariant model. Diagnostic macro-F1 scores were 0.389 and 0.483, respectively. The
+95\% intervals for both differences included zero. In segmentation, the equivariant
+representation achieved higher macro-F1 under four of the five label budgets; the
+simultaneous interval excluded zero only at 500 labels per class. When all available
+labels were used, the point estimate favored the baseline VAE.
+
+The latent-space analysis used 25 fixed validation patches and distinguished between
+transforming and decoding the latent representation, canonicalizing its orientation, and
+evaluating the complete autoencoder. For exact quarter-turn rotations, the median
+action-error ratio decreased from 0.709453 to \(2{.}18\times10^{-6}\) in the equivariant
+model. Interpolated rotations also yielded lower action and canonicalization errors for
+this model, whereas the continuous end-to-end comparison favored the baseline VAE. PCA
+projections and local geometry measures complemented this characterization. The clearest
+finding was a more consistent rotational response when transforming and decoding the
+latent representation. Predictive performance varied with the task and the number of
+labels.
 \endgroup
+\end{otherlanguage}

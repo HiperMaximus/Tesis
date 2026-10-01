@@ -21,17 +21,14 @@ por lo que los intervalos cuantifican remuestreo de WSI, no variación entre
 entrenamientos.
 
 La Figura~\ref{fig:entrenamiento-vae} resume las diez épocas de los dos VAE.
-Ambas ramas completaron el presupuesto previsto. Las curvas se muestran como
-descripción del proceso de optimización; no se usaron para cambiar
-retrospectivamente el punto de control evaluado.
+Ambas ramas completaron el presupuesto previsto. Las curvas describen el proceso de optimización.
 
 \begin{figure}[p]
     \centering
     \includegraphics[width=0.88\textwidth]{vae_training_loss_panels.png}
     \caption{Evolución del objetivo compuesto y del término MAE durante
     \(60\,000\) actualizaciones. Las curvas de entrenamiento están suavizadas y
-    los marcadores corresponden a las evaluaciones periódicas de validación.
-    Elaboración propia a partir de los registros de entrenamiento.}
+    los marcadores corresponden a las evaluaciones periódicas de validación.}
     \label{fig:entrenamiento-vae}
 \end{figure}
 
@@ -41,8 +38,7 @@ retrospectivamente el punto de control evaluado.
     \includegraphics[width=0.88\textwidth]{vae_training_quality_panels.png}
     \caption[]{Evolución del entrenamiento de los VAE (continuación): pérdida
     estructural \(1-\mathrm{SSIM}\) y PSNR sobre los 25 parches fijos de
-    validación. Estos parches se usaron como diagnóstico de desarrollo y no
-    como prueba sellada.}
+    validación. }
 \end{figure}
 
 \begin{figure}[p]
@@ -51,8 +47,7 @@ retrospectivamente el punto de control evaluado.
     \includegraphics[width=0.88\textwidth]{vae_training_control_panels.png}
     \caption[]{Evolución del entrenamiento de los VAE (continuación): razón de
     equivarianza latente de desarrollo y calendario de la tasa de aprendizaje.
-    La razón se presenta como diagnóstico de desarrollo, no como criterio para
-    escoger un punto de control posterior.}
+    La razón corresponde al seguimiento del desarrollo.}
 \end{figure}
 
 La Figura~\ref{fig:entrenamiento-vae-dispersion} complementa los diagnósticos
@@ -80,9 +75,7 @@ las variaciones principales de tinción en los 25 parches fijos. La
 Figura~\ref{fig:reconstrucciones-fixed9} amplía los primeros nueve ejemplos
 del selector y compara cada entrada con las reconstrucciones de ambos VAE.
 La Figura~\ref{fig:reconstrucciones-fixed25}, situada a continuación,
-conserva la vista general del conjunto fijo completo. Ambas figuras muestran
-material observado durante el desarrollo; sirven para diagnóstico cualitativo
-y no como prueba independiente.
+conserva la vista general del conjunto fijo completo. Ambas figuras permiten inspeccionar los parches fijos de validación.
 
 \begin{figure}[htbp]
     \centering
@@ -99,8 +92,7 @@ y no como prueba independiente.
     \includegraphics[width=\textwidth]{vae_reconstructions_fixed25.png}
     \caption{Vista general de las entradas y reconstrucciones pareadas del
     conjunto fijo de 25 parches. Cada columna conserva el mismo parche para
-    ambos VAE. Elaboración propia a partir de las reconstrucciones registradas
-    durante el entrenamiento.}
+    ambos VAE.}
     \label{fig:reconstrucciones-fixed25}
 \end{figure}
 
@@ -140,9 +132,8 @@ En este conjunto fijo, el VAE base obtuvo MAE
 \(27,898\pm1,839\) dB y SSIM \(0,7308\pm0,0637\). El
 VAE-\(\mathrm{SO}(2)\) obtuvo, respectivamente,
 \(0,0624\pm0,0130\), \(0,0075\pm0,0029\),
-\(27,645\pm1,826\) dB y \(0,7170\pm0,0637\). Las dispersiones son
-desviaciones estándar poblacionales entre los 25 parches y no intervalos de
-incertidumbre.
+\(27,645\pm1,826\) dB y \(0,7170\pm0,0637\). Las dispersiones corresponden a
+desviaciones estándar poblacionales entre los 25 parches.
 
 \subsection{Prueba sellada de reconstrucción}
 
@@ -151,8 +142,7 @@ La Tabla~\ref{tab:reconstruccion-sellada} presenta las métricas sobre los
 ligeramente al VAE base. La diferencia primaria de MAE fue \(-0,001358\), con
 intervalo bootstrap por WSI del 95\% \([-0,002213;0,000046]\). Como el intervalo
 incluyó cero, esta prueba no sustenta una diferencia concluyente en el criterio
-primario. El VAE base tuvo menor MAE media en 22 de las 23 WSI, pero ese conteo
-descriptivo tampoco incorpora variación entre entrenamientos.
+primario. El VAE base tuvo menor MAE media en 22 de las 23 WSI.
 
 \begin{table}[htbp]
     \centering
@@ -172,23 +162,19 @@ descriptivo tampoco incorpora variación entre entrenamientos.
 
 La Figura~\ref{fig:reconstruccion-sellada-wsi-distribuciones} resume las
 medias de las 23 WSI para las cuatro métricas. Cada punto corresponde a una
-lámina y las cajas son descriptivas, no intervalos de confianza. La
+lámina y las cajas resumen las distribuciones de medias por WSI. La
 Figura~\ref{fig:reconstruccion-sellada-parches} conserva la distribución de
 los parches y la Figura~\ref{fig:reconstruccion-sellada-wsi} presenta la
 comparación pareada de MAE por WSI. PSNR y SSIM, definidos como medidas secundarias, también tuvieron mejores
 valores descriptivos para el VAE base. En conjunto, se observó una diferencia
-pequeña en la medida principal de esta prueba. El experimento no fue diseñado
-como prueba de equivalencia o no inferioridad, ni permite atribuir causalmente
-la diferencia a la equivarianza porque también cambiaron la parametrización y
-el costo de cómputo.
+pequeña en la medida principal de esta prueba.
 
 \begin{figure}[p]
     \centering
     \includegraphics[width=\textwidth]{vae_test_wsi_distributions.png}
     \caption{Distribuciones descriptivas de las medias de reconstrucción por
     WSI en las 23 láminas de prueba sellada. Cada punto es la media de los
-    parches seleccionados de una WSI; las cajas resumen las 23 medias por
-    modelo y no representan intervalos de confianza.}
+    parches seleccionados de una WSI; las cajas resumen las distribuciones de las 23 medias por modelo.}
     \label{fig:reconstruccion-sellada-wsi-distribuciones}
 \end{figure}
 
@@ -206,9 +192,8 @@ el costo de cómputo.
         \caption{Error cuadrático medio en el dominio normalizado.}
     \end{subfigure}
     \caption{Distribuciones de error de reconstrucción por parche sobre las 23
-    WSI de prueba. Las cajas describen parches correlacionados dentro de cada
-    lámina; no son intervalos de confianza. Elaboración propia a partir de la
-    evaluación de reconstrucción en la prueba sellada.}
+    WSI de prueba. Las cajas resumen las distribuciones por parche; los parches de una
+    misma lámina son observaciones correlacionadas.}
     \label{fig:reconstruccion-sellada-parches}
 \end{figure}
 
@@ -234,10 +219,7 @@ el costo de cómputo.
 \begin{figure}[p]
     \centering
     \includegraphics[width=\textwidth]{vae_test_paired_wsi_mae_readable.png}
-    \caption{MAE media pareada de las 23 WSI de prueba. Cada segmento une las
-    medias de una misma WSI en el VAE base y el VAE-\(\mathrm{SO}(2)\), por lo
-    que no confunde láminas con diferente número de parches. Elaboración propia
-    a partir de la evaluación de reconstrucción en la prueba sellada.}
+    \caption{MAE media pareada de las 23 WSI de prueba. Cada segmento une las medias de una misma WSI en el VAE base y el VAE-\(\mathrm{SO}(2)\).}
     \label{fig:reconstruccion-sellada-wsi}
 \end{figure}
 
@@ -255,8 +237,7 @@ grande de \(32\,595\) parches.
     \caption{Evolución del entrenamiento y validación del clasificador MIL
     local-global: macro-F1 de validación. El punto de control de cada rama se
     eligió por esta métrica, con entropía cruzada como desempate. El azul
-    identifica el VAE base y el naranja el VAE-\(\mathrm{SO}(2)\). Elaboración
-    propia a partir de los registros del experimento.}
+    identifica el VAE base y el naranja el VAE-\(\mathrm{SO}(2)\). }
     \label{fig:desarrollo-mil}
 \end{figure}
 
@@ -278,8 +259,7 @@ puntuales de macro-F1, exactitud y entropía cruzada; el VAE base tuvo una
 exactitud balanceada ligeramente mayor. La Tabla~\ref{tab:mil-sellado} muestra
 que el intervalo de la diferencia primaria de macro-F1 atravesó cero. La
 entropía cruzada fue menor para la rama equivariante y su intervalo exploratorio
-no atravesó cero, pero esto no reemplaza el criterio primario ni corrige la
-incertidumbre por una sola inicialización.
+no atravesó cero.
 
 \begin{table}[htbp]
     \centering
@@ -305,16 +285,13 @@ no recuperó casos EC ni LGSC, mientras que el VAE-\(\mathrm{SO}(2)\) no recuper
 casos MC. Las métricas globales se presentan en la
 Figura~\ref{fig:mil-sellado-global}; las matrices de confusión, en la
 Figura~\ref{fig:mil-sellado-confusiones}; y los F1 por clase, en la
-Figura~\ref{fig:mil-sellado-f1-clases}. El protocolo de inferencia no
-almacenó los pesos de atención por parche. Por ello no se reportan mapas de
-atención empíricos: recalcularlos con una ejecución posterior no describiría
-exactamente la inferencia con la que se obtuvieron estos resultados.
+Figura~\ref{fig:mil-sellado-f1-clases}.
 
 \begin{figure}[p]
     \centering
     \includegraphics[width=\textwidth]{mil_test_metrics_refined.png}
     \caption{Macro-F1, exactitud balanceada y exactitud en las 23 WSI de
-    prueba sellada. Cada segmento une las puntuaciones de los dos modelos
+    prueba sellada. Cada par de barras presenta las puntuaciones de los dos modelos
     para una misma métrica; los intervalos por WSI se informan en la
     Tabla~\ref{tab:mil-sellado}.}
     \label{fig:mil-sellado-global}
@@ -326,8 +303,7 @@ exactamente la inferencia con la que se obtuvieron estos resultados.
     \caption{Matrices de confusión en la prueba sellada: clasificador entrenado
     sobre las representaciones del VAE base. Cada celda presenta el conteo y el
     porcentaje dentro de la clase real indicada por la fila. Ambos modelos se
-    evaluaron sobre las mismas 23 WSI. Elaboración propia a partir de las
-    predicciones de prueba.}
+    evaluaron sobre las mismas 23 WSI.}
     \label{fig:mil-sellado-confusiones}
 \end{figure}
 
@@ -346,9 +322,7 @@ exactamente la inferencia con la que se obtuvieron estos resultados.
     \centering
     \includegraphics[width=\textwidth]{mil_test_per_class_f1.png}
     \caption{F1 por subtipo histológico en la prueba sellada. El soporte
-    pequeño de LGSC y MC limita la precisión de las estimaciones por clase.
-    Elaboración propia a partir de
-    las predicciones de prueba.}
+    pequeño de LGSC y MC limita la precisión de las estimaciones por clase.}
     \label{fig:mil-sellado-f1-clases}
 \end{figure}
 
@@ -405,9 +379,7 @@ regiones anotadas y no asignan una clase a los sectores negros o sin máscara.
     \includegraphics[width=\textwidth]{tissue_training_f1.png}
     \caption{Mejor macro-F1 de validación alcanzado por el clasificador de
     tejido en cada presupuesto de etiquetas. El azul identifica el VAE base y
-    el naranja el VAE-\(\mathrm{SO}(2)\). La curva pertenece al desarrollo y se
-    presenta separada de los resultados de prueba sellada. Elaboración propia a
-    partir de los registros del experimento.}
+    el naranja el VAE-\(\mathrm{SO}(2)\). }
     \label{fig:tejido-desarrollo}
 \end{figure}
 
@@ -437,6 +409,7 @@ regiones anotadas y no asignan una clase a los sectores negros o sin máscara.
 \clearpage
 
 \section{Análisis del espacio latente}
+\label{sec:resultados-latentes}
 
 \subsection{Transformaciones prescritas y reconstrucciones}
 
@@ -444,27 +417,34 @@ La primera comprobación aplicó giros exactos de 90, 180 y 270 grados al mapa
 latente espacial y decodificó el resultado. La Figura~\ref{fig:rotacion-latente}
 muestra que el VAE-\(\mathrm{SO}(2)\) siguió la acción prescrita en estos cuartos
 de vuelta, mientras que aplicar la misma operación geométrica al latente del
-VAE base produjo cambios y artefactos no controlados. Esta es una comprobación
-cualitativa sobre parches fijos, no una comparación poblacional de calidad.
+VAE base produjo cambios y artefactos no controlados.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.94\textwidth]{vae_rotated_input_vs_latent.png}
+    \includegraphics[width=\textwidth]{vae_rotation_0_90.png}
     \caption{Reconstrucciones al rotar la entrada y al transformar el latente.
-    Los cuartos de vuelta son controles exactos de la acción espacial. En el
-    VAE base, rotar el mapa latente es una intervención para la cual no fue
-    entrenado;
-    en el VAE-\(\mathrm{SO}(2)\), corresponde a la acción prescrita. Fuente:
-    análisis de transformación latente.}
+    Parche fijo 12 a 0 y 90 grados; para cada ángulo se presentan el VAE base
+    y el VAE-\(\mathrm{SO}(2)\). La primera columna muestra la entrada rotada;
+    la segunda, su reconstrucción; la tercera, la decodificación del latente
+    transformado. Los cuartos de vuelta aplican una reindexación exacta.
+    Fuente: análisis de transformación latente.}
     \label{fig:rotacion-latente}
+\end{figure}
+
+\begin{figure}[p]
+    \ContinuedFloat
+    \centering
+    \includegraphics[width=\textwidth]{vae_rotation_180_270.png}
+    \caption[]{Reconstrucciones al rotar la entrada y al transformar el latente
+    (continuación): giros exactos de 180 y 270 grados del mismo parche. Las filas
+    y columnas siguen la disposición de la página anterior.}
 \end{figure}
 
 La ampliación de la Figura~\ref{fig:rotacion-latente-ampliada} aísla el giro de
 90 grados y las dos intervenciones latentes. En el VAE base aparecen mezclas de
 textura y contornos que no corresponden al objetivo rotado; en el
 VAE-\(\mathrm{SO}(2)\), la transformación espacial del posterior conserva la
-organización de la reconstrucción. Este ejemplo hace visible el mecanismo que
-el mosaico completo resume, pero no reemplaza las medidas sobre los 25 parches.
+organización de la reconstrucción. Este ejemplo amplía el mecanismo resumido en el mosaico completo.
 
 \begin{figure}[htbp]
     \centering
@@ -493,8 +473,7 @@ La evaluación cuantitativa distinguió entre transformar el latente y
 canonizarlo antes de decodificar. Para rotaciones interpoladas de cinco grados,
 la mediana de la razón de error de acción fue 0,713 en el VAE base y 0,550 en
 el VAE-\(\mathrm{SO}(2)\); la razón de canonización fue 0,661 y 0,513,
-respectivamente. La rama equivariante fue menor en los 25 parches, pero no
-alcanzó el criterio absoluto predefinido de 0,5. En cambio, para el control
+respectivamente. La rama equivariante fue menor en los 25 parches. Para el control
 exacto de cuartos de vuelta, la razón de acción descendió de 0,709453 en el VAE
 base a \(2,18\times10^{-6}\) en el VAE-\(\mathrm{SO}(2)\), y la de
 canonización de 0,710638 a 0,088854.
@@ -514,9 +493,7 @@ canonización de 0,710638 a 0,088854.
     \end{subfigure}
     \caption{Respuesta de las reconstrucciones a transformaciones del latente.
     Valores menores indican mejor acuerdo con la acción o canonización
-    prescrita. El control exacto verifica la compatibilidad del decodificador
-    equivariante con \(C_4\), no por sí solo equivarianza continua de todo el
-    autoencodificador. Fuente: análisis de transformación latente.}
+    prescrita. El control exacto evalúa la compatibilidad del decodificador equivariante con \(C_4\). Fuente: análisis de transformación latente.}
     \label{fig:razones-latentes}
 \end{figure}
 
@@ -524,28 +501,21 @@ La distinción anterior resultó esencial. Al evaluar la composición completa
 \(D(\boldsymbol{\mu}(R_\theta x))\) frente a
 \(R_\theta D(\boldsymbol{\mu}(x))\), que también incluye al codificador y la
 interpolación de la entrada, la mediana fue 0,174 para el VAE base y 0,210 para
-el VAE-\(\mathrm{SO}(2)\); el VAE base fue menor en los 25 parches. Por ello,
-el éxito del control \(C_4\) no se extrapola a una ventaja de extremo a extremo
-para rotaciones continuas.
+el VAE-\(\mathrm{SO}(2)\); el VAE base fue menor en los 25 parches.
 
 \subsection{Geometría local y organización espacial}
 
 En órbitas muestreadas cada grado, la medida corregida de geometría local fue
 0,649 para el VAE base y 0,601 para el VAE-\(\mathrm{SO}(2)\), una reducción
-relativa de 7,38\%. Aunque los 25 parches favorecieron a la rama equivariante a
-esa resolución, el efecto no alcanzó el margen predefinido de 10\% y la
-dirección no fue estable al usar pasos de cinco grados: el VAE-\(\mathrm{SO}(2)\)
-fue favorable en solo 8 de 25 parches. Tampoco se obtuvieron resultados que
-demostraran una acción reducida compartida o una factorización global del
-latente.
+relativa de 7,38\%. Los 25 parches favorecieron a la rama equivariante a esa
+resolución. La dirección cambió al usar pasos de cinco grados: el VAE-\(\mathrm{SO}(2)\)
+fue favorable en solo 8 de 25 parches.
 
 La Figura~\ref{fig:orbita-latente-parche} muestra cómo se obtuvo esa evidencia
 para el parche fijo 12. Cada punto representa el posterior completo dentro del
 disco central para un ángulo, proyectado sobre un PCA ajustado con las 360
 vistas del mismo modelo y parche. La trayectoria del VAE-\(\mathrm{SO}(2)\) es
-visualmente más regular en este ejemplo; la curva inferior recuerda que la
-forma de la proyección no sustituye el residual directo ni permite comparar
-las escalas de dos PCA independientes.
+visualmente más regular en este ejemplo; la curva inferior cuantifica el residual directo para cada ángulo.
 
 \begin{figure}[htbp]
     \centering
@@ -561,16 +531,14 @@ La proyección PCA espacial de la Figura~\ref{fig:pca-latente-espacial} mostró
 estructura local en ambos modelos. La RMS relativa de aristas tuvo mediana
 1,4567 para el VAE base y 1,4676 para el VAE-\(\mathrm{SO}(2)\); por tanto, esta
 medida no mostró mayor suavidad espacial de la rama equivariante. Un sondeo RGB
-puntual explicó \(R^2=0,286\) y \(R^2=0,189\), respectivamente. Como los PCA se
-ajustaron por modelo, los colores no alinean canales entre redes.
+puntual explicó \(R^2=0,286\) y \(R^2=0,189\), respectivamente.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.70\textwidth]{latent_spatial_pca_maps.png}
     \caption{Proyección PCA de los mapas latentes espaciales para cuatro
     parches fijos. Cada color representa los tres primeros componentes bajo un
-    ajuste común por modelo; se usa para visualizar organización interna y no
-    como correspondencia de canales entre redes. Fuente: análisis de órbitas y
+    ajuste común por modelo; se usa para visualizar la organización interna. Fuente: análisis de órbitas y
     estructura latente.}
     \label{fig:pca-latente-espacial}
 \end{figure}
@@ -590,16 +558,15 @@ ajustaron por modelo, los colores no alinean canales entre redes.
         \caption{Diferencia VAE-\(\mathrm{SO}(2)\) menos VAE base por parche.}
     \end{subfigure}
     \caption[]{Proyección PCA espacial (continuación): medidas cuantitativas de
-    rugosidad local. Un valor menor no equivale por sí solo a una mejor
-    representación, pues también puede resultar de suavizado o colapso.}
+    rugosidad local. Valores menores indican menor rugosidad local.}
 \end{figure}
 
 El análisis latente verificó la compatibilidad numérica del decodificador
 VAE-\(\mathrm{SO}(2)\) con la acción discreta \(C_4\) en cuartos de vuelta
 y mostró una mejora local descriptiva a un grado. La comparación continua de
-extremo a extremo favoreció al VAE base. La organización global del espacio
-latente queda pendiente de evaluación en el análisis funcional planificado.
-La relación con las tareas posteriores se examina en la discusión.
+extremo a extremo favoreció al VAE base.
+
+\clearpage
 
 \section{Síntesis de resultados por objetivo}
 
@@ -622,13 +589,12 @@ cada evaluación.
         Formulación e implementación & Se construyeron VAE residuales pareados,
         uno con convoluciones restringidas a \(F_0/F_1\), y clasificadores
         idénticos sobre sus latentes congelados. & La rama equivariante tiene
-        menos parámetros, pero mayor costo de convolución; capacidad y simetría
-        no quedaron aisladas causalmente. \\
+        menos parámetros y mayor costo de convolución. \\
         Evaluación & La reconstrucción favoreció levemente al VAE base; WSI y
         algunos presupuestos bajos favorecieron puntualmente al
         VAE-\(\mathrm{SO}(2)\); se verificó su control exacto \(C_4\). & Una
         inicialización por rama, 23 WSI de prueba, clases minoritarias escasas y
-        análisis funcional latente pendiente. \\
+        análisis latente sobre 25 parches fijos. \\
         \bottomrule
     \end{tabularx}
 \end{table}

@@ -5,11 +5,8 @@ La histopatología permite caracterizar enfermedades mediante la observación de
 la morfología microscópica de los tejidos. Su digitalización en forma de WSI
 facilita conservar, consultar y distribuir las láminas, y proporciona una entrada
 estandarizada para desarrollar herramientas de análisis computacional
-~\cite{pallua_future_2020,song_artificial_2023}. Estas herramientas pueden apoyar
-tareas repetitivas, cuantificar patrones y explorar biomarcadores morfológicos,
-pero su adopción clínica exige distinguir el desempeño experimental de la
-validación diagnóstica y considerar limitaciones operativas, regulatorias y de
-generalización~\cite{verghese_computational_2023}.
+~\cite{pallua_future_2020,song_artificial_2023}. Estas herramientas pueden apoyar tareas repetitivas, cuantificar patrones y
+explorar biomarcadores morfológicos~\cite{verghese_computational_2023}.
 
 Una dificultad central es la disponibilidad de etiquetas. Las anotaciones
 histológicas detalladas requieren tiempo de especialistas y su costo aumenta con
@@ -38,10 +35,8 @@ diagnóstico. El aumento de datos mediante rotaciones expone al modelo a ejemplo
 transformados, pero no garantiza una respuesta exactamente equivariante y añade
 un costo que depende de cuántas transformaciones se evalúen. Las convoluciones
 equivariantes incorporan la relación geométrica en la arquitectura mediante
-compartición restringida de parámetros~\cite{veeling_rotation_2018}. Esta
-restricción puede reducir la complejidad estadística bajo supuestos adecuados,
-aunque su utilidad debe comprobarse en la tarea y distribución concretas
-~\cite{elesedy_provably_2021}.
+compartición restringida de parámetros~\cite{veeling_rotation_2018}. Esta restricción puede reducir la complejidad estadística bajo supuestos
+adecuados~\cite{elesedy_provably_2021}.
 
 Por tal motivo, este trabajo estudia redes neuronales convolucionales
 equivariantes como parte de un esquema semisupervisado. Primero se entrenaron,

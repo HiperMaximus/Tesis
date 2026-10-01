@@ -1,6 +1,47 @@
 # Current Status
 
-Last updated: 2026-09-30
+Last updated: 2026-10-01
+
+## PDF annotation and approved editorial passes: completed
+
+Applied the approved 37-comment pass and the subsequent 35-group style audit.
+Removed project-history framing, discarded-candidate narratives and repeated
+warnings; consolidated statistical and PCA scope while preserving accepted
+metrics, sample sizes, sparse-mask eligibility and the baseline-favorable
+continuous end-to-end rotation result. Added the Spanish vector denoising-VAE
+pipeline from the accepted INCISCOS revision, completed the architecture table
+with supports/normalization/gates/kernel constraints, and added the approved
+Introduction result paragraph. Professor comments and research files are intact.
+
+Final PDF: 109 pages. `document.sh check thesis` and `git diff --check` pass.
+All 70 bibliography entries are cited in the active document, with none missing
+or unused; no overfull boxes or unresolved references remain. Manifest entries
+are unique and output hashes pass. The earlier SSIM pseudocode verification
+and archived-data figure checks remain valid. Reviewed the final pipeline and
+table plus 18 changed or adjacent pages in this pass; QA is under
+`build/thesis/annotation-review/style2-pages/`.
+
+Incorporated the approved thesis-length Resumen and equivalent English Abstract,
+including the recovered digital-pathology/cancer context, annotation effort,
+parameter-sharing motivation and all five wording adjustments. Both cover
+methods, downstream tasks, mixed results and the thesis-specific latent analysis.
+Each occupies two pages. Academic metadata and keywords are preserved. English
+hyphenation and decimal notation are scoped to the Abstract; reviewed all four
+summary pages and the updated contents. QA is in
+`build/thesis/annotation-review/summary-pages/`; final check and diff checks pass.
+The user requested committing and pushing this approved revision to
+`origin/main`. No Overleaf synchronization was requested.
+
+Applied the seven residual style groups after user approval: removed the extra
+activation/ablation warning, consolidated architecture-comparison scope in
+Limitations, stated MIL patch identity and the RGB probe positively, simplified
+the dispersion description, made the full-label conclusion concrete, and
+rephrased the future pathology review. Nine targeted replacements affected
+four chapters. All inline mathematical values and expressions are retained.
+`document.sh check thesis` and `git diff --check` pass; no overfull boxes or
+unresolved references remain. Reviewed nine affected pages, including the
+synthesis table. Final PDF remains 109 pages; QA is under
+`build/thesis/annotation-review/residual-pages/`.
 
 ## Complete
 
@@ -302,7 +343,7 @@ final PDF: 103 pages, 31,169,094 bytes. Logs and PNGs:
 
 Other pending work:
 
-1. finish the functional latent-space analysis and revise any affected results,
+1. expand the functional latent-space analysis and revise any affected results,
    discussion and conclusions;
 2. replace the summary and abstract;
 3. complete the administrative annexes and final institutional review.

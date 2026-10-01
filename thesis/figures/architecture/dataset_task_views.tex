@@ -18,7 +18,7 @@
 \node[box, right=1.15cm of tissue] (crop) {Lectura RGB directa\\parche $256\times256$};
 \node[model, right=1.0cm of crop, yshift=0.75cm] (normal) {Codificador VAE base\\congelado};
 \node[model, right=1.0cm of crop, yshift=-0.75cm] (so2) {Codificador VAE-$\mathrm{SO}(2)$\\congelado};
-\node[task, right=1.0cm of $(normal)!0.5!(so2)$] (views) {Medias posteriores pareadas\\vistas lógicas por tarea};
+\node[task, right=1.25cm of normal.east, anchor=west, yshift=-0.75cm] (views) {Medias posteriores pareadas\\vistas lógicas por tarea};
 
 \draw[flow] (atlas) -- (recon);
 \draw[flow] (atlas) -- (tissue);

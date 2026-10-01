@@ -1,0 +1,26 @@
+\begin{tikzpicture}[
+    font=\sffamily\footnotesize, >=Latex, node distance=3mm,
+    stage/.style={draw=black!55,fill=blue!5,rounded corners=2pt,
+                  align=center,text width=2.05cm,minimum height=1.65cm,
+                  inner sep=2mm},
+    flow/.style={->,thick,draw=black!70}]
+\node[stage] (input) {Parche limpio\\$\mathbf{x}$\\RGB $256\times256$};
+\node[stage,right=of input] (noise) {Perturbación $C$\\entrada\\$\widetilde{\mathbf{x}}$};
+\node[stage,right=of noise] (encoder) {Codificador\\cuatro etapas\\residuales};
+\node[stage,right=of encoder] (posterior) {Posterior normal\\$\boldsymbol{\mu},\boldsymbol{\ell}$\\$16\times32\times32$};
+\node[stage,text width=2.3cm,right=of posterior] (decoder) {Decodificador\\$\mathbf{z}$ al entrenar\\$\boldsymbol{\mu}$ al evaluar};
+\node[stage,text width=2.3cm,right=of decoder] (output) {Reconstrucción\\$\widehat{\mathbf{x}}$\\comparada con $\mathbf{x}$};
+\draw[flow] (input)--(noise);
+\draw[flow] (noise)--(encoder);
+\draw[flow] (encoder)--(posterior);
+\draw[flow] (posterior)--(decoder);
+\draw[flow] (decoder)--(output);
+\node[stage,fill=green!7,minimum height=0.9cm,text width=3.2cm,
+      above=7mm of posterior] (heads) {Media $\boldsymbol{\mu}$ congelada\\a los clasificadores};
+\draw[flow,draw=blue!65!black] (posterior.north)--(heads.south);
+\coordinate (targetleft) at ($(input.south)+(0,-0.55)$);
+\coordinate (targetright) at (output.south |- targetleft);
+\draw[flow,dashed] (input.south)--(targetleft)--(targetright)--(output.south);
+\node[below=1mm,align=center,text=black!70]
+    at ($(targetleft)!0.5!(targetright)$) {Parche limpio como objetivo de la pérdida de reconstrucción};
+\end{tikzpicture}

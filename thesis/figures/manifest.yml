@@ -244,17 +244,21 @@
   source_key: so2_vae_rank12_angle90_action
   evidence_class: accepted-exploratory-view
 - file: figures/experiments/latent_population_ratios.png
-  sha256: 20036cd9e6d23616f518359824e70bacf37250d5042a8823bdc574fe52e0fbad
+  sha256: 33e2155f3902b700bed59ed8de82d120c4183f4bf80ca27307118d11438cca56
   source_repository: equivariant-vae
   source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
-  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/figures/01-population-ratios.png
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/decoded_latent_transform_summary.json
   evidence_class: accepted-exploratory
+  derivation: Redrawn archived numeric values with Spanish labels and larger typography; original values and PCA fits are preserved; no acceptance threshold.
+
 - file: figures/experiments/latent_exact_d4.png
-  sha256: 468e2e91fcf44da2a0558ffe8f55d49a9f86878551a19d2f3fd85525c3e099da
+  sha256: e3782e1c8bdd136cb94085099d9519f8b93ad7d30301c0f222d7b31d7d1a9bde
   source_repository: equivariant-vae
   source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
-  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/figures/04-exact-d4.png
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/decoded_latent_transform_summary.json
   evidence_class: accepted-exact-control
+  derivation: Redrawn archived numeric values with Spanish labels and larger typography; original values and PCA fits are preserved; no acceptance threshold.
+
 - file: figures/experiments/latent_spatial_pca.png
   sha256: 792d95f4aee76204b3880cac3ae30f9dc1a6deb42c63f8a4732b1923ec89d45f
   source_repository: equivariant-vae
@@ -262,11 +266,13 @@
   source_path: runs/local/frozen_vae_rotation_orbits/04-spatial-latent-pca.png
   evidence_class: accepted-exploratory
 - file: figures/experiments/latent_orbit_single_patch.png
-  sha256: 44abf7dc64932393b5bc521d08566501c3c0bf64bca5ecbf32d6fef265ae7090
+  sha256: 188b7206d8467d4987ae39a2608ad2dd2d06ec46e06fe512a23a71481b5672ca
   source_repository: equivariant-vae
   source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
-  source_path: runs/local/frozen_vae_rotation_orbits/01-latent-orbits.png
+  source_path: runs/local/frozen_vae_rotation_orbits/rotation-orbits.html
   evidence_class: accepted-exploratory
+  derivation: Redrawn archived numeric values with Spanish labels and larger typography; original values and PCA fits are preserved; no acceptance threshold.
+
 - file: figures/experiments/latent_spatial_pca_maps.png
   sha256: ae24e2cd67121b24fd6ca93026bd082c13707aee2d09e5cbecd22df197754f17
   source_repository: equivariant-vae
@@ -275,18 +281,18 @@
   derivation: Lossless crop by scripts/export_accepted_figure_views.py.
   evidence_class: accepted-exploratory-view
 - file: figures/experiments/latent_spatial_pca_paired.png
-  sha256: 02a5ee8ec496fdff43a62c35cb79b75618fd9a905818df0ebb484dfca1d80eab
+  sha256: 770cb51e04a033058437274c346cf2595f62684200ad169349ccfe8fe2f3be16
   source_repository: equivariant-vae
   source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
-  source_path: runs/local/frozen_vae_rotation_orbits/04-spatial-latent-pca.png
-  derivation: Lossless crop by scripts/export_accepted_figure_views.py.
+  source_path: runs/local/frozen_vae_rotation_orbits/rotation-orbits.html
+  derivation: Redrawn archived numeric values with Spanish labels and larger typography; original values and PCA fits are preserved; no acceptance threshold.
   evidence_class: accepted-exploratory-view
 - file: figures/experiments/latent_spatial_pca_delta.png
-  sha256: 99cfa4a21d7ba1b6856e6a19cfaa20c059977055fc0d554fde4b5c2cb667014d
+  sha256: 3cc64311d5058e9236aa3d589032f9654885b82c47bb5d8e03be83d27868c6c2
   source_repository: equivariant-vae
   source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
-  source_path: runs/local/frozen_vae_rotation_orbits/04-spatial-latent-pca.png
-  derivation: Lossless crop by scripts/export_accepted_figure_views.py.
+  source_path: runs/local/frozen_vae_rotation_orbits/rotation-orbits.html
+  derivation: Redrawn archived numeric values with Spanish labels and larger typography; original values and PCA fits are preserved; no acceptance threshold.
   evidence_class: accepted-exploratory-view
 - file: figures/experiments/so2_stem_kernel_f1.png
   sha256: 9c6cbfe98d21bb82aee1cd0845b5e9f33f34061bc5e46489ccb37857c5fec03d
@@ -407,13 +413,13 @@
   derivation: Accepted test macro-F1 at five class-balanced label budgets, rendered by scripts/render_selected_paper_views.py.
   evidence_class: accepted-sealed-test-view
 - file: figures/experiments/mil_test_metrics_refined.png
-  sha256: 43764c57ba291f310f7c14f054a18b075c69db39916eec3d8b1454526ae41cc9
+  sha256: b7c338e55b4e2eb7dde4dcede77d6c6799c15268c6505dfe2f2f071b5a4f9504
   source_repository: equivariant-vae
   source_commit: 1d9c5af1a3dc445459fd3e932fd1016ca56657c5
   source_path: runs/local/ubc_ocean_mil_test_scored_v1/normal_vae/scored_predictions_and_metrics.json
   additional_source_paths:
     - runs/local/ubc_ocean_mil_test_scored_v1/so2_vae/scored_predictions_and_metrics.json
-  derivation: Accepted overall WSI test scores rendered as paired dot comparisons by scripts/render_selected_paper_views.py.
+  derivation: Accepted overall WSI test scores rendered as horizontal bars with numeric labels by scripts/render_selected_paper_views.py.
   evidence_class: accepted-sealed-test-view
 - file: figures/experiments/vae_training_curves_refined.png
   sha256: f7519064a14a87d4ac76a5a714be7dfba9429fd88814e9deb2a82e5460ca2aa0
@@ -426,3 +432,39 @@
     - runs/kaggle/so2_selected_runtime_full_v1_session1/metrics/validation_metrics.csv
   derivation: All successive accepted run segments specified in scripts/render_selected_paper_views.py; train means in 3000-step bins and validation mean plus or minus the logged SD across each evaluation.
   evidence_class: accepted-development-diagnostic-view
+
+- file: figures/architecture/transformer_block.tex
+  source_repository: Tesis
+  source_commit: befba39
+  source_path: thesis/chapters/03_marco_referencia.tex
+  derivation: Thesis-native diagram of the complete pre-normalized Transformer block.
+  output_sha256: 79b08e98f047d3b3e8a87815e7436d3061ee25ca2ef98a4d7c2111d695dfae7c
+
+- file: figures/experiments/radial_basis_sampling.png
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: src/eqvae/models/so2_architecture_probe.py
+  derivation: Gaussian profiles at the accepted radii and widths; continuous rings and integer 7x7 grid.
+  output_sha256: 0eb0e40238b0946f757239be050ccd20ad7f3061ac33239b42d2dbd165152632
+
+- file: figures/experiments/vae_rotation_0_90.png
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/selected_images_uint8.npz
+  derivation: Accepted uint8 images for patch 12 at 0 and 90 degrees; two models and three operations.
+  output_sha256: b88432dd41a890a117bb8fbb37e83341a1cf034e466d3ec1013f15e1b07aee3d
+
+- file: figures/experiments/vae_rotation_180_270.png
+  source_repository: equivariant-vae
+  source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
+  source_path: runs/local/decoded_latent_transform_v1/decoded_latent_transform_v1/selected_images_uint8.npz
+  derivation: Accepted uint8 images for patch 12 at 180 and 270 degrees; two models and three operations.
+  output_sha256: c8a5d7b2514834b3a86d1a7666f7a4bd2c051255eacb65e68081a5fb587a1fe5
+
+- file: figures/architecture/vae_denoising_pipeline.tex
+  source_repository: equivariant-vae
+  source_commit: b85d7f2c23aa1620dbabcc902aee2d10a7062caa
+  source_path: paper/inciscos2026/main.tex
+  source_figure: fig:vae-pipeline
+  derivation: Spanish vector adaptation of the accepted shared denoising workflow; posterior sampling, frozen means and clean reconstruction target retain the implemented protocol.
+  output_sha256: 770d5f8fdd715ffa63577b18f92b4ae01a073fa7749e085690a47028f15465bb

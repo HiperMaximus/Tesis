@@ -1,9 +1,8 @@
 % !TEX root = ../main.tex
 \chapter{Metodología}
 
-El trabajo se desarrolló en cuatro etapas: selección de imágenes,
-formulación e implementación del modelo, evaluación experimental y elaboración
-del informe final. Se implementaron dos autoencodificadores variacionales y,
+El trabajo se desarrolló en tres etapas: selección de imágenes,
+formulación e implementación del modelo y evaluación experimental. Se implementaron dos autoencodificadores variacionales y,
 una vez entrenados, se congelaron sus pesos para evaluar las representaciones
 mediante tareas supervisadas. El aprendizaje no supervisado utilizó parches
 sin etiquetas como objetivo de entrenamiento; los clasificadores posteriores
@@ -31,11 +30,8 @@ La inferencia se efectuó en tres escalas relacionadas. En la primera, cada
 parche fue reconstruido y descrito por un mapa latente. En la segunda, los
 parches con anotación suficiente se clasificaron como tumor, estroma o
 necrosis. En la tercera, todos los parches seleccionados por Otsu de una WSI
-se agregaron para clasificar la lámina en uno de cinco subtipos de cáncer de ovario. Las
-conclusiones se restringen a los dos puntos de control entrenados, una sola
-inicialización por experimento supervisado y las particiones descritas a
-continuación; por ello, una diferencia puntual no se interpreta como
-superioridad general de una familia de modelos.
+se agregaron para clasificar la lámina en uno de cinco subtipos de cáncer de ovario. Se evaluaron los dos puntos de control entrenados y una inicialización por
+experimento supervisado, con las particiones descritas a continuación.
 
 \section{Conjuntos de datos}
 
@@ -65,8 +61,7 @@ población de parches dentro de esas láminas.
     lámina de las 513 WSI convencionales. Los subconjuntos de desarrollo VAE,
     desarrollo supervisado y prueba son disjuntos. Las mismas 23 WSI se
     utilizan en las tres evaluaciones finales, con poblaciones de parches
-    específicas por tarea. Ambos modelos comparten las asignaciones.
-    Elaboración propia a partir de las particiones experimentales.}
+    específicas por tarea. Ambos modelos comparten las asignaciones.}
     \label{fig:particion-compartida-wsi}
 \end{figure}
 
@@ -103,7 +98,7 @@ miniaturas ni confundir el color negro de la máscara con una clase negativa.
     \caption{Construcción del atlas de coordenadas para la cohorte de
     evaluación. Las miniaturas aportan una selección de tejido independiente
     de las anotaciones, mientras las máscaras incompletas aportan fracciones de
-    clase. Elaboración propia a partir del procedimiento ejecutado.}
+    clase.}
     \label{fig:construccion-atlas}
 \end{figure}
 
@@ -183,8 +178,7 @@ entrada al modelo se transformaron al intervalo \([-1,1]\).
     por franjas de una fila de la cuadrícula y solo se recortan las posiciones
     seleccionadas. Abajo, el preentrenamiento consume un archivo RGB
     prebarajado mediante \texttt{mmap}, mientras la evaluación escribe
-    directamente latentes pareados sin materializar otro conjunto RGB.
-    Elaboración propia a partir del flujo ejecutado.}
+    directamente latentes pareados sin materializar otro conjunto RGB.}
     \label{fig:lectura-parches-wsi}
 \end{figure}
 
@@ -212,12 +206,13 @@ prueba físicamente separada del ajuste de modelos y puntos de control.
     \caption{Derivación de las poblaciones de reconstrucción, tejido y
     diagnóstico a partir de un atlas y una partición comunes. Los dos
     codificadores reciben los mismos píxeles y producen almacenes latentes
-    pareados; la diferencia entre tareas reside en sus vistas lógicas.
-    Elaboración propia a partir del flujo ejecutado.}
+    pareados; la diferencia entre tareas reside en sus vistas lógicas.}
     \label{fig:vistas-logicas-datos}
 \end{figure}
 
-El VAE se entrenó como un autoencodificador de eliminación de ruido. Con
+El VAE se entrenó como un autoencodificador variacional de eliminación de ruido
+(\emph{denoising variational autoencoder}, denoising VAE): recibió una entrada
+perturbada y aprendió a reconstruir el parche limpio~\cite{im_denoising_2017}. Con
 probabilidad 0,3 se aplicó al parche de entrada una perturbación de color en el
 espacio de hematoxilina, eosina y residuo, obtenido mediante deconvolución de
 color~\cite{ruifrok_color_2001}, junto con ruido gaussiano, mientras que el
@@ -256,6 +251,23 @@ log-varianza se restringió al intervalo \([-8,4]\). Para las evaluaciones se
 utilizó directamente \(\boldsymbol{\mu}\), lo que eliminó la variación debida
 al muestreo posterior.
 
+La Figura~\ref{fig:flujo-denoising-vae} reúne el recorrido compartido por
+ambos modelos y el uso posterior de sus representaciones.
+
+\begin{figure}[htbp]
+    \centering
+    \begingroup\setstretch{1}
+    \resizebox{\textwidth}{!}{\input{figures/architecture/vae_denoising_pipeline}}
+    \endgroup
+    \caption{Flujo compartido del denoising VAE. La perturbación afecta la
+    entrada, mientras el parche limpio permanece como objetivo de reconstrucción.
+    El codificador produce un posterior espacial de \(16\times32\times32\);
+    el decodificador recibe una muestra durante el entrenamiento y la media
+    posterior durante la evaluación. Los clasificadores utilizan esta media
+    con los modelos congelados.}
+    \label{fig:flujo-denoising-vae}
+\end{figure}
+
 La topología macroscópica se mantuvo igual: ocho bloques residuales en el
 codificador, tres reducciones de resolución, dos cabezas posteriores, una
 proyección latente, ocho bloques residuales en el decodificador y tres
@@ -265,22 +277,20 @@ filtro binomial fijo de \(5\times5\) antes del submuestreo y los aumentos
 emplearon interpolación bilineal. La diferencia central estuvo en el tipo de
 convolución y en la forma en que se transformaron los canales ocultos.
 
-El diseño se derivó de la familia de redes residuales y, en particular, de un
-prototipo inicial construido como codificador y decodificador ResNet-18 con
-bloques básicos~\cite{he_deep_2016}. De allí se conservó la organización en
-cuatro etapas, con dos bloques por etapa. El VAE final contiene 16 bloques
-residuales: ocho en el codificador y ocho en el decodificador.
+El codificador y el decodificador se basaron en los bloques básicos y la
+organización en cuatro etapas de ResNet-18~\cite{he_deep_2016}, con dos bloques
+por etapa. El VAE contiene 16 bloques residuales: ocho en el codificador y ocho
+en el decodificador.
 
 Para obtener dos autoencodificadores comparables, se eliminó la reducción
 abrupta del tallo, se aumentó el latente espacial a \(32\times32\), se
 reemplazaron la normalización por lotes (\emph{BatchNorm}), la unidad lineal
 rectificada (ReLU, \emph{rectified linear unit}), el aumento por vecino más cercano y las
-proyecciones puntuales del prototipo por operaciones que admitieran una
+proyecciones puntuales de ResNet-18 por operaciones que admitieran una
 contraparte clara para campos direccionables. También se redujeron los anchos
 y se fijaron el mismo calendario de etapas, las mismas 43 convoluciones
 aprendidas y las mismas formas de entrada, posterior y salida. Se controló así
-la topología macroscópica y el protocolo, aunque el número de parámetros y el
-costo de cómputo no pudieron igualarse simultáneamente.
+la topología macroscópica y el protocolo.
 
 En cada bloque, la rama principal aprende una corrección
 \(\mathcal{F}(\mathbf{x})\) y la salida se calcula como
@@ -304,7 +314,7 @@ campo.
     \caption[Estructura del bloque residual empleado.]{Estructura de un bloque residual. La suma combina la rama
     aprendida con un camino corto de identidad o de proyección. Adaptación
     conceptual de ResNet~\cite{he_deep_2016} a la implementación de esta
-    investigación. La Subsección~\ref{sec:modelo-so2} explica el soporte
+    investigación. La Subsección~\ref{sec:comparacion-arquitecturas} explica el soporte
     \(7\times7\) de las convoluciones direccionables frente al
     \(5\times5\) de las ordinarias y compara sus parámetros aprendidos.}
     \label{fig:bloque-residual}
@@ -316,8 +326,7 @@ La no linealidad se eligió como parte del control entre arquitecturas. Una
 ReLU aplicada por separado a todos los canales sería válida en el VAE base,
 pero no en una copia \(F_1\): al rotar un vector, sus dos componentes se
 mezclan y, en general, la ReLU componente a componente no conmuta con esa
-mezcla. Suprimir las activaciones únicamente en el modelo equivariante también
-habría cambiado la profundidad no lineal del experimento. Por ello se empleó
+mezcla. Por ello se empleó
 una misma familia de compuertas sigmoidales aprendidas: escalar en los canales
 ordinarios y radial en los campos vectoriales. Esta clase de no linealidades
 compatibles con el tipo de representación es necesaria en CNN direccionables
@@ -383,8 +392,7 @@ Las cabezas posteriores y la proyección RGB final no tuvieron activación; esta
 última entregó valores crudos en el dominio normalizado. El emparejamiento
 conservó así el mecanismo y la ubicación de la no linealidad, mientras la
 variante radial introdujo solamente la modificación necesaria para respetar
-\(F_1\). No igualó el número total de parámetros ni constituye una ablación de
-otras funciones de activación.
+\(F_1\).
 
 \subsection{Modelo base}
 
@@ -409,7 +417,7 @@ presenta la arquitectura final.
     resolución. El tallo usa un soporte \(7\times7\) y las demás
     convoluciones, \(5\times5\). La Subsección~\ref{sec:modelo-so2}
     justifica los soportes de la contraparte direccionable y su comparación
-    de parámetros. Elaboración propia a partir de la implementación final.}
+    de parámetros.}
     \label{fig:arquitectura-vae-base}
 \end{figure}
 
@@ -450,7 +458,7 @@ Figura~\ref{fig:tipos-campo-f01}.
     \resizebox{0.96\textwidth}{!}{\input{figures/architecture/field_types}}
     \caption{Transformación intuitiva de los tipos de campo empleados. Un
     campo escalar \(F_0\) conserva su valor interno; una copia vectorial
-    \(F_1\) rota conjuntamente sus dos componentes. Elaboración propia.}
+    \(F_1\) rota conjuntamente sus dos componentes.}
     \label{fig:tipos-campo-f01}
 \end{figure}
 
@@ -536,7 +544,10 @@ Un candidato muestreado tuvo entonces componentes
 
 Además de las envolventes, cada generador de orden cero aportó una muestra
 concentrada en \(r=0\); todo término de orden no nulo se forzó a cero en ese
-punto. En el soporte \(7\times7\) se usaron
+punto, porque su dependencia angular no tiene un valor único en el origen.
+Los términos de orden cero sí pueden aportar allí: en particular, los
+generadores \(\mathbf I\) y \(\mathbf J\) del bloque \(F_1\!\to F_1\) no se
+anulan por esta regla. En el soporte \(7\times7\) se usaron
 \(\boldsymbol\eta=(1;1{,}90395977;2{,}75)\),
 \(\boldsymbol\sigma=(0{,}3;0{,}3;0{,}3)\) y orden máximo 2 en cada
 envolvente. Para \(9\times9\) se usaron
@@ -549,32 +560,40 @@ más allá del radio 2,5, mientras el soporte de 7 por 7 muestrea esa envolvente
 en más direcciones: la cuadrícula centrada se extiende tres píxeles en cada
 eje, frente a los dos del soporte de 5 por 5. La discretización seleccionada
 representa la envolvente exterior con mayor resolución angular y reduce el
-riesgo de artefactos por muestreo escaso. Las comparaciones entre CNN
-ordinarias y equivariantes pueden igualar el soporte del núcleo, el número
-de parámetros o el costo de cómputo. Weiler y Cesa emplearon núcleos
-direccionables de mayor soporte para mitigar artefactos de discretización y
-ajustaron los anchos de las capas para mantener el número total de parámetros
-~\cite{weiler_general_2019}. Worrall et al. compararon filtros armónicos de
-\(5\times5\) con filtros ordinarios de \(3\times3\) e informaron sus distintos
-números de parámetros~\cite{worrall_harmonic_2017}. En histología, Graham et
-al. también emplearon filtros direccionables de \(7\times7\)
-~\cite{graham_dense_2020}. Pese a su mayor soporte, una convolución
-direccionable de la primera etapa residual sin cambio de resolución aprendió
-\(7\,680\) coeficientes de base, frente a \(25\,600\) pesos libres de la capa
-ordinaria correspondiente (30,0\%). El soporte espacial determina dónde se
-muestrean las bases, mientras los coeficientes determinan cómo se combinan.
-Para un número fijo de bases y de copias de campo, ampliar la cuadrícula no
-aumenta por sí solo el número de coeficientes aprendidos; sí aumenta el tamaño
-del núcleo expandido y el trabajo de la convolución densa. En el modelo
-completo, la proporción de parámetros fue del 29,8\% y el costo convolucional
-fue mayor que el de la línea base (Tabla~\ref{tab:comparacion-arquitecturas}).
+riesgo de artefactos por muestreo escaso. La Figura~\ref{fig:envolventes-radiales}
+relaciona los perfiles gaussianos, sus anillos y el muestreo en la cuadrícula.
 
-Para evitar que la escala y la correlación de las muestras dependieran de la
-cuadrícula, se vectorizó cada \(\mathbf C_{s,q,A}\) en una columna. Si la matriz
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{radial_basis_sampling.png}
+    \caption{Envolventes gaussianas del soporte \(7\times7\). A la izquierda,
+    los tres perfiles \(g_s(r)\), centrados en 1, 1,90395977 y 2,75 píxeles,
+    con desviación estándar 0,3. En el centro, su distribución radial continua;
+    a la derecha, los puntos de muestreo de la cuadrícula. Una base completa
+    multiplica esta envolvente escalar por el generador y su dependencia angular
+    de la Ecuación~\eqref{eq:muestra-base-f01}.}
+    \label{fig:envolventes-radiales}
+\end{figure}
+
+\subsection{Implementación de la convolución direccionable}
+\label{sec:implementacion-convolucion}
+
+La función optimizada \texttt{conv2d} aplica una convolución bidimensional
+con pesos de forma \((C_{\mathrm{out}},C_{\mathrm{in}},k,k)\) y recibe además
+el tensor de entrada~\cite{pytorch_conv2d}. La implementación construye primero esos pesos a partir
+de un banco fijo y de coeficientes aprendidos; después los aplica mediante
+\texttt{conv2d}. El recorrido es: muestrear las bases continuas, ortogonalizar
+sus muestras, combinar el banco con los coeficientes, reorganizar los ejes y
+ensamblar los bloques de canales.
+
+Para controlar la escala y la correlación de las muestras, se vectorizó cada \(\mathbf C_{s,q,A}\) en una columna. Si la matriz
 resultante es
 \(\mathbf C\in\mathbb R^{(d_{\ell_o}d_{\ell_i}k^2)\times M}\), una
-factorización QR reducida \(\mathbf C=\mathbf Q\mathbf R\) produjo el banco
-fijo
+factorización QR reducida \(\mathbf C=\mathbf Q\mathbf R\) separó una matriz
+\(\mathbf Q\) con columnas ortonormales, \(\mathbf Q^{\mathsf T}\mathbf Q=
+\mathbf I_M\), y una matriz triangular superior \(\mathbf R\) de tamaño
+\(M\times M\). Esta operación, disponible como \texttt{torch.linalg.qr},
+produjo el banco fijo~\cite{pytorch_qr}
 
 \begin{equation}
     \mathbf B=\sqrt{d_{\ell_o}}\,\mathbf Q^{\mathsf T}
@@ -660,7 +679,12 @@ Ecuación~\eqref{eq:forma-bloque-kernel}. De manera equivalente, si
 \(\mathbf{A}_m\in\mathbb{R}^{c_o\times c_i}\) contiene los coeficientes de la
 base \(m\) y \(\mathbf{B}_m(\mathbf u)\in
 \mathbb{R}^{d_{\ell_o}\times d_{\ell_i}}\) es su valor en un desplazamiento,
-el mismo bloque se puede escribir como una suma de productos de Kronecker:
+el mismo bloque se puede escribir como una suma de productos de Kronecker.
+Para matrices \(\mathbf A\) y \(\mathbf B\), el producto
+\(\mathbf A\otimes\mathbf B\) sustituye cada entrada \(A_{ba}\) por el bloque
+\(A_{ba}\mathbf B\); sus entradas satisfacen
+\((\mathbf A\otimes\mathbf B)_{bd_o+r_o,ad_i+r_i}=A_{ba}B_{r_o r_i}\).
+Esta es la operación \texttt{torch.kron}~\cite{pytorch_kron}. Por tanto,
 
 \begin{equation}
     \mathbf{K}^{\ell_o\leftarrow\ell_i}(\mathbf u)
@@ -705,7 +729,11 @@ En las capas ocultas, donde cada disposición conserva el mismo número de
 copias escalares y vectoriales, los cuatro productos se agruparon en una sola
 contracción por lotes (\emph{batched}). Los coeficientes se rellenaron hasta
 \(\widetilde{\mathbf A}\in\mathbb R^{4\times(c_oc_i)\times14}\) y las bases
-hasta \(\widetilde{\mathbf B}\in\mathbb R^{4\times14\times196}\). Entonces
+hasta \(\widetilde{\mathbf B}\in\mathbb R^{4\times14\times196}\). La función
+\texttt{torch.bmm} multiplica pares de matrices en un lote:
+\([b,n,m]\times[b,m,p]\to[b,n,p]\), con una multiplicación ordinaria por cada
+índice del primer eje~\cite{pytorch_bmm}. Aquí ese eje identifica los cuatro
+bloques de tipos de campo. Entonces
 
 \begin{equation}
     \widetilde{\mathbf G}
@@ -732,11 +760,8 @@ independientes que rompieran la transformación conjunta de cada pareja.
 
 El diseño experimental se limitó a campos \(F_0\) y \(F_1\). La primera
 convolución utilizó soporte \(9\times9\) y las demás,
-\(7\times7\). Estos soportes mayores que los \(7\times7\) y \(5\times5\) de
-la línea base fueron los que permitieron que las bases radiales y angulares
-retenidas superaran los controles numéricos de soporte y condicionamiento del
-preentrenamiento. La elección de estos tamaños dependió de las bases y los
-controles numéricos de esta implementación.
+\(7\times7\). La Subsección~\ref{sec:comparacion-arquitecturas} relaciona estos
+soportes con el muestreo de las bases y los compara con los de la línea base.
 
 La Figura~\ref{fig:convolucion-so2-implementacion} y el
 Listado~\ref{lst:convolucion-so2} resumen la implementación. Los bloques de
@@ -756,12 +781,12 @@ había sido expandido.
     analítico fijo y los coeficientes entrenables son entradas independientes
     de la expansión que construye \(K\); el mapa \(\mathbf{x}\) entra solamente
     en la convolución \(K*\mathbf{x}\). Las bases satisfacen la restricción de
-    equivarianza~\eqref{eq:restriccion-nucleo-so2}. Elaboración propia a partir
-    del código final.}
+    equivarianza~\eqref{eq:restriccion-nucleo-so2}.}
     \label{fig:convolucion-so2-implementacion}
 \end{figure}
 
-\begin{lstlisting}[caption={Módulo simplificado, en estilo PyTorch, de la convolución \(F_0/F_1\) implementada.},label={lst:convolucion-so2}]
+\begingroup\setstretch{1}
+\begin{lstlisting}[float=p,basicstyle=\ttfamily\fontsize{9}{10.5}\selectfont,caption={Módulo simplificado, en estilo PyTorch, de la convolución \(F_0/F_1\) implementada.},label={lst:convolucion-so2}]
 def expand(coeff, basis, co, ci, do, di, k):
     # coeff: [(co*ci), M]; basis: [M, (do*di*k*k)]
     flat = coeff @ basis
@@ -809,6 +834,7 @@ class F01Conv2d(nn.Module):
         return F.conv2d(x, self.expanded_kernel(),
                         padding=self.kernel_size // 2)
 \end{lstlisting}
+\endgroup
 
 La función que construye el banco en el listado corresponde directamente a las
 Ecuaciones~\eqref{eq:cuadricula-kernel-so2}--\eqref{eq:qr-banco-f01}; el
@@ -827,7 +853,7 @@ Ecuación~\eqref{eq:base-expansion-so2}.
     \(F_{\ell_i}\!\to F_{\ell_o}\). Cada coeficiente aprendido multiplica una
     plantilla completa y, por tanto, participa en múltiples componentes y
     posiciones del núcleo. Los tres colores son términos ilustrativos de una
-    suma que contiene \(M\) bases. Elaboración propia.}
+    suma que contiene \(M\) bases.}
     \label{fig:comparticion-parametros-kernel}
 \end{figure}
 
@@ -839,8 +865,7 @@ Ecuación~\eqref{eq:base-expansion-so2}.
     \(L_2\); cada flecha representa sus dos componentes para uno de los tres
     colores de entrada y todas comparten escala. La figura muestra la
     estructura del núcleo direccionable aprendido. La respuesta rotacional del
-    modelo se evalúa en el análisis del espacio latente. Elaboración propia a
-    partir del núcleo final.}
+    modelo se evalúa en el análisis del espacio latente.}
     \label{fig:nucleo-f1-aprendido}
 \end{figure}
 
@@ -856,6 +881,29 @@ Ecuación~\eqref{eq:base-expansion-so2}.
     \label{fig:nucleo-f1-aprendido-ampliado}
 \end{figure}
 
+\subsection{Comparación entre arquitecturas}
+\label{sec:comparacion-arquitecturas}
+
+Las comparaciones entre CNN
+ordinarias y equivariantes pueden igualar el soporte del núcleo, el número
+de parámetros o el costo de cómputo. Weiler y Cesa emplearon núcleos
+direccionables de mayor soporte para mitigar artefactos de discretización y
+ajustaron los anchos de las capas para mantener el número total de parámetros
+~\cite{weiler_general_2019}. Worrall et al. compararon filtros armónicos de
+\(5\times5\) con filtros ordinarios de \(3\times3\) e informaron sus distintos
+números de parámetros~\cite{worrall_harmonic_2017}. En histología, Graham et
+al. también emplearon filtros direccionables de \(7\times7\)
+~\cite{graham_dense_2020}. Pese a su mayor soporte, una convolución
+direccionable de la primera etapa residual sin cambio de resolución aprendió
+\(7\,680\) coeficientes de base, frente a \(25\,600\) pesos libres de la capa
+ordinaria correspondiente (30,0\%). El soporte espacial determina dónde se
+muestrean las bases, mientras los coeficientes determinan cómo se combinan.
+Para un número fijo de bases y de copias de campo, ampliar la cuadrícula no
+aumenta por sí solo el número de coeficientes aprendidos; sí aumenta el tamaño
+del núcleo expandido y el trabajo de la convolución densa. En el modelo
+completo, la proporción de parámetros fue del 29,8\% y el costo convolucional
+fue mayor que el de la línea base (Tabla~\ref{tab:comparacion-arquitecturas}).
+
 La arquitectura final, representada en la
 Figura~\ref{fig:arquitectura-vae-so2}, tuvo \(1\,180\,035\) parámetros
 aprendidos, frente a \(3\,958\,435\) del VAE base: 29,81\% del total, o una
@@ -864,9 +912,6 @@ cómputo. Debido a los soportes mayores y al número de canales físicos de los
 campos vectoriales, las convoluciones aprendidas del VAE-\(\mathrm{SO}(2)\)
 requirieron aproximadamente \(1,598\times10^{11}\) operaciones de
 multiplicación-acumulación por muestra, 4,383 veces la estimación del VAE base.
-Esta diferencia es una propiedad del diseño y también una limitación causal de
-la comparación: simetría, capacidad y costo cambiaron al mismo tiempo, aunque
-se mantuvieron fijos los datos, el espacio latente y el entrenamiento.
 
 \begin{figure}[htbp]
     \centering
@@ -875,9 +920,8 @@ se mantuvieron fijos los datos, el espacio latente y el entrenamiento.
     denota campos escalares y \(F_1\), campos vectoriales de dos componentes.
     La salida posterior \(L\) vuelve a ser escalar. El tallo usa un soporte
     \(9\times9\) y las demás convoluciones, \(7\times7\). Véase la
-    Subsección~\ref{sec:modelo-so2} para la justificación del soporte y la
-    comparación de parámetros. Elaboración propia a partir de la
-    implementación final.}
+    Subsección~\ref{sec:comparacion-arquitecturas} para la justificación del soporte y la
+    comparación de parámetros.}
     \label{fig:arquitectura-vae-so2}
 \end{figure}
 
@@ -886,7 +930,7 @@ se mantuvieron fijos los datos, el espacio latente y el entrenamiento.
     \caption{Elementos controlados y diferencias entre los modelos de representación.}
     \label{tab:comparacion-arquitecturas}
     \small
-    \begin{tabularx}{\textwidth}{@{}lXX@{}}
+    \begin{tabularx}{\textwidth}{@{}p{0.31\textwidth}XX@{}}
         \toprule
         Elemento & VAE base & VAE-\(\mathrm{SO}(2)\) \\
         \midrule
@@ -894,6 +938,10 @@ se mantuvieron fijos los datos, el espacio latente y el entrenamiento.
         Posterior & \(16\times32\times32\) & \(16F_0\times32\times32\) \\
         Convoluciones aprendidas & 43 ordinarias & 43 direccionables \\
         Etapas del codificador & 32, 48, 64 y 96 canales & \(A,B,C,D\) con campos \(F_0+F_1\) \\
+        Soporte: tallo / demás convoluciones & \(7\times7\) / \(5\times5\) & \(9\times9\) / \(7\times7\) \\
+        Normalización & GroupNorm, 8 grupos & \(F_0\): GroupNorm, 8 grupos; \(F_1\): RMS, 4 grupos \\
+        No linealidad & Compuerta escalar aprendida & Compuertas escalares y radiales aprendidas \\
+        Restricción rotacional del núcleo & Pesos libres & Restricción continua \(\mathrm{SO}(2)\) \\
         Parámetros aprendidos & \(3\,958\,435\) & \(1\,180\,035\) \\
         Costo estimado de convoluciones & \(3,65\times10^{10}\) MAC/muestra & \(1,598\times10^{11}\) MAC/muestra \\
         Datos, pérdida y actualizaciones & \multicolumn{2}{c}{Idénticos en ambos modelos} \\
@@ -922,9 +970,7 @@ pareja con \(c_i\) copias de entrada y \(M\) bases se utilizó
 
 Las escalas
 de normalización por campo también comenzaron en uno y las compuertas
-escalares y radiales en \(a=1,b=0\). No fue posible copiar los mismos pesos
-entre ramas porque un píxel libre de una convolución ordinaria y un coeficiente
-de base direccionable no parametrizan el mismo objeto.
+escalares y radiales en \(a=1,b=0\).
 
 La excepción común fue la última convolución del decodificador: su peso y su
 sesgo se inicializaron en cero en ambos modelos. Por ello, antes de la primera
@@ -933,10 +979,8 @@ normalizado \([-1,1]\), y el primer gradiente actualizaba la cabeza RGB antes
 de propagarse con amplitud no nula hacia el resto del decodificador. Esta
 decisión controló la escala de salida durante el arranque. Su motivación es
 coherente con el uso de contribuciones de salida inicializadas en cero para
-estabilizar magnitudes descrito por Karras et al.~\cite{karras_training_2024},
-pero aquí se aplicó a una convolución RGB completa dentro de VAE que sí poseen
-capas de normalización; no se reprodujo su arquitectura de difusión sin
-normalización.
+estabilizar magnitudes descrito por Karras et al.~\cite{karras_training_2024}.
+En estos VAE, la inicialización en cero se aplicó a la convolución RGB final.
 
 \section{Protocolo de entrenamiento}
 
@@ -968,12 +1012,17 @@ cuadrático penaliza con especial intensidad las desviaciones grandes y, ante
 objetivos ambiguos, puede favorecer promedios visualmente suaves. Los estudios
 de restauración de imágenes muestran que cambiar la pérdida \(L_2\) por
 objetivos \(L_1\) y estructurales puede mejorar la calidad perceptual sin
-modificar la arquitectura~\cite{zhao_loss_2017}. Esto motiva la selección, pero
-no permite afirmar que MAE elimine por sí sola todo desenfoque.
+modificar la arquitectura~\cite{zhao_loss_2017}.
 
 SSIM compara luminancia, contraste y estructura local, en lugar de reducir la
-imagen a errores independientes por píxel~\cite{wang_image_2004}. Para dos
-ventanas \(x\) y \(y\), se calculó como
+imagen a errores independientes por píxel~\cite{wang_image_2004}. La luminancia
+se compara mediante medias locales, el contraste mediante las variaciones y la
+estructura mediante la covarianza. Así, SSIM aporta información sobre la
+organización de texturas y contornos que complementa el error absoluto.
+Las pérdidas estructurales se han empleado en autoencodificadores para mejorar
+la semejanza visual~\cite{timmins_ssim_2021}; Snell et al. estudiaron además
+la variante multiescala MS-SSIM para generación de imágenes~\cite{snell_perceptual_2017}.
+Para dos ventanas \(x\) y \(y\), se calculó como
 
 \begin{equation}
     \operatorname{SSIM}(x,y)=
@@ -989,7 +1038,47 @@ relleno por reflexión para que toda la imagen contribuyera. Los momentos, las
 reducciones y el valor final se calcularon en FP32 y luego se promediaron sobre
 canales, posiciones e imágenes. Un valor cercano a uno indica mayor semejanza
 estructural; por ello, \(1-\operatorname{SSIM}\) puede emplearse como término
-diferenciable de pérdida.
+diferenciable de pérdida. Si \(G\) es la ventana gaussiana normalizada y
+\(*\) indica convolución espacial por canal, los momentos empleados son
+
+\begin{equation}
+\begin{aligned}
+\mu_x&=G*x, &\mu_y&=G*y,\\
+\sigma_x^2&=G*x^2-\mu_x^2,
+&\sigma_y^2&=G*y^2-\mu_y^2,\\
+\sigma_{xy}&=G*(xy)-\mu_x\mu_y.
+\end{aligned}
+\label{eq:momentos-ssim}
+\end{equation}
+
+En el Listado~\ref{lst:ssim} se expresan estos pasos para tensores RGB de forma
+\([B,3,H,W]\). El relleno por reflexión mantiene las dimensiones y
+\texttt{groups=3} aplica la misma ventana a cada canal por separado.
+
+\begingroup\setstretch{1}
+\begin{lstlisting}[float=tp,basicstyle=\ttfamily\footnotesize,caption={Cálculo de SSIM mediante momentos gaussianos locales.},label={lst:ssim}]
+@torch.autocast(device_type="cuda", enabled=False)
+def ssim(clean, reconstruction):
+    # Entradas normalizadas en [-1, 1]; reducciones en FP32.
+    x = (clean.float() + 1) / 2
+    y = ((reconstruction.float() + 1) / 2).clamp(0, 1)
+    t = torch.arange(-5, 6, device=x.device, dtype=torch.float32)
+    g = torch.exp(-t.square() / (2 * 1.5**2))
+    g = g / g.sum()
+    window = (g[:, None] * g[None, :]).expand(3, 1, 11, 11)
+    def smooth(v):
+        v = F.pad(v, (5, 5, 5, 5), mode="reflect")
+        return F.conv2d(v, window, groups=3)
+    mx, my = smooth(x), smooth(y)
+    vx = smooth(x.square()) - mx.square()
+    vy = smooth(y.square()) - my.square()
+    cov = smooth(x * y) - mx * my
+    c1, c2 = 0.01**2, 0.03**2
+    score = ((2 * mx * my + c1) * (2 * cov + c2)
+             / ((mx.square() + my.square() + c1) * (vx + vy + c2)))
+    return score.mean()
+\end{lstlisting}
+\endgroup
 
 El término MAE se calculó sobre la salida cruda del decodificador en el dominio
 normalizado \([-1,1]\). Para SSIM y las visualizaciones, tanto el objetivo como
@@ -1030,9 +1119,8 @@ para reproducir cada evaluación.
 
 La reconstrucción de cada parche se calculó de forma determinista como
 \(\widehat{\mathbf{x}}=D(\boldsymbol{\mu})\), sin muestrear
-\(\boldsymbol{\epsilon}\). Primero se inspeccionó un conjunto fijo de 25
-parches de validación para seguir la evolución del entrenamiento. Este conjunto
-sirvió solamente como diagnóstico visual y no como estimación poblacional.
+\(\boldsymbol{\epsilon}\). Se utilizaron 25 parches fijos de validación para inspección descriptiva
+y seguimiento del entrenamiento.
 
 La evaluación cuantitativa se realizó sobre los \(67\,138\) parches de las 23
 WSI de prueba. Se calcularon MAE y error cuadrático medio (MSE, \emph{mean
@@ -1056,13 +1144,7 @@ instancia, agrega la bolsa mediante una función invariante a permutaciones y
 predice una etiqueta global~\cite{ilse_attention_2018}. Este esquema y sus
 extensiones para WSI, como CLAM y DSMIL, muestran que una etiqueta de lámina
 puede supervisar representaciones obtenidas de miles de
-parches~\cite{lu_dataefficient_2021,li_dualstream_2021}. En las exploraciones
-iniciales se ensayó una agregación MIL global convencional; no produjo una
-configuración de desarrollo satisfactoria y no se conservó como comparación
-numérica formal. Además, un candidato con autoatención global entre todos los
-parches resultó inviable para las bolsas completas por su costo cuadrático.
-Estas exploraciones orientaron el diseño final; la comparación formal se
-realizó con el clasificador local-global descrito a continuación.
+parches~\cite{lu_dataefficient_2021,li_dualstream_2021}.
 
 La bolsa más grande contenía \(32\,595\) parches, de modo que la interacción
 global parche a parche habría tenido costo cuadrático en su tamaño. Para
@@ -1071,14 +1153,13 @@ diseño combinó un codificador convolucional de tokens, atención sobre un graf
 local y una lectura global. Esta motivación reúne ideas de sesgos
 convolucionales en atención~\cite{wu_cvt_2021}, ventanas y vecindarios locales
 en visión~\cite{liu_swin_2021,hassani_neighborhood_2023}, y atención sobre
-grafos~\cite{velickovic_graph_2018}; la arquitectura resultante es propia y no
-una reproducción de uno de esos modelos.
+grafos~\cite{velickovic_graph_2018}.
 
 De forma operativa, el clasificador siguió tres etapas. Primero, el parche
 \(i\) se convirtió en un vector y consultó únicamente los parches de tejido
-ubicados a dos celdas o menos de su coordenada. El resultado no reemplazó su
-identidad: la fila \(i\) siguió representando el mismo parche, pero incorporó
-un resumen ponderado de su entorno. Dos bloques repitieron esta operación para
+ubicados a dos celdas o menos de su coordenada. Cada fila \(i\) siguió
+representando el mismo parche e incorporó un resumen ponderado de su entorno.
+Dos bloques repitieron esta operación para
 todos los parches y produjeron una matriz
 \(\mathbf X_2\in\mathbb R^{N\times192}\). Segundo, un token de clasificación
 (CLS) y 16 tokens de registro (REG) aprendidos consultaron las \(N\) filas de
@@ -1097,9 +1178,7 @@ operaciones con sus dimensiones exactas.
     \caption{Ejemplo del flujo del clasificador MIL local-global. Cada parche
     atiende primero a su vecindario real; las \(N\) representaciones resultantes
     sirven después como claves y valores para CLS y 16 REG; por último, CLS
-    integra los 17 resúmenes y produce los cinco \emph{logits} de la WSI. Las
-    flechas representan flujo de datos y no contienen operaciones implícitas.
-    Elaboración propia a partir de la implementación final.}
+    integra los 17 resúmenes y produce los cinco \emph{logits} de la WSI. Las flechas representan flujo de datos.}
     \label{fig:mil-local-global-detalle}
 \end{figure}
 
@@ -1235,8 +1314,7 @@ estas contracciones.
     \caption{Cálculo de una capa de atención local. Los índices del grafo
     reúnen hasta 25 claves y valores por consulta sin construir una matriz
     \(N\times N\). La ranura nula participa en \emph{softmax}, pero su valor
-    cero no aporta al contexto. Los huecos de tejido permanecen enmascarados.
-    Elaboración propia a partir de la implementación final.}
+    cero no aporta al contexto. Los huecos de tejido permanecen enmascarados.}
     \label{fig:calculo-atencion-local}
 \end{figure}
 
@@ -1287,9 +1365,7 @@ Los 17 vectores fueron parámetros aprendidos inicializados de manera
 independiente con una normal de desviación 0,02. No poseían coordenadas,
 etiquetas ni una función semántica preasignada. Actuaron como consultas de
 resumen, de manera análoga a las consultas aprendidas usadas para agrupar
-conjuntos de tamaño variable~\cite{lee_settransformer_2019}; los registros
-ofrecieron más de una ranura de resumen, pero no se asumió que adquirieran
-especializaciones diferentes.
+conjuntos de tamaño variable~\cite{lee_settransformer_2019}.
 
 Los tokens globales realizaron una única lectura cruzada de todos los parches.
 Esta etapa conectó explícitamente las dos secuencias anteriores: la salida local
@@ -1519,9 +1595,8 @@ entropía cruzada, resultados por clase y matriz de confusión.
 
 \subsection{Segmentación de WSI a resolución de parche}
 
-Los experimentos denominados inicialmente \emph{clasificación de tejido por
-parche} se interpretaron como segmentación de la WSI sobre una cuadrícula cuya
-resolución espacial es el parche de \(256\times256\) píxeles. Para cada celda
+La segmentación de WSI se realizó sobre una cuadrícula cuya resolución
+espacial es el parche de \(256\times256\) píxeles. Para cada celda
 seleccionada por el manifiesto dentro de las regiones anotadas se predijo tumor,
 estroma o necrosis. Al devolver esas predicciones a sus coordenadas se obtuvo un
 mapa disperso de segmentación a baja resolución, no una cobertura completa de
@@ -1575,8 +1650,7 @@ pesos y recibió los mismos índices en cada época.
     \caption{Arquitecturas supervisadas aplicadas sobre la media posterior
     congelada. La rama superior produce una etiqueta por celda seleccionada de
     la cuadrícula y la rama inferior agrega la bolsa completa para producir el
-    diagnóstico de la WSI. Elaboración propia a partir de las implementaciones
-    finales.}
+    diagnóstico de la WSI.}
     \label{fig:arquitecturas-supervisadas}
 \end{figure}
 
@@ -1599,16 +1673,18 @@ Los mapas sobre la lámina muestran la resolución y el comportamiento espacial
 del método en las posiciones evaluadas.
 
 \subsection{Análisis del espacio latente}
+\label{sec:analisis-latente-metodos}
+
+Los resultados de este protocolo se presentan en la
+Sección~\ref{sec:resultados-latentes}.
 
 El análisis latente utilizó la media posterior y mantuvo congelados los dos
 modelos. Su motivación se apoyó en EQ-VAE, donde se plantea que una respuesta
 latente más equivariante frente a transformaciones que preservan el contenido
 puede reducir la complejidad de la distribución que deberá aprender un modelo
-posterior~\cite{kouzelis_eqvae_2025}. Esta tesis no reprodujo su término de
-regularización ni evaluó un generador: tomó de ese trabajo la pregunta
-geométrica y la convención de visualizar por PCA la organización espacial del
-latente, y la adaptó a dos codificadores entrenados desde cero sobre parches
-histopatológicos.
+posterior~\cite{kouzelis_eqvae_2025}. Se caracterizaron la organización espacial por PCA y la respuesta
+rotacional de las representaciones de dos codificadores entrenados desde cero
+sobre parches histopatológicos.
 
 Una primera descripción trató las \(32\times32\) posiciones de cada mapa como
 observaciones de 16 variables latentes. Tras excluir las esquinas afectadas
@@ -1636,11 +1712,9 @@ relativa de aristas locales
 
 donde \(\mathcal{E}\) contiene las parejas horizontales y verticales vecinas.
 El numerador mide cambios locales y el denominador, la variación espacial
-centrada del mismo parche. Un valor menor indica un campo localmente menos
-rugoso, pero no implica por sí solo mayor calidad ni equivarianza, pues también
-puede resultar de una representación suavizada o colapsada. Los colores se
-normalizaron por modelo y, por tanto, sirvieron para estudiar organización
-espacial interna, no para alinear canales entre modelos entrenados por separado.
+centrada del mismo parche. La medida cuantifica rugosidad espacial y también disminuye ante
+suavizado o colapso. Los colores se normalizaron por modelo para estudiar la organización
+espacial interna.
 
 Como sondeo de contenido, la imagen RGB original se redujo de
 \(256\times256\) a \(32\times32\) mediante interpolación bilineal con
@@ -1651,7 +1725,7 @@ regularizada (\emph{ridge}) de penalización \(10^{-3}\) sin penalizar el interc
 parches restantes, fijados antes del ajuste, se usaron para calcular
 \(R^2=1-\mathrm{SSE}/\mathrm{SST}\); en \(\mathrm{SST}\), la referencia fue la
 media RGB de los 20 parches de ajuste. Este sondeo mide información cromática
-recuperable mediante una lectura lineal local, no calidad diagnóstica.
+recuperable mediante una lectura lineal local.
 
 La respuesta a rotaciones se evaluó sobre 25 parches fijos provenientes de 16
 WSI. Para cada parche se generó una órbita de 360 vistas, con pasos de un
@@ -1660,8 +1734,7 @@ patrones asimétricos. Se conservaron controles exactos a 90, 180 y 270 grados.
 Cada vista se codificó por separado y la media posterior se restringió a un
 disco central de radio 14, equivalente a 616 celdas y 9\,856 valores por
 ángulo. Sobre las 360 observaciones se ajustó un PCA independiente para cada
-modelo y parche; sus dos primeras coordenadas sirvieron para dibujar la órbita,
-no para comparar escalas entre paneles. Sobre la trayectoria completa se
+modelo y parche; sus dos primeras coordenadas sirvieron para dibujar la órbita. Sobre la trayectoria completa se
 midieron longitud, diferencias de primer y segundo orden, linealidad local,
 curvatura, concentración espectral armónica y dimensión de subespacios
 tangentes. Las rotaciones de un grado permitieron estudiar continuidad local,
@@ -1708,8 +1781,8 @@ una máscara espacial central \(M\), se calcularon
 
 El denominador es, respectivamente, el error de no transformar o de no
 canonizar el latente. Por tanto, uno significa que la operación candidata no
-reduce ese error y 0,5 que deja como máximo la mitad. Este umbral absoluto se
-fijó antes de observar el resultado. Para los ángulos densos, \(R_\theta\) fue
+reduce ese error; un valor menor indica mayor reducción relativa. Para los
+ángulos densos, \(R_\theta\) fue
 bilineal; para 90, 180 y 270 grados se usó una reindexación exacta de la
 cuadrícula. La tercera razón evalúa la composición completa y no solo el
 decodificador.
@@ -1744,9 +1817,8 @@ imagen RGB aplanada. La división por la misma medida en la órbita RGB controla
 irregularidad introducida por la interpolación de la entrada. Se evaluó con
 \(\delta=1^\circ\) y, como control de robustez, con
 \(\delta=5^\circ\). Los ángulos son mediciones repetidas de los mismos parches
-y no muestras biológicas independientes. Estas medidas constituyen un análisis
-funcional descriptivo del conjunto fijo; siguen pendientes pruebas más amplias
-de factorización, topología o una acción global aprendida.
+y no muestras biológicas independientes. Estas medidas caracterizan las órbitas locales muestreadas en el
+conjunto fijo.
 
 \section{Análisis estadístico}
 
@@ -1798,7 +1870,7 @@ Los intervalos del 95\% describen la incertidumbre asociada con las WSI
 observadas. No incorporan variación entre inicializaciones, otros selectores de
 parches ni otros conjuntos de datos. Los análisis sobre los 25 parches fijos se
 trataron como descripciones de ese conjunto y se informaron mediante medianas,
-conteos favorables y controles predefinidos, sin denominarlos pruebas de
+conteos favorables y comparaciones pareadas, sin denominarlos pruebas de
 significancia poblacional.
 
 \section{Reproducibilidad y trazabilidad}
@@ -1821,9 +1893,7 @@ Finalmente, la inferencia sobre prueba se ejecutó sin acceso a sus etiquetas.
 Primero se guardaron y cerraron las predicciones de ambos modelos; únicamente
 después se unieron localmente con la verdad de referencia para calcular las
 métricas. No se volvió a entrenar, escoger otro punto de control ni repetir una
-configuración a partir del resultado sellado. Estos controles fueron
-suficientes para comprobar la separación entre desarrollo y prueba sin hacer
-depender la exposición de identificadores internos del repositorio.
+configuración a partir del resultado sellado.
 
 \section{Consideraciones éticas y manejo de datos}
 
@@ -1839,13 +1909,4 @@ UBC-OCEAN distribuye el material bajo la licencia CC BY-NC-ND 4.0
 ~\cite{ubc_ocean_2023}. No se intentó reidentificar a los participantes y el
 uso se restringió a investigación no comercial. Las figuras que contienen
 material del conjunto identifican su procedencia y las transformaciones
-realizadas. Antes del depósito final deberá confirmarse con la instancia
-institucional correspondiente si las composiciones derivadas pueden
-redistribuirse bajo esa licencia o si deben sustituirse por esquemas propios o
-material autorizado. Los resultados se presentan como evidencia
-experimental sobre el conjunto analizado y no como un dispositivo diagnóstico
-ni como recomendación clínica. La determinación institucional de aprobación,
-exención o clasificación ética que corresponda deberá constar en los anexos
-administrativos antes del depósito final; las referencias generales a la
-Declaración de Helsinki y a las pautas CIOMS del plan no sustituyen esa
-constancia específica.
+realizadas.

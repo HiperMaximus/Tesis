@@ -12,13 +12,57 @@
 
 \begingroup\small
 
-% TODO: reemplazar por un resumen final que sintetice problema, método,
-% resultados cuantitativos principales y conclusiones.
-La patología digital representa un cambio de paradigma en el enfoque tradicional de diagnóstico médico. Dentro de la medicina contemporánea los avances tecnológicos en curso remodelan constantemente las prácticas de atención médica. Por lo que, el desarrollo de la patología digital es un logro transformador que permite introducir una combinación de dispositivos electrónicos de punta, como los escáneres de láminas histológicas, análisis de datos y experiencia clínica que puede transformar significativamente la forma en que se brinda la atención al paciente.
+La patología digital permite conservar y analizar computacionalmente imágenes
+histopatológicas, cuya información morfológica es fundamental para caracterizar tejidos
+y estudiar enfermedades como el cáncer. El desarrollo de modelos para este análisis
+depende de anotaciones que requieren tiempo y conocimiento especializado de los
+patólogos. Su disponibilidad limitada motiva el aprendizaje semisupervisado, que
+aprovecha regiones sin etiquetas para construir representaciones utilizadas
+posteriormente en tareas supervisadas. A escala microscópica, una misma estructura
+celular puede aparecer en distintas orientaciones. Aprovechar esta simetría mediante la
+compartición de parámetros permite aprender características comunes a esas orientaciones
+con menos parámetros, lo que motiva estudiar su utilidad cuando las anotaciones son
+escasas. Esta investigación estudió cómo la equivarianza a rotaciones continuas modifica
+la reconstrucción, la utilidad predictiva y la organización del espacio latente de un
+autoencodificador variacional.
 
-Dentro de las aplicaciones de la patología digital, una de las que mayor acogida e interés ha provocado han sido las que respectan al cáncer. Esto es debido a que es una de las principales causas de muerte a nivel global. La carga del cáncer aumentará aproximadamente en un 60\% durante las próximas dos décadas, lo que afectará aún más a los sistemas de salud, a las personas y a las comunidades.
+Se compararon dos autoencodificadores variacionales (\emph{variational autoencoders},
+VAE) residuales: un VAE convolucional ordinario y un VAE con convoluciones
+direccionables (\emph{steerable convolutions}) restringidas al grupo \(\mathrm{SO}(2)\),
+con campos escalares y vectoriales. Ambos recibieron los mismos parches RGB de
+\(256\times256\) píxeles, compartieron la estructura general y produjeron mapas latentes
+de \(16\times32\times32\). El entrenamiento utilizó 300.000 parches sin etiquetas de
+UBC-OCEAN y 60.000 actualizaciones por modelo. La función objetivo combinó error
+absoluto medio (MAE), similitud estructural y regularización variacional. Las
+perturbaciones de color y ruido se aplicaron a la entrada, mientras el parche limpio
+permaneció como objetivo de reconstrucción. El modelo equivariante empleó un 70,2 \%
+menos de parámetros aprendidos, pero tuvo mayor costo convolucional estimado.
 
-Dado esto, se requiere un nuevo enfoque como el uso de modelos de inteligencia artificial (IA), que optimizan y aceleran los métodos actuales. Aunque se han desarrollado proyectos de aprendizaje automático dentro del ámbito de la patología digital, la limitada disponibilidad de imágenes anotadas y segmentadas obstaculiza los procesos de aprendizaje profundo, pues realizar estos procesos de anotación exige gran demanda de tiempo y esfuerzo por parte de los patólogos. Hasta ahora los métodos tradicionales de aprendizaje profundo han solucionado estos problemas con el uso de aumento de datos, que consiste en generación de datos nuevos a partir de los que hay, pero este proyecto pretende mostrar el uso de representaciones equivariantes en los modelos de aprendizaje profundo, que permitirían una representación estable y eficaz de imágenes en patología digital.
+Las 513 imágenes de lámina completa (WSI) se separaron en poblaciones disjuntas para
+desarrollo no supervisado, desarrollo supervisado y prueba. Una vez entrenados los VAE,
+sus parámetros se congelaron y se ajustaron clasificadores de la misma arquitectura
+sobre la media posterior. Se evaluaron el diagnóstico de cinco subtipos de carcinoma de
+ovario mediante aprendizaje de instancias múltiples y la segmentación de tumor, estroma
+y necrosis sobre una cuadrícula de parches. Esta última se evaluó en regiones anotadas
+de alta pureza, con cinco presupuestos de etiquetas por clase. Se evaluó una
+inicialización por modelo y clasificador. La prueba compartida incluyó 23 WSI; los
+intervalos de confianza se estimaron mediante remuestreo pareado por lámina.
 
-Por esto, se propone un modelo de aprendizaje profundo semi-supervisado de redes neuronales equivariantes que permita optimizar el tiempo y los recursos de preprocesamiento, pero también disminuir las limitaciones que tienen los patólogos al implementar proyectos de análisis automático.
+El VAE base obtuvo un MAE medio de 0,0629, frente a 0,0642 del modelo equivariante. En
+diagnóstico, los valores de macro-F1 fueron 0,389 y 0,483, respectivamente. Los
+intervalos del 95 \% para ambas diferencias incluyeron cero. En segmentación, la
+representación equivariante alcanzó mayor macro-F1 en cuatro de los cinco presupuestos;
+el intervalo simultáneo excluyó cero únicamente con 500 etiquetas por clase. Al utilizar
+todas las etiquetas disponibles, la estimación puntual favoreció al VAE base.
+
+El análisis latente utilizó 25 parches fijos de validación y distinguió entre
+transformar el latente y decodificar, canonizar su orientación y evaluar el
+autoencodificador completo. Para cuartos de vuelta exactos, la mediana de la razón de
+error de acción disminuyó de 0,709453 a \(2,18\times10^{-6}\) en el modelo equivariante.
+Las rotaciones interpoladas también produjeron menores errores de acción y canonización
+en esa rama, mientras la comparación continua de extremo a extremo favoreció al VAE
+base. Las proyecciones PCA y las medidas de geometría local complementaron esta
+caracterización. El resultado más claro fue una respuesta rotacional más consistente al
+transformar y decodificar el latente. La utilidad predictiva varió según la tarea y la
+cantidad de etiquetas.
 \endgroup

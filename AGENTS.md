@@ -15,6 +15,14 @@ Read `docs/thesis_structure.md` before changing chapter order or scope.
 - Preserve the plan's continuous expository form: use substantial connected
   paragraphs, keep heading depth normally at section or subsection, and avoid
   fragmenting one argument into microsections or presentation-style bullets.
+- Use neutral, direct wording for experimental scope and limitations. Prefer
+  "Limitaciones del estudio" to "Amenazas a la validez" and explain concrete
+  constraints without alarmist language or repeated admonitions. Preserve
+  scientific qualifications and technical terms. Common English technical
+  terms may remain after their first introduction with the Spanish name.
+- Before a new editorial pass, show representative before/after examples and
+  wait for the user's approval of that scope. Continue approved changes without
+  requesting the same approval again.
 - Both document roots must compile independently; never reference files through
   `../` from LaTeX.
 - Keep generated files under `build/`. Only final PDFs under `artifacts/` are

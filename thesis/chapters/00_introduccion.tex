@@ -32,7 +32,8 @@ fracción de los pacientes~\cite{berg_prostate_2011}. Estos resultados ilustran
 que la variabilidad de interpretación debe considerarse al diseñar y evaluar
 herramientas de apoyo.
 
-El análisis computacional de una WSI presenta, además, dificultades de escala.
+El análisis computacional de una imagen de lámina completa
+(\emph{whole-slide image}, WSI) presenta, además, dificultades de escala.
 Una sola lámina puede aproximarse a \(100\,000\times100\,000\) píxeles, por lo
 que no suele procesarse como una imagen convencional en memoria
 ~\cite{wang_managing_2012}. A la vez, la evidencia relevante puede ocupar solo
@@ -52,21 +53,24 @@ etiquetas diagnósticas y después se evalúa esa representación mediante tarea
 supervisadas con anotaciones limitadas.
 
 Para estudiar si una restricción geométrica puede mejorar ese aprendizaje, este
-trabajo compara un autoencoder variacional convolucional base con otro
-equivariante a la acción continua del grupo de rotaciones planas
-\(\mathrm{SO}(2)\). La elección se apoya en que la orientación global de las
-estructuras histopatológicas no determina por sí sola su clase y en que las
-arquitecturas equivariantes pueden explotar esta regularidad
+trabajo compara un autoencodificador variacional (\emph{variational autoencoder},
+VAE) convolucional base con un
+modelo que emplea convoluciones direccionables para rotaciones continuas del
+plano, descritas por el grupo \(\mathrm{SO}(2)\). A bajo aumento, la orientación puede ser relevante
+para describir la arquitectura del tejido; a alto aumento, los patrones
+celulares no tienen una orientación fija en la imagen. En esta escala, rotar
+un parche cambia su orientación de observación, pero conserva la identidad del
+tejido y su información diagnóstica. Esta regularidad motiva el uso de la
+simetría rotacional como sesgo inductivo en el aprendizaje de representaciones
 ~\cite{veeling_rotation_2018}. Los beneficios teóricos de imponer una simetría
 dependen, no obstante, de que la distribución y la tarea satisfagan los supuestos
-correspondientes~\cite{elesedy_provably_2021}; por esta razón la tesis no supone
-de antemano una superioridad empírica. El alcance comprende rotaciones continuas,
-pero no reflexiones ni una extensión adicional de la equivarianza traslacional
-propia de la convolución.
+correspondientes~\cite{elesedy_provably_2021}. Su utilidad se evaluó mediante
+la comparación experimental de ambos modelos. El estudio se centró en
+rotaciones continuas del plano, sin incorporar reflexiones.
 
-En resumen, se implementaron y evaluaron dos modelos de representación bajo un
-protocolo pareado. La comparación considera reconstrucción, clasificación a nivel
-de WSI, segmentación de WSI a resolución de parche y respuesta del espacio latente
+Los dos modelos se implementaron y evaluaron bajo un protocolo pareado. La
+comparación considera reconstrucción, segmentación de WSI
+a resolución de parche, clasificación a nivel de WSI y respuesta del espacio latente
 a rotaciones continuas. La segmentación no se interpreta como una cobertura
 exhaustiva de la lámina porque las máscaras disponibles contienen regiones sin
 anotar que no pueden utilizarse como etiquetas negativas.

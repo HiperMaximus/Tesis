@@ -55,28 +55,56 @@ retrospectivamente el punto de control evaluado.
     escoger un punto de control posterior.}
 \end{figure}
 
+La Figura~\ref{fig:entrenamiento-vae-dispersion} complementa los diagnósticos
+anteriores con una vista compacta de la pérdida de reconstrucción. La banda
+muestra la desviación estándar registrada dentro de cada evaluación de
+validación, no la variación entre entrenamientos independientes.
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{vae_training_curves_refined.png}
+    \caption{Pérdida de reconstrucción durante las 60.000 actualizaciones de
+    cada VAE. Los puntos son medias de validación con corrupción determinista;
+    la banda muestra la media más o menos una desviación estándar registrada.
+    La línea punteada resume las pérdidas de entrenamiento por bloques de
+    3.000 pasos. Cada arquitectura se entrenó una sola vez.}
+    \label{fig:entrenamiento-vae-dispersion}
+\end{figure}
+
 \section{Reconstrucción y aprendizaje de representaciones}
 
 \subsection{Inspección cualitativa y conjunto fijo de desarrollo}
 
 Los dos modelos preservaron la organización general del tejido, los núcleos y
 las variaciones principales de tinción en los 25 parches fijos. La
-Figura~\ref{fig:reconstrucciones-fixed25} permite comparar las mismas entradas
-con ambas reconstrucciones. Este panel fue observado repetidamente durante el
-desarrollo; por ello, sirve para diagnóstico cualitativo y no como prueba
-independiente.
+Figura~\ref{fig:reconstrucciones-fixed9} amplía los primeros nueve ejemplos
+del selector y compara cada entrada con las reconstrucciones de ambos VAE.
+La Figura~\ref{fig:reconstrucciones-fixed25}, situada a continuación,
+conserva la vista general del conjunto fijo completo. Ambas figuras muestran
+material observado durante el desarrollo; sirven para diagnóstico cualitativo
+y no como prueba independiente.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{vae_reconstructions_fixed9.png}
+    \caption{Primeros nueve parches del selector fijo de validación, sus
+    reconstrucciones con el VAE base y sus reconstrucciones con el
+    VAE-\(\mathrm{SO}(2)\). Las tres cuadrículas de 3 por 3 conservan el mismo
+    orden de parches y permiten observar más detalle que el mosaico completo.}
+    \label{fig:reconstrucciones-fixed9}
+\end{figure}
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{vae_reconstructions_fixed25.png}
-    \caption{Entradas y reconstrucciones pareadas del conjunto fijo de 25
-    parches. Cada columna conserva el mismo parche para el VAE base y el
-    VAE-\(\mathrm{SO}(2)\). Elaboración propia a partir de las reconstrucciones
-    registradas durante el entrenamiento.}
+    \caption{Vista general de las entradas y reconstrucciones pareadas del
+    conjunto fijo de 25 parches. Cada columna conserva el mismo parche para
+    ambos VAE. Elaboración propia a partir de las reconstrucciones registradas
+    durante el entrenamiento.}
     \label{fig:reconstrucciones-fixed25}
 \end{figure}
 
-El mosaico permite revisar diversidad, pero comprime los detalles celulares.
+La vista general permite revisar diversidad, pero comprime los detalles celulares.
 La Figura~\ref{fig:reconstruccion-ampliada} muestra a resolución mayor el
 parche fijo 12, que también se utilizó en los análisis de rotación. La
 comparación ampliada ilustra, para este parche, que las diferencias entre modelos son sutiles en
@@ -142,15 +170,27 @@ descriptivo tampoco incorpora variación entre entrenamientos.
     \end{tabular}
 \end{table}
 
-La Figura~\ref{fig:reconstruccion-sellada-parches} muestra por separado las
-cuatro distribuciones por parche, mientras la
-Figura~\ref{fig:reconstruccion-sellada-wsi} presenta la comparación pareada por
-WSI. PSNR y SSIM, definidos como medidas secundarias, también tuvieron mejores
+La Figura~\ref{fig:reconstruccion-sellada-wsi-distribuciones} resume las
+medias de las 23 WSI para las cuatro métricas. Cada punto corresponde a una
+lámina y las cajas son descriptivas, no intervalos de confianza. La
+Figura~\ref{fig:reconstruccion-sellada-parches} conserva la distribución de
+los parches y la Figura~\ref{fig:reconstruccion-sellada-wsi} presenta la
+comparación pareada de MAE por WSI. PSNR y SSIM, definidos como medidas secundarias, también tuvieron mejores
 valores descriptivos para el VAE base. En conjunto, se observó una diferencia
 pequeña en la medida principal de esta prueba. El experimento no fue diseñado
 como prueba de equivalencia o no inferioridad, ni permite atribuir causalmente
 la diferencia a la equivarianza porque también cambiaron la parametrización y
 el costo de cómputo.
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{vae_test_wsi_distributions.png}
+    \caption{Distribuciones descriptivas de las medias de reconstrucción por
+    WSI en las 23 láminas de prueba sellada. Cada punto es la media de los
+    parches seleccionados de una WSI; las cajas resumen las 23 medias por
+    modelo y no representan intervalos de confianza.}
+    \label{fig:reconstruccion-sellada-wsi-distribuciones}
+\end{figure}
 
 \begin{figure}[p]
     \centering
@@ -272,11 +312,11 @@ exactamente la inferencia con la que se obtuvieron estos resultados.
 
 \begin{figure}[p]
     \centering
-    \includegraphics[width=\textwidth]{mil_test_metrics.png}
-    \caption{Métricas globales de diagnóstico en la prueba sellada de 23 WSI.
-    Los valores puntuales deben interpretarse junto con los intervalos por WSI
-    de la Tabla~\ref{tab:mil-sellado}. Elaboración propia a partir de las
-    predicciones de prueba.}
+    \includegraphics[width=\textwidth]{mil_test_metrics_refined.png}
+    \caption{Macro-F1, exactitud balanceada y exactitud en las 23 WSI de
+    prueba sellada. Cada segmento une las puntuaciones de los dos modelos
+    para una misma métrica; los intervalos por WSI se informan en la
+    Tabla~\ref{tab:mil-sellado}.}
     \label{fig:mil-sellado-global}
 \end{figure}
 
@@ -306,8 +346,8 @@ exactamente la inferencia con la que se obtuvieron estos resultados.
     \centering
     \includegraphics[width=\textwidth]{mil_test_per_class_f1.png}
     \caption{F1 por subtipo histológico en la prueba sellada. El soporte
-    pequeño de LGSC y MC impide interpretar una barra aislada como una
-    estimación estable de desempeño poblacional. Elaboración propia a partir de
+    pequeño de LGSC y MC limita la precisión de las estimaciones por clase.
+    Elaboración propia a partir de
     las predicciones de prueba.}
     \label{fig:mil-sellado-f1-clases}
 \end{figure}
@@ -375,11 +415,11 @@ regiones anotadas y no asignan una clase a los sectores negros o sin máscara.
 
 \begin{figure}[p]
     \centering
-    \includegraphics[width=\textwidth]{tissue_label_efficiency.png}
-    \caption{Prueba sellada de segmentación a resolución de parche: macro-F1
-    frente al presupuesto por clase. El eje de etiquetas refleja subconjuntos
-    balanceados, anidados y estratificados por WSI. Elaboración propia a partir
-    de las predicciones de prueba.}
+    \includegraphics[width=\textwidth]{tissue_label_efficiency_refined.png}
+    \caption{Macro-F1 de segmentación de WSI a resolución de parche en los
+    cinco presupuestos balanceados y anidados de etiquetas por clase. El
+    asterisco marca el presupuesto de 500 etiquetas cuyo intervalo simultáneo
+    del 95\% para la diferencia entre modelos excluye cero.}
     \label{fig:tejido-resultados}
 \end{figure}
 
@@ -554,20 +594,18 @@ ajustaron por modelo, los colores no alinean canales entre redes.
     representación, pues también puede resultar de suavizado o colapso.}
 \end{figure}
 
-En síntesis, los resultados latentes separan una propiedad verificada de una
-hipótesis aún abierta. La compatibilidad numérica del decodificador
+El análisis latente verificó la compatibilidad numérica del decodificador
 VAE-\(\mathrm{SO}(2)\) con la acción discreta \(C_4\) en cuartos de vuelta
-quedó verificada, y a un grado se
-observó una mejora local descriptiva. No quedó demostrada una organización
-global más simple, una ventaja continua de extremo a extremo ni una mejora
-uniforme de las tareas posteriores. El análisis funcional planificado deberá
-evaluarse antes de formular conclusiones adicionales.
+y mostró una mejora local descriptiva a un grado. La comparación continua de
+extremo a extremo favoreció al VAE base. La organización global del espacio
+latente queda pendiente de evaluación en el análisis funcional planificado.
+La relación con las tareas posteriores se examina en la discusión.
 
 \section{Síntesis de resultados por objetivo}
 
 La Tabla~\ref{tab:sintesis-objetivos} relaciona los objetivos específicos con
-la evidencia disponible y evita que los resultados exploratorios sustituyan
-los criterios principales.
+la evidencia disponible, indicando los resultados principales y el alcance de
+cada evaluación.
 
 \begin{table}[htbp]
     \centering

@@ -13,8 +13,8 @@ comparables: uno ordinario y otro equivariante a \(\mathrm{SO}(2)\) sobre
 campos \(F_0\) y \(F_1\). Ambos conservaron los bloques, no linealidades y
 variables latentes, y alimentaron los mismos clasificadores. La rama
 equivariante empleó menos parámetros libres, pero soportes mayores y más
-cómputo estimado; se compararon, por tanto, dos arquitecturas completas y no
-un experimento en el que solo cambiara una variable.
+cómputo estimado. La comparación incluyó estas diferencias junto con el sesgo
+de simetría.
 
 En relación con el tercer objetivo, la hipótesis de que la representación
 equivariante produciría una mejora general en reconstrucción, clasificación y
@@ -39,13 +39,12 @@ visualmente coherentes sin los artefactos observados en la rama ordinaria. Las
 razones de acción y canonización también fueron menores bajo rotaciones
 interpoladas, aunque no alcanzaron todos los umbrales predefinidos. La
 arquitectura aprendió y conservó, por tanto, una regularidad rotacional
-controlable en la representación; este resultado no implica todavía una
-factorización global del espacio latente ni una equivarianza continua perfecta
-de extremo a extremo.
+controlable al transformar el latente y decodificar. La comparación continua
+de extremo a extremo favoreció al VAE base, mientras que la factorización
+global del espacio latente queda pendiente de evaluación.
 
-En síntesis, el presente trabajo produjo un modelo semisupervisado funcional y
-evaluó sus propiedades predictivas y geométricas. Su principal contribución no
-consiste en demostrar superioridad general, sino en mostrar que una restricción
-continua de rotación puede conservarse de manera mensurable en la
-representación latente. Una posible ventaja bajo pocas etiquetas permanece
-como hipótesis y requiere más evidencia.
+El trabajo implementó y evaluó un modelo semisupervisado con convoluciones
+direccionables para rotaciones continuas. La menor razón de error de acción
+del latente fue el resultado más claro de la comparación. Una posible ventaja
+predictiva bajo pocas etiquetas permanece como hipótesis y requiere más
+evidencia.

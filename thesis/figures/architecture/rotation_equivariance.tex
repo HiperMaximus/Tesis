@@ -1,0 +1,37 @@
+\begin{tikzpicture}[
+    font=\small, >=Latex,
+    flow/.style={->, thick, draw=black!65},
+    tile/.style={draw=black!45, rounded corners=1pt,
+        minimum width=1.8cm, minimum height=1.8cm,
+        fill=black!2, inner sep=0}
+]
+\node[tile] (x) at (0,0) {};
+\node[tile] (fx) at (5.2,0) {};
+\node[tile] (rx) at (0,-3.2) {};
+\node[tile] (rfx) at (5.2,-3.2) {};
+\foreach \n/\a in {x/0,rx/60}{
+    \begin{scope}[shift={(\n.center)}, rotate=\a]
+        \fill[teal!65!black] (-.5,-.5) rectangle (-.18,.5);
+        \fill[teal!65!black] (-.18,-.5) rectangle (.5,-.18);
+        \fill[orange!80!black] (.3,.3) circle[radius=.12];
+    \end{scope}
+}
+\foreach \n/\a in {fx/0,rfx/60}{
+    \begin{scope}[shift={(\n.center)}, rotate=\a]
+        \foreach \p in {(-.4,-.35),(-.4,.2),(.1,-.35)}{
+            \draw[->, very thick, teal!65!black] \p -- ++(.45,0);
+        }
+    \end{scope}
+}
+\node[above=1mm of x] {Entrada $\mathbf x$};
+\node[above=1mm of fx] {Campo $F(\mathbf x)$};
+\node[below=1mm of rx] {$\rho_X(R_\theta)\mathbf x$};
+\node[below=1mm of rfx, align=center]
+    {$F(\rho_X(R_\theta)\mathbf x)$\\$=\rho_Y(R_\theta)F(\mathbf x)$};
+\draw[flow] (x.east) -- node[above] {Mapa $F$} (fx.west);
+\draw[flow] (rx.east) -- node[above] {Mismo mapa $F$} (rfx.west);
+\draw[flow] (x.south) -- node[left, align=right]
+    {Rotación de\\la entrada} (rx.north);
+\draw[flow] (fx.south) -- node[right, align=left]
+    {Rotación espacial\\y de componentes} (rfx.north);
+\end{tikzpicture}

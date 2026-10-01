@@ -67,9 +67,17 @@ dimensión que conserve información de la entrada
 ~\cite{goodfellow_deep_2016}. Esta situación es relevante en patología porque
 las anotaciones densas requieren trabajo experto. En una experiencia de
 anotación de 200 WSI de colon y piel, el tiempo por lámina varió desde segundos
-hasta varias horas según la tarea~\cite{lindman_annotations_2019}; este rango
-ilustra por qué no debe suponerse que todas las WSI disponibles tendrán una
-máscara exhaustiva.
+hasta varias horas según la tarea~\cite{lindman_annotations_2019}. El costo
+de estas anotaciones limita la disponibilidad de máscaras exhaustivas.
+
+Los autoencodificadores aprenden una representación al reconstruir la entrada
+a partir de una descripción comprimida. En patología digital, Tellez et al.
+utilizaron esta estrategia para aprender representaciones de parches antes de
+predecir etiquetas de imágenes de gran tamaño~\cite{tellez_neural_2021}.
+La reconstrucción evalúa la fidelidad de la imagen recuperada; las tareas
+supervisadas posteriores evalúan la información que la representación
+conserva para reconocer el tejido o diagnosticar la lámina. Durante el ajuste
+de esos predictores, los pesos del codificador permanecen congelados.
 
 \begin{figure}
 \centering
@@ -173,7 +181,7 @@ débil~\cite{lu_dataefficient_2021}, mientras DSMIL combina evidencia de una
 instancia crítica con una representación agregada de la bolsa
 ~\cite{li_dualstream_2021}.
 
-La operación central de un Transformer es la atención de producto punto
+La operación central de un transformador (\emph{Transformer}) es la atención de producto punto
 escalado~\cite{vaswani_attention_2017}. Sean una secuencia de consultas
 \(\mathbf X_q\in\mathbb R^{n_q\times d}\) y una secuencia que aporta claves y
 valores \(\mathbf X_{kv}\in\mathbb R^{n_k\times d}\). Para una cabeza de
@@ -195,7 +203,8 @@ donde, por ejemplo, \(\mathbf W_Q\in\mathbb R^{d\times d_k}\) y
 \(\mathbf b_Q\in\mathbb R^{d_k}\). La atención propia toma
 \(\mathbf X_q=\mathbf X_{kv}\); la atención cruzada conserva las dos secuencias
 distintas. Cada fila de \(\mathbf Q\mathbf K^{\mathsf T}\) compara una consulta
-con todas las claves. Para un vector \(\mathbf s\in\mathbb R^{m}\), se define
+con todas las claves. Para un vector \(\mathbf s\in\mathbb R^{m}\), la
+normalización exponencial (\emph{softmax}) se define como
 
 \begin{equation}
     \operatorname{softmax}(\mathbf s)_j
@@ -241,7 +250,7 @@ ancho \(Hd_h=d\), \(\mathbf W_O\in\mathbb R^{d\times d}\) y
 \(\operatorname{MHA}(\mathbf X)\) cuando se trata de atención propia.
 
 La normalización por capas (LN, \emph{layer normalization}) se aplica a cada
-token por separado~\cite{ba_layernorm_2016}. Para la fila
+elemento de la secuencia (\emph{token}) por separado~\cite{ba_layernorm_2016}. Para la fila
 \(\mathbf x_i\in\mathbb R^d\),
 
 \begin{equation}
@@ -259,7 +268,10 @@ Los vectores \(\boldsymbol\gamma\) y \(\boldsymbol\beta\) son aprendidos y
 \(\epsilon>0\) evita dividir por cero. En los bloques pre-normalizados, LN se
 evalúa antes de cada rama y su salida se suma al estado que entró a la rama
 ~\cite{xiong_layernorm_2020}.
-La segunda rama emplea SwiGLU~\cite{shazeer_glu_2020}. Si
+La segunda rama emplea una unidad lineal con compuerta Swish
+(SwiGLU)~\cite{shazeer_glu_2020}, basada en la unidad lineal ponderada por
+sigmoide (SiLU, \emph{sigmoid-weighted linear unit})
+~\cite{elfwing_silu_2018}. Si
 \(\mathbf Z=\operatorname{LN}(\mathbf U)\in\mathbb R^{n\times d}\), esta
 unidad se define como
 
@@ -383,8 +395,8 @@ resume en la Figura~\ref{fig:cat_segmentation}.
 \end{figure}
 
 
-En histopatología, la orientación del tejido sobre el portaobjetos no define por
-sí sola la clase diagnóstica. Esta observación ha motivado modelos que comparten
+En histopatología, la clase del tejido no depende de un ángulo fijo de
+observación de sus estructuras microscópicas. Esta observación ha motivado modelos que comparten
 filtros entre rotaciones y reflexiones en tareas histológicas
 ~\cite{veeling_rotation_2018}. No toda imagen presenta esta simetría: los
 dígitos \(6\) y \(9\), por ejemplo, pueden intercambiar su identidad al rotarse
@@ -450,10 +462,21 @@ posiblemente distintas \(\rho_X\) y \(\rho_Y\). Una función
 \end{equation}
 
 Las dos rutas de la Ecuación~\eqref{eq:definicion-equivarianza} forman el
-diagrama conmutativo siguiente.
-\begin{center}
-\includegraphics[scale=0.1]{equivariance_diagram.jpg}
-\end{center}
+diagrama conmutativo de la Figura~\ref{fig:equivarianza-rotacional}.
+Cuando la salida contiene campos vectoriales, la acción de rotación debe
+transformar tanto las posiciones espaciales como las componentes de cada
+vector.
+
+\begin{figure}[htbp]
+    \centering
+    \input{figures/architecture/rotation_equivariance}
+    \caption[Las dos rutas de un mapa equivariante a rotaciones.]{Las dos
+    rutas de un mapa equivariante a rotaciones. Rotar la entrada antes de
+    aplicar \(F\) produce el mismo resultado que aplicar la acción de salida
+    a \(F(\mathbf x)\). Esquema conceptual de la rotación de las posiciones
+    y las componentes de un campo vectorial. Elaboración propia.}
+    \label{fig:equivarianza-rotacional}
+\end{figure}
 \paragraph{Convolución en grupos.}
 
 La convolución puede extenderse a señales definidas sobre un grupo. Sean
@@ -560,10 +583,20 @@ linfático; frente a su línea base reportaron mejor exactitud y eficiencia de
 parámetros~\cite{veeling_rotation_2018}. Li et al. combinaron filtros dinámicos
 con convoluciones equivariantes y reportaron mejoras frente a las líneas base
 consideradas en tareas de imagen médica~\cite{li_dynamic_2020}.
-Estos antecedentes muestran que existen métodos equivariantes para
-clasificación supervisada, pero que la utilidad de ese sesgo inductivo en un
-autoencodificador histopatológico debe evaluarse de manera separada. En esta
-tesis se estudió esa relación mediante reconstrucción, tareas supervisadas con
-representaciones congeladas y análisis de la respuesta latente a rotaciones,
-sin asumir de antemano que la restricción geométrica produciría una ventaja en
-todas las medidas.
+La equivarianza también se ha estudiado en autoencodificadores. Nasiri y
+Bepler formularon TARGET-VAE, cuyo codificador equivariante a traslaciones y
+rotaciones infiere la posición, la pose y una representación semántica del
+objeto; un generador espacialmente equivariante permite reconstruirlo
+~\cite{nasiri_target_2022}. Burgess et al. introdujeron O2-VAE
+para perfilar la forma de células y orgánulos. Su codificador combina
+operaciones equivariantes con agrupamiento espacial para obtener una
+representación invariante a la orientación, y el entrenamiento alinea la
+entrada con la reconstrucción~\cite{burgess_orientation_2024}. Ambos modelos
+aprenden representaciones sin supervisión: TARGET-VAE separa contenido y pose,
+mientras O2-VAE obtiene invariancia a la orientación.
+
+En esta tesis se estudió la utilidad de un mapa latente espacial mediante
+reconstrucción, segmentación a resolución de parche, diagnóstico de WSI y
+análisis de su respuesta a rotaciones. Las tareas supervisadas utilizaron las
+representaciones obtenidas durante el entrenamiento de los VAE, cuyos pesos
+permanecieron congelados.

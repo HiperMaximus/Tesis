@@ -1,0 +1,46 @@
+\begingroup
+\setstretch{1}
+\begin{tikzpicture}[
+    font=\footnotesize, >=Latex,
+    box/.style={draw=black!55, rounded corners=2pt, align=center,
+        text width=4.0cm, minimum height=1.15cm, inner sep=2mm},
+    vae/.style={box, fill=blue!6, draw=blue!60!black},
+    supervised/.style={box, fill=orange!7, draw=orange!70!black},
+    test/.style={box, fill=purple!6, draw=purple!65!black},
+    task/.style={box, fill=green!6, draw=green!45!black},
+    flow/.style={->, thick, draw=black!65}
+]
+\node[box, fill=black!3] (source) at (5,0)
+    {UBC-OCEAN sin TMA\\\textbf{513 WSI}};
+\node[vae] (vae) at (0,-2)
+    {Desarrollo\\no supervisado\\\textbf{361 WSI}};
+\node[supervised] (supervised) at (5,-2)
+    {Desarrollo supervisado\\\textbf{129 WSI}};
+\node[test] (test) at (10,-2)
+    {Prueba sellada\\compartida\\\textbf{23 WSI}};
+\node[vae] (vae_splits) at (0,-4)
+    {Entrenamiento: 322 WSI\\$300\,000$ parches\\
+     Validación: 39 WSI\\$30\,000$ parches};
+\node[supervised] (supervised_splits) at (5,-4)
+    {Entrenamiento: 106 WSI\\Validación: 23 WSI\\
+     Clasificadores de tejido\\y diagnóstico};
+\node[task] (reconstruction) at (0,-6.8)
+    {Reconstrucción\\$67\,138$ parches};
+\node[task] (tissue) at (5,-6.8)
+    {Segmentación\\a resolución de parche\\$31\,572$ parches};
+\node[task] (wsi) at (10,-6.8)
+    {Diagnóstico de WSI\\23 bolsas de prueba\\$261\,168$ parches};
+\draw[flow] (source.south) -- ++(0,-0.35) -| (vae.north);
+\draw[flow] (source.south) -- (supervised.north);
+\draw[flow] (source.south) -- ++(0,-0.35) -| (test.north);
+\draw[flow] (vae) -- (vae_splits);
+\draw[flow] (supervised) -- (supervised_splits);
+\draw[thick, draw=purple!65!black]
+    (test.south) -- (10,-5.6) -- (0,-5.6);
+\foreach \target/\position in {reconstruction/0,tissue/5,wsi/10}
+    \draw[flow, draw=purple!65!black]
+        (\position,-5.6) -- (\target.north);
+\node[font=\footnotesize, align=center] at (5,-5.15)
+    {Evaluaciones finales sobre las mismas 23 WSI};
+\end{tikzpicture}
+\endgroup

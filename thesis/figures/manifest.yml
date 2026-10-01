@@ -1,5 +1,20 @@
 # Figures copied from the research repository and thesis-native figures derived
 # from its executable architecture both belong here.
+- file: figures/architecture/shared_wsi_partition.tex
+  source_repository: equivariant-vae
+  source_commit: b85d7f2c23aa1620dbabcc902aee2d10a7062caa
+  source_path: paper/inciscos2026/figures/data_split.tex
+  additional_source_paths:
+    - docs/specs/0018-shared-masked-wsi-evaluation-split.md
+  derivation: Spanish thesis-native layout; three disjoint WSI populations and direct shared-test branch; preserves accepted sample counts.
+  purpose: Distinguish VAE development, classifier development and the single test population for all three final evaluations.
+- file: figures/architecture/rotation_equivariance.tex
+  source_repository: equivariant-vae
+  source_commit: b85d7f2c23aa1620dbabcc902aee2d10a7062caa
+  source_path: paper/inciscos2026/main.tex
+  literature_source: cohen_group_2016; cohen_steerable_2016
+  derivation: Spanish adaptation of the rotation-equivariance schematic, using the thesis action notation and an illustrative 60-degree rotation.
+  purpose: Show the commutative transformation law and rotation of vector positions and components; replaces the small generic diagram.
 - file: figures/architecture/normal_vae.tex
   source_repository: equivariant-vae
   source_commit: bfed730a1559366841ebafa5f09edd6dbff43176
@@ -365,3 +380,49 @@
   source_path: reports/professor/informe_final_experimento_eqvae.docx#word/media/image22.png
   source_document_sha256: c4c3cf292212830960dad6015bea518902f704a893875d407c27bc5b892ed98d
   evidence_class: accepted-sealed-test
+- file: figures/experiments/vae_reconstructions_fixed9.png
+  sha256: a04ce681ecfbc5f49105134eeb75b7aec99e9a06215d109d2caecec787584307
+  source_repository: equivariant-vae
+  source_commit: 1d9c5af1a3dc445459fd3e932fd1016ca56657c5
+  source_path: docs/data/fixed25/originals.pt
+  additional_source_paths:
+    - runs/kaggle/selected_runtime_full_v4_session3/artifacts/fixed25/boundary_060000/reconstruction_progress.pt
+    - runs/kaggle/so2_selected_runtime_full_session7_fresh_v1_retry1/artifacts/fixed25/boundary_060000/reconstruction_progress.pt
+  derivation: First nine entries of the fixed validation selector, rendered in selector order by scripts/render_selected_paper_views.py.
+  evidence_class: accepted-development-diagnostic-view
+- file: figures/experiments/vae_test_wsi_distributions.png
+  sha256: 223acdff1019903cc7b4532df5c751f12f9bff480e839a95e56cb8c9ebf75e9c
+  source_repository: equivariant-vae
+  source_commit: 1d9c5af1a3dc445459fd3e932fd1016ca56657c5
+  source_path: runs/local/vae_test_reconstruction_scored_v1/metrics/per_wsi_metrics.csv
+  source_sha256: d9474ac247cfe2e257b2c14e9968a6c90ad1286247961ea711004a696237e0a3
+  derivation: Four descriptive boxplots of the 23 paired WSI means, rendered by scripts/render_selected_paper_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/tissue_label_efficiency_refined.png
+  sha256: 91716b74f95564e80aafea0498a687d89b68c8908c495309208302142e15f244
+  source_repository: equivariant-vae
+  source_commit: 1d9c5af1a3dc445459fd3e932fd1016ca56657c5
+  source_path: runs/local/tissue_test_scored_v1/label_efficiency_table.json
+  source_sha256: d0acad286eb33eaa02f0318de2726ba4e7f714e19ea873cd88c5b0d4bb6a231f
+  derivation: Accepted test macro-F1 at five class-balanced label budgets, rendered by scripts/render_selected_paper_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/mil_test_metrics_refined.png
+  sha256: 43764c57ba291f310f7c14f054a18b075c69db39916eec3d8b1454526ae41cc9
+  source_repository: equivariant-vae
+  source_commit: 1d9c5af1a3dc445459fd3e932fd1016ca56657c5
+  source_path: runs/local/ubc_ocean_mil_test_scored_v1/normal_vae/scored_predictions_and_metrics.json
+  additional_source_paths:
+    - runs/local/ubc_ocean_mil_test_scored_v1/so2_vae/scored_predictions_and_metrics.json
+  derivation: Accepted overall WSI test scores rendered as paired dot comparisons by scripts/render_selected_paper_views.py.
+  evidence_class: accepted-sealed-test-view
+- file: figures/experiments/vae_training_curves_refined.png
+  sha256: f7519064a14a87d4ac76a5a714be7dfba9429fd88814e9deb2a82e5460ca2aa0
+  source_repository: equivariant-vae
+  source_commit: 1d9c5af1a3dc445459fd3e932fd1016ca56657c5
+  source_path: runs/kaggle/selected_runtime_full_v2/metrics/train_steps.csv
+  additional_source_paths:
+    - runs/kaggle/selected_runtime_full_v2/metrics/validation_metrics.csv
+    - runs/kaggle/so2_selected_runtime_full_v1_session1/metrics/train_steps.csv
+    - runs/kaggle/so2_selected_runtime_full_v1_session1/metrics/validation_metrics.csv
+  derivation: All successive accepted run segments specified in scripts/render_selected_paper_views.py; train means in 3000-step bins and validation mean plus or minus the logged SD across each evaluation.
+  evidence_class: accepted-development-diagnostic-view

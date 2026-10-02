@@ -2,6 +2,21 @@
 
 Last updated: 2026-10-01
 
+## Temporal-coherence audit and approved edits: completed
+
+Read all thesis chapters, frontmatter and architecture figure sources, with
+two independent subagents and comparison to inherited plan passages. No
+completed work remains described as pending. Applied four user-approved tense
+harmonizations after reading their full contexts: the executed comparison now
+uses "incluyó", while three generic explanations use the present. Preserved
+"este trabajo compara" and "este trabajo estudia" at the user's request.
+Genuine future extensions, objective infinitives and theoretical conditionals
+remain valid. Final PDF: 109 pages; build, document check and whitespace check
+pass, with no unresolved references or overfull boxes. Reviewed all four
+affected PDF pages. Proposals, logs and renders are under
+`build/thesis/temporal-audit/`. The user authorized committing and pushing this
+approved revision to `origin/main`.
+
 ## Bibliography corrections: completed
 
 Applied the user's approved bibliography proposals: corrected NCI years and

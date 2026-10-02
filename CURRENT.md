@@ -2,6 +2,23 @@
 
 Last updated: 2026-10-01
 
+## Bibliography corrections: completed
+
+Applied the user's approved bibliography proposals: corrected NCI years and
+author names, normalized journal and proceedings metadata, completed three
+conference entries, protected proper names, and explicitly identified five
+arXiv preprints. All 33 publication DOI links are present in the final PDF;
+all 70 entries have source URLs. Software references retain consultation dates
+without presenting them as publication years. Corrected the Elesedy/Zaidi
+comparison and Graham's similar parameter budgets in the two cited passages.
+
+Final PDF remains 109 pages. `document.sh check thesis` and `git diff --check`
+pass; no missing, unused or duplicate references, unresolved citations or
+overfull boxes. Reviewed all eight bibliography pages and four changed or
+adjacent body pages. Audit, source evidence, link checks and rendered QA are
+under `build/thesis/bibliography-audit/`. The user authorized commit and push
+to `origin/main`; no Overleaf synchronization was requested.
+
 ## PDF annotation and approved editorial passes: completed
 
 Applied the approved 37-comment pass and the subsequent 35-group style audit.

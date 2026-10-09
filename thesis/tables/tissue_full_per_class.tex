@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+    \centering
+    \caption[Métricas por clase con el presupuesto completo.]{Precisión, sensibilidad y F1 por clase en segmentación con \(5\,671\) etiquetas por clase. El soporte es el número de celdas de referencia; necrosis proviene de cinco WSI.}
+    \label{tab:tejido-clases-completo}
+    \small
+    \begin{tabular}{@{}rllrrrr@{}}
+        \toprule
+        Etiquetas/clase & Modelo & Clase & Precisión & Sensibilidad & F1 & Soporte \\
+        \midrule
+        \(5\,671\) & VAE base & Tumor & 0,927 & 0,816 & 0,868 & \(21\,796\) \\
+        \(5\,671\) & VAE base & Estroma & 0,660 & 0,811 & 0,728 & \(8\,500\) \\
+        \(5\,671\) & VAE base & Necrosis & 0,580 & 0,885 & 0,701 & \(1\,276\) \\
+        \(5\,671\) & VAE-SO(2) & Tumor & 0,925 & 0,823 & 0,871 & \(21\,796\) \\
+        \(5\,671\) & VAE-SO(2) & Estroma & 0,676 & 0,750 & 0,711 & \(8\,500\) \\
+        \(5\,671\) & VAE-SO(2) & Necrosis & 0,401 & 0,867 & 0,548 & \(1\,276\) \\
+        \bottomrule
+    \end{tabular}
+\end{table}

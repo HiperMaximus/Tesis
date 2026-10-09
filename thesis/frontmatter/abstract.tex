@@ -5,7 +5,7 @@
 
 \textbf{Title:} Semi-supervised model of equivariant convolutional neural networks for segmentation and classification of histopathological images.\footnote{Bachelor thesis.}
 
-\textbf{Author:} \Author.\footnote{Faculty of Physical-Mechanical Engineering. School of Systems Engineering and Informatics. Advisor: \DirectorName, \DirectorDegree.}
+\textbf{Author:} \Author.\footnote{Faculty of Physical-Mechanical Engineering. School of Systems Engineering and Informatics. Advisor: \DirectorName, \DirectorDegree}
 
 \textbf{Keywords:} equivariant convolutional neural networks, histopathological images, digital image processing, semi-supervised learning.
 
@@ -26,15 +26,11 @@ when annotations are scarce. This study investigated how equivariance to continu
 rotations affects reconstruction, predictive performance, and the organization of a
 variational autoencoder's latent space.
 
-Two residual variational autoencoders (VAEs) were compared: a conventional convolutional
-VAE and a VAE with steerable convolutions constrained by the \(\mathrm{SO}(2)\) group,
-using scalar and vector fields. Both models received the same \(256\times256\) RGB
-patches, shared the overall structure, and produced \(16\times32\times32\) latent maps.
-Training used 300,000 unlabeled patches from UBC-OCEAN and 60,000 updates per model. The
-objective combined mean absolute error (MAE), structural similarity, and variational
-regularization. Color perturbations and noise were applied to the input, while the clean
-patch remained the reconstruction target. The equivariant model used 70.2\% fewer
-learned parameters but had a higher estimated convolutional cost.
+Two residual variational autoencoders (VAEs) were compared: a baseline VAE with
+conventional convolutions and an \(\mathrm{SO}(2)\)-equivariant VAE with steerable convolutions.
+Both shared the overall structure and were trained on the same 300,000 patches from
+UBC-OCEAN. The equivariant model used 70.2\% fewer learned parameters and had a higher
+estimated convolutional cost.
 
 The 513 whole-slide images (WSIs) were divided into disjoint populations for
 unsupervised development, supervised development, and testing. After VAE training, their
@@ -55,13 +51,17 @@ representation achieved higher macro-F1 under four of the five label budgets; th
 simultaneous interval excluded zero only at 500 labels per class. When all available
 labels were used, the point estimate favored the baseline VAE.
 
-The latent-space analysis used 25 fixed validation patches and distinguished between
-transforming and decoding the latent representation, canonicalizing its orientation, and
-evaluating the complete autoencoder. For exact quarter-turn rotations, the median
-action-error ratio decreased from 0.709453 to \(2{.}18\times10^{-6}\) in the equivariant
-model. Interpolated rotations also yielded lower action and canonicalization errors for
-this model, whereas the continuous end-to-end comparison favored the baseline VAE. PCA
-projections and local geometry measures complemented this characterization. The clearest
+The latent-space analysis used 25 fixed validation patches and distinguished three
+tests: rotating and decoding the latent representation; encoding a rotated image,
+undoing the rotation in the latent representation, and decoding it; and reconstructing
+a rotated image using the encoder and decoder together. For exact quarter-turn
+rotations, the median error ratio when rotating and decoding the latent representation
+was 0.709 for the baseline VAE and \(2{.}18\times10^{-6}\) for the
+\(\mathrm{SO}(2)\)-equivariant VAE.
+Interpolated rotations also yielded lower errors in the first two tests for this model,
+whereas the comparison of the complete autoencoder under continuous rotations favored
+the baseline VAE. Projections from principal component analysis (PCA)
+and local geometry measures complemented this characterization. The clearest
 finding was a more consistent rotational response when transforming and decoding the
 latent representation. Predictive performance varied with the task and the number of
 labels.

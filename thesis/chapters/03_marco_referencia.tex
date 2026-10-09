@@ -4,14 +4,15 @@
 Este capítulo presenta los conceptos necesarios para interpretar el diseño
 experimental. Primero se describe la patología digital y la relación entre
 aprendizaje supervisado y no supervisado; luego se introducen las redes
-convolucionales, la atención para aprendizaje de instancias múltiples y las
-convoluciones equivariantes utilizadas en el VAE-\(\mathrm{SO}(2)\).
+convolucionales, los VAE y las convoluciones equivariantes. A continuación, se
+explican el MIL y la atención espacial. El
+capítulo termina con los trabajos relacionados.
 
 \section{Patología digital}
 
 La patología digital reúne los sistemas usados para adquirir, almacenar,
 visualizar y analizar portaobjetos en formato digital. Su elemento central es
-la imagen completa del portaobjetos (WSI, \emph{whole-slide image}), obtenida
+la WSI, obtenida
 al digitalizar la preparación histológica con resolución suficiente para
 examinarla a diferentes aumentos. Este soporte facilita la consulta remota, la
 gestión de archivos y el desarrollo de métodos computacionales sobre la lámina
@@ -34,7 +35,8 @@ entre entrenamiento y evaluación~\cite{wang_managing_2012,niazi_digital_2019}.
 
 \section{Tipos de aprendizaje de máquina}
 
-El aprendizaje de máquina estima, a partir de datos, los parámetros de una
+El aprendizaje de máquina (\emph{machine learning}) estima, a partir de datos,
+los parámetros de una
 función que se utiliza para predecir o describir observaciones nuevas. La
 distinción entre aprendizaje supervisado, no supervisado y semisupervisado
 depende principalmente de qué variables objetivo están disponibles durante el
@@ -46,14 +48,16 @@ En aprendizaje supervisado se observan pares \((\mathbf x_i,y_i)\), donde
 \(\mathbf x_i\) es una entrada y \(y_i\) es la etiqueta o respuesta que el
 modelo debe predecir. En patología, la respuesta puede ser el diagnóstico de
 una WSI, la clase de un parche o una máscara espacial elaborada por un experto.
-La Figura~\ref{fig:labelled} muestra este último caso.
+La Figura~\ref{fig:labelled} ilustra esta tarea.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.6\textwidth]{labelled.jpg}
-   \caption{Imágenes histopatológicas anotadas para guiar una tarea
+   \caption[Imágenes histopatológicas con anotaciones ilustrativas.]{Imágenes
+   histopatológicas con anotaciones ilustrativas para guiar una tarea
    supervisada. Las regiones marcadas proporcionan una respuesta espacial para
-   cada imagen.}
+   cada imagen. \textit{Nota.} Imágenes del conjunto
+   GlaS~\cite{sirinukunwattana_glas_2017,sirinukunwattana_polygons_2015}.}
     \label{fig:labelled}
 \end{figure}
 
@@ -63,7 +67,9 @@ En aprendizaje no supervisado se observan las entradas, pero no una respuesta
 externa para cada ejemplo. El objetivo puede ser modelar la distribución de
 los datos, agrupar observaciones o aprender una representación de menor
 dimensión que conserve información de la entrada
-~\cite{goodfellow_deep_2016}. Esta situación es relevante en patología porque
+~\cite{goodfellow_deep_2016}. La Figura~\ref{fig:clustering} ilustra la
+agrupación de imágenes con características visuales similares.
+Esta situación es relevante en patología porque
 las anotaciones densas requieren trabajo experto. En una experiencia de
 anotación de 200 WSI de colon y piel, el tiempo por lámina varió desde segundos
 hasta varias horas según la tarea~\cite{lindman_annotations_2019}. El costo
@@ -80,12 +86,14 @@ de esos predictores, los pesos del codificador permanecen congelados.
 
 \begin{figure}
 \centering
-\subcaptionbox{Cluster A}{\includegraphics[width=0.55\textwidth]{cluster_A.jpg}}%
+\subcaptionbox{Grupo A}{\includegraphics[width=0.55\textwidth]{cluster_A.jpg}}%
 \hfill
-\subcaptionbox{Cluster B}{\includegraphics[width=0.45\textwidth]{cluster_B.jpg}}%
+\subcaptionbox{Grupo B}{\includegraphics[width=0.45\textwidth]{cluster_B.jpg}}%
 \hfill
-\caption{Agrupación ilustrativa de imágenes similares sin usar una etiqueta
-objetivo para cada imagen.}
+\caption[Agrupación ilustrativa de imágenes similares.]{Agrupación
+ilustrativa de imágenes similares sin usar una etiqueta objetivo para cada
+imagen. \textit{Nota.} Imágenes del conjunto
+GlaS~\cite{sirinukunwattana_glas_2017,sirinukunwattana_polygons_2015}.}
 \label{fig:clustering}
 \end{figure}
 
@@ -102,9 +110,30 @@ latentes alimentaron las tareas supervisadas.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{semi_supervised_model.jpg}
-    \caption{Esquema semisupervisado en el que una representación aprendida
-    con datos sin anotar se reutiliza en una tarea que dispone de etiquetas.}
+    \begin{tikzpicture}[inner sep=0pt,outer sep=0pt,baseline=(panel.south)]
+        \node[anchor=south west] (panel) at (0,0)
+            {\includegraphics[width=\textwidth]{semi_supervised_model.jpg}};
+        \begin{scope}[x={(panel.south east)},y={(panel.north west)}]
+            % Native labels over the archived 3316x2657 illustration.
+            \fill[white] ({1190/3316},{1-132/2657}) rectangle
+                ({2300/3316},{1-217/2657});
+            \node[font=\sffamily\fontsize{10.5}{12}\selectfont]
+                at ({1745/3316},{1-175/2657}) {Modelo de aprendizaje de máquina};
+            % Reuse a text-free strip from the same horizontal gradient.
+            \node[anchor=north west] at ({1490/3316},{1-344/2657})
+                {\includegraphics[trim=1490 1972 1401 680,clip,
+                    width=0.128166\textwidth,height=0.084138\textwidth]
+                    {semi_supervised_model.jpg}};
+            \node[align=center,font=\sffamily\fontsize{8}{9.5}\selectfont]
+                at ({1695/3316},{1-476/2657}) {Modelo\\semisupervisado};
+        \end{scope}
+    \end{tikzpicture}
+    \caption[Esquema semisupervisado de aprendizaje y uso de representaciones.]{Esquema
+    semisupervisado en el que una representación aprendida con datos sin
+    anotar se reutiliza en una tarea que dispone de etiquetas.
+    \textit{Nota.} Imágenes del conjunto
+    GlaS~\cite{sirinukunwattana_glas_2017,sirinukunwattana_polygons_2015}, con
+    anotaciones ilustrativas.}
     \label{fig:semi-supervised}
 \end{figure}
 \section{Redes neuronales profundas}
@@ -115,20 +144,47 @@ se transforma como \(\mathbf y=\phi(\mathbf W\mathbf x+\mathbf b)\), con
 \(\mathbf W\in\mathbb R^{d_{out}\times d_{in}}\),
 \(\mathbf b\in\mathbb R^{d_{out}}\) y una no linealidad \(\phi\). Durante el
 entrenamiento, la diferenciación inversa proporciona los gradientes usados por
-un optimizador para reducir una función de pérdida
-~\cite{goodfellow_deep_2016}. La Figura~\ref{fig:deep_nets} muestra una
-composición de varias capas.
+un optimizador para reducir una función de pérdida (\emph{loss function})
+~\cite{goodfellow_deep_2016}. La Figura~\ref{fig:deep_nets} muestra una red cuyas
+capas ocultas utilizan la unidad lineal rectificada (\emph{rectified linear unit}, ReLU).
+La salida del ejemplo utiliza la función sigmoide (\emph{sigmoid}).
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.9\textwidth]{neural_nets.drawio.jpg}
+    \begin{tikzpicture}[inner sep=0pt,outer sep=0pt,baseline=(panel.south)]
+        \node[anchor=south west] (panel) at (0,0)
+            {\includegraphics[width=0.9\textwidth]{neural_nets.drawio.jpg}};
+        \begin{scope}[x={(panel.south east)},y={(panel.north west)}]
+            % Cover only the original label in the archived 1249x443 image.
+            \fill[white] ({1004/1249},{1-176/443}) rectangle
+                ({1076/1249},{1-202/443});
+            \node[font=\sffamily\fontsize{6.4}{7}\selectfont]
+                at ({1040/1249},{1-188/443}) {Sigmoide};
+            \fill[white] ({5/1249},{1-394/443}) rectangle
+                ({95/1249},{1-420/443});
+            \node[align=center,font=\sffamily\fontsize{5}{5.6}\selectfont]
+                at ({50/1249},{1-405/443}) {Capa de\\entrada};
+            \fill[white] ({497/1249},{1-380/443}) rectangle
+                ({650/1249},{1-408/443});
+            \node[font=\sffamily\fontsize{7}{8}\selectfont]
+                at ({573/1249},{1-395/443}) {Capas ocultas};
+            \fill[white] ({994/1249},{1-401/443}) rectangle
+                ({1087/1249},{1-429/443});
+            \node[align=center,font=\sffamily\fontsize{5}{5.6}\selectfont]
+                at ({1040/1249},{1-415/443}) {Capa de\\salida};
+            \fill[white] ({1180/1249},{1-174/443}) rectangle
+                ({1249/1249},{1-205/443});
+            \node[font=\sffamily\fontsize{6.4}{7}\selectfont]
+                at ({1216/1249},{1-189/443}) {Salida};
+        \end{scope}
+    \end{tikzpicture}
     \caption{Ejemplo de una red neuronal profunda. Cada capa oculta aplica una
     transformación afín y una no linealidad; la capa de salida produce la
     predicción correspondiente a la tarea.}
     \label{fig:deep_nets}
 \end{figure}
 
-Las redes neuronales convolucionales (CNN) sustituyen parte de las matrices
-densas por núcleos locales cuyos coeficientes se comparten entre posiciones.
+Las CNN sustituyen parte de las matrices
+densas por kernels locales cuyos coeficientes se comparten entre posiciones.
 En imágenes, esta estructura reduce el número de parámetros y conserva la
 organización espacial. La operación puede entenderse como el desplazamiento de
 un filtro sobre una cuadrícula, como se ilustra en la
@@ -136,7 +192,7 @@ Figura~\ref{fig:convolution}.
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.6\textwidth]{convolution_classical.png}
-    \caption{Ejemplo de convolución discreta para un filtro que se desliza sobre la grilla magenta. La función del filtro la transforma a otro valor (color verde). Se puede ver que el proceso es local: solo se toman elementos que conforman un vecindario en la grilla para generar el resultado.}
+    \caption{Ejemplo de convolución discreta para un filtro que se desliza sobre la cuadrícula magenta. La función del filtro la transforma a otro valor (color verde). Se puede ver que el proceso es local: solo se toman elementos que conforman un vecindario en la cuadrícula para generar el resultado.}
 \label{fig:convolution}
 \end{figure}
 
@@ -154,30 +210,308 @@ reemplaza por una suma:
 \end{equation}
 
 Las bibliotecas de aprendizaje profundo suelen implementar correlación cruzada,
-sin invertir el núcleo; como los coeficientes se aprenden, se conserva la misma
+sin invertir el kernel; como los coeficientes se aprenden, se conserva la misma
 capacidad de representación y se mantiene el nombre de convolución por
 convención~\cite{goodfellow_deep_2016}. Una convolución con paso unitario es
 equivariante a traslaciones en el dominio ideal: trasladar la entrada traslada
 la salida. Esta propiedad no significa invariancia y puede dejar de ser exacta
-en bordes o cuando se introducen relleno, submuestreo o agrupamiento
+en bordes o cuando se introducen relleno, submuestreo o \emph{pooling}
 ~\cite{cohen_group_2016}. La misma distinción entre equivarianza e invariancia
 se utiliza también para las rotaciones.
 
-\section{Aprendizaje de instancias múltiples y atención espacial}
+Un autoencodificador combina un codificador, que transforma una imagen en una
+representación latente, usualmente comprimida o de menor dimensión que la
+entrada, y un decodificador, que utiliza esa representación para reconstruirla.
+El entrenamiento busca conservar en el latente información suficiente para
+recuperar la entrada. Esa información puede utilizarse posteriormente en otras
+tareas mediante un predictor entrenado sobre las representaciones
+~\cite{goodfellow_deep_2016,tellez_neural_2021}.
 
+En un VAE, el codificador describe una distribución
+latente asociada a cada entrada, habitualmente gaussiana, mediante una media y
+una varianza aprendidas. Esta distribución se distingue de la distribución de
+referencia o distribución previa (\emph{prior distribution}), para la cual
+suele elegirse una normal
+estándar, de media cero y varianza uno en cada coordenada. Durante el
+entrenamiento se obtiene una muestra de la distribución producida por el
+codificador y se entrega al decodificador. La reparametrización
+(\emph{reparameterization}) permite
+expresar ese muestreo mediante una transformación diferenciable de ruido
+aleatorio, de modo que los parámetros del codificador también puedan ajustarse
+a partir del error de reconstrucción~\cite{kingma_autoencoding_2014}.
+
+El objetivo incorpora además una regularización que compara la distribución
+producida por el codificador con la distribución previa mediante la divergencia
+de Kullback--Leibler (KL). Este término favorece que el codificador ajuste sus
+salidas de media y varianza para acercar las distribuciones latentes a la
+distribución escogida, en equilibrio con la conservación de información
+necesaria para reconstruir la entrada~\cite{kingma_autoencoding_2014}. En esta
+tesis se utilizó una distribución normal estándar como referencia. Después del
+entrenamiento, los clasificadores recibieron la media de la distribución
+latente, manteniendo congelado el codificador; así, cada parche tuvo una
+representación determinista para las tareas supervisadas.
+
+\section{Redes neuronales convolucionales equivariantes}
+
+Una convolución ordinaria comparte el mismo kernel en todas las posiciones y,
+salvo efectos de borde o submuestreo, es equivariante a traslaciones. Si una
+entrada se desplaza, el mapa de características (\emph{feature map}) se desplaza
+de la misma forma;
+la salida no permanece necesariamente fija~\cite{cohen_group_2016,lim_what_2022}.
+Rotaciones y reflexiones son acciones diferentes y una CNN ordinaria no es
+equivariante a ellas por construcción. La Figura~\ref{fig:cat} muestra estas
+transformaciones en una imagen natural y en un recorte histológico.
+\begin{figure}[h!]
+\includegraphics[width=1\textwidth]{transformaciones_gato_wsi.png}
+\caption[Transformaciones de una imagen natural y un recorte histológico.]{Ejemplos
+de cambio de iluminación, traslación, rotación y reflexión aplicados a una
+imagen natural y a un recorte histológico. \textit{Nota.} Imagen histológica de
+GlaS~\cite{sirinukunwattana_glas_2017,sirinukunwattana_polygons_2015}.}
+\label{fig:cat}
+\end{figure}
+
+La salida deseada determina si la transformación debe producir invariancia o
+equivarianza. En clasificación, la clase puede permanecer fija; en
+segmentación, la máscara debe transformarse junto con la entrada, como se
+resume en la Figura~\ref{fig:cat_segmentation}.
+
+\begin{figure}[h!]
+\centering
+\subcaptionbox{Invariancia}{\includegraphics[width=0.35\linewidth]{fig2.jpg}}
+\quad
+\subcaptionbox{Equivarianza}{\includegraphics[width=0.55
+\linewidth]{fig3.jpg}}
+\caption{En \textbf{(a)} se muestra cómo la clasificación puede ser invariante.
+    En \textbf{(b)} se muestra cómo la segmentación puede ser equivariante.}
+\label{fig:cat_segmentation}
+\end{figure}
+
+En histopatología, la clase del tejido no depende de un ángulo fijo de
+observación de sus estructuras microscópicas. Esta observación ha motivado modelos que comparten
+filtros entre rotaciones y reflexiones en tareas histológicas
+~\cite{veeling_rotation_2018}. No toda imagen presenta esta simetría: los
+dígitos \(6\) y \(9\), por ejemplo, pueden intercambiar su identidad al rotarse
+\(180^\circ\), como ilustra la Figura~\ref{fig:69}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth]{6.jpg}
+    \includegraphics[width=0.3\textwidth]{9.jpg}
+    \caption{Ejemplo de una tarea que no posee invariancia rotacional: una
+    rotación de \(180^\circ\) puede intercambiar los dígitos 6 y 9.}
+    \label{fig:69}
+\end{figure}
+\enlargethispage{\baselineskip}
+\begin{samepage}
+Como en las CNN usuales, aprovechar una simetría introduce un sesgo inductivo
+(\emph{inductive bias})
+y permite compartir parámetros sobre las transformaciones consideradas
+~\cite{cesa_program_2021}. El \emph{data augmentation}
+ofrece otra forma de exponer el modelo a transformaciones geométricas. Bajo
+supuestos específicos sobre la distribución, la función objetivo y la clase
+de modelos, se han demostrado beneficios de generalización para imponer
+equivarianza directamente~\cite{elesedy_provably_2021}.
+\par\end{samepage}
+\paragraph{Grupos y acciones.}
+
+Un grupo \(G\) es un conjunto dotado de una operación interna. Para
+\(a,b,c\in G\), esta operación es asociativa, existe una identidad \(e\) y
+cada elemento posee un inverso~\cite{hall_lie_groups_2015}:
+
+\begin{equation}
+    (ab)c=a(bc),\qquad ea=ae=a,\qquad a^{-1}a=aa^{-1}=e.
+    \label{eq:axiomas-grupo}
+\end{equation}
+
+Una acción especifica cómo cada \(g\in G\) transforma un espacio. En espacios
+vectoriales se representa mediante operadores lineales invertibles
+\(\rho(g)\), con \(\rho(e)=\mathbf I\) y
+\(\rho(g_1g_2)=\rho(g_1)\rho(g_2)\). En este trabajo, el grupo incorporado es
+el de rotaciones continuas del plano,
+
+\begin{equation}
+    \mathrm{SO}(2)=\left\{\mathbf R_\theta=
+    \begin{bmatrix}\cos\theta&-\sin\theta\\
+                    \sin\theta& \cos\theta\end{bmatrix}:
+    \theta\in[0,2\pi)\right\}.
+    \label{eq:definicion-so2}
+\end{equation}
+
+No se incorporaron reflexiones. Una red equivariante codifica esta acción en
+sus capas; el \emph{data augmentation}, en cambio, presenta ejemplos transformados
+durante el ajuste.
+
+\paragraph{Mapas equivariantes.}
+
+Sean \(X\) y \(Y\) los espacios de entrada y salida, con representaciones
+posiblemente distintas \(\rho_X\) y \(\rho_Y\). Una función
+\(F:X\rightarrow Y\) es equivariante al grupo \(G\) si
+
+\begin{equation}
+    F\!\left(\rho_X(g)\mathbf x\right)
+    =\rho_Y(g)F(\mathbf x),
+    \qquad \forall g\in G,\ \mathbf x\in X.
+    \label{eq:definicion-equivarianza}
+\end{equation}
+
+\begingroup\widowpenalty=10000
+Matemáticamente, un campo es una función \(f:\mathbb R^2\rightarrow V\)
+que asigna a cada posición \(\mathbf u\) del plano un valor
+\(f(\mathbf u)\) en un espacio vectorial \(V\). Para un campo escalar (\emph{scalar field}),
+\(V=\mathbb R\); para un campo vectorial (\emph{vector field}) de dos componentes,
+\(V=\mathbb R^2\). En una CNN, estos valores se representan en la cuadrícula
+del \emph{feature map}. Una capa puede contener varios campos y, en una
+CNN equivariante a rotaciones, se especifica cómo se transforman al rotar la
+imagen.
+\par\endgroup
+
+Un campo escalar asigna un número a cada posición y ocupa un canal físico del
+tensor. Al rotar la imagen, estos valores se reubican sin cambiar. Los canales
+rojo, verde y azul (\emph{red, green, blue}, RGB) de una imagen son ejemplos de campos escalares.
+Denotaremos este tipo por \(F_0\); el subíndice \(0\) indica una frecuencia
+angular cero en la transformación de sus valores, que se conservan al rotar
+la imagen.
+
+Un campo vectorial asigna a cada posición un vector de dos componentes y
+ocupa dos canales físicos. Al rotar la imagen, los vectores cambian de
+posición y también se rotan. Denotaremos este tipo por \(F_1\); la frecuencia
+angular \(1\) indica que cada vector gira el mismo ángulo que la imagen.
+Sus dos canales se transforman conjuntamente, pues contienen las componentes
+de un mismo vector.
+
+Si \(f_0(\mathbf u)\) y \(f_1(\mathbf u)\) son, respectivamente, los valores
+de un campo escalar y uno vectorial en la posición \(\mathbf u\), la acción
+de una rotación de ángulo \(\theta\) se expresa como
+
+\begin{equation}
+    \begin{aligned}
+        \relax[T_\theta f_0](\mathbf u)&=f_0(R_{-\theta}\mathbf u),\\
+        \relax[T_\theta f_1](\mathbf u)&=R_\theta f_1(R_{-\theta}\mathbf u).
+    \end{aligned}
+    \label{eq:accion-campo-fn}
+\end{equation}
+
+Aquí \(R_\theta\) es la matriz de rotación definida anteriormente y
+\(R_{-\theta}\mathbf u\) indica la posición de origen del valor que ocupa
+\(\mathbf u\) después de la rotación.
+
+Por ejemplo, supongamos que en la posición \(\mathbf u=(1,0)\) un campo
+escalar tiene valor \(5\) y un campo vectorial tiene valor \((2,0)\). Una
+rotación de \(90^\circ\) en sentido antihorario lleva esa posición a
+\((0,1)\). En la nueva posición, el campo escalar sigue teniendo valor
+\(5\), mientras que el campo vectorial tiene valor \((0,2)\).
+
+Una capa con \(n_0\) campos escalares y \(n_1\) vectoriales ocupa
+\(C=n_0+2n_1\) canales físicos. Por muestra, su tensor tiene forma
+\(C\times H\times W\), donde \(C\) es la dimensión de canales y \(H\) y
+\(W\) son las dimensiones espaciales del mapa. La
+Figura~\ref{fig:tipos-campo-f01} resume estas transformaciones. Estas reglas
+permiten interpretar las dos rutas de la
+Figura~\ref{fig:equivarianza-rotacional}: rotar primero la entrada o
+transformar después los campos de salida debe producir el mismo resultado.
+
+\begin{figure}[htbp]
+    \centering
+    \resizebox{0.96\textwidth}{!}{\input{figures/architecture/field_types}}
+    \caption{Transformación intuitiva de los tipos de campo empleados. Un
+    campo escalar \(F_0\) conserva su valor; un campo vectorial
+    \(F_1\) rota conjuntamente sus dos componentes.}
+    \label{fig:tipos-campo-f01}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \input{figures/architecture/rotation_equivariance}
+    \caption[Las dos rutas de un mapa equivariante a rotaciones.]{Las dos
+    rutas de un mapa equivariante a rotaciones. Rotar la entrada antes de
+    aplicar \(F\) produce el mismo resultado que aplicar la acción de salida
+    a \(F(\mathbf x)\). Esquema conceptual de la rotación de las posiciones
+    y las componentes de un campo vectorial.}
+    \label{fig:equivarianza-rotacional}
+\end{figure}
+\FloatBarrier
+\paragraph{Convolución en grupos.}
+
+La convolución puede extenderse a señales definidas sobre un grupo. Sean
+\(\mathbf f:G\rightarrow\mathbb R^{c_{in}}\) una señal y
+\(\boldsymbol\psi:G\rightarrow
+\mathbb R^{c_{out}\times c_{in}}\) un kernel. Se define
+
+\begin{equation}
+    (\mathbf f*\boldsymbol\psi)(x)
+    =\int_G \boldsymbol\psi(y^{-1}x)\,\mathbf f(y)\,d\lambda(y)
+    \in\mathbb R^{c_{out}},
+    \label{eq:convolucion-grupo}
+\end{equation}
+
+donde \(d\lambda\) es una medida de Haar invariante por la izquierda:
+\(\lambda(hA)=\lambda(A)\). En grupos compactos puede normalizarse para que
+\(\lambda(G)=1\); en un grupo discreto, la integral se convierte en una suma.
+Si \([L_h\mathbf f](x)=\mathbf f(h^{-1}x)\), entonces
+
+\begin{equation}
+    L_h(\mathbf f*\boldsymbol\psi)
+      =(L_h\mathbf f)*\boldsymbol\psi,
+    \label{eq:equivarianza-convolucion-grupo}
+\end{equation}
+
+que expresa equivarianza a la acción regular izquierda. Para grupos compactos
+y bajo restricciones naturales sobre las capas lineales, Kondor y Trivedi
+caracterizan la estructura convolucional como condición necesaria y suficiente
+para equivarianza~\cite{kondor_generalization_2018}. La
+Figura~\ref{fig:conv_equivariant} ilustra las dos rutas equivalentes.
+La Figura~\ref{fig:convdiagram} muestra las dos rutas equivalentes: rotar la
+entrada y después aplicar la convolución, o aplicar primero la convolución y
+rotar la salida. Las flechas horizontales representan una rotación de
+\(60^\circ\), mientras que las verticales representan la convolución, cuyo
+efecto sobre la señal se ilustra mediante un cambio de color.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{aplicacion_en_f.jpg}
+    \includegraphics[width=0.45\textwidth]{aplicacion_en_fg.jpg}
+    \caption{Equivarianza de una convolución respecto de una rotación de
+    \(60^\circ\): transformar la entrada antes de la operación produce el
+    mismo resultado que transformar la salida.}
+    \label{fig:conv_equivariant}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{hexagono.jpg}
+    \caption{Diagrama ilustrativo de la
+    Ecuación~\eqref{eq:equivarianza-convolucion-grupo} para el grupo discreto
+    de rotaciones de un hexágono.}
+    \label{fig:convdiagram}
+\end{figure}
+
+\FloatBarrier
+Las convoluciones steerable utilizan kernels que respetan las reglas de
+transformación de los campos de entrada y salida. Sus kernels se expresan
+como combinaciones lineales de funciones de base compatibles con esas
+transformaciones. Durante el entrenamiento se aprenden los coeficientes de la
+combinación. Así se pueden construir capas entre campos escalares y
+vectoriales~\cite{cohen_steerable_2016}.
+
+\section{MIL y atención espacial}
+
+\begingroup\brokenpenalty=10000
 En una WSI, la etiqueta clínica describe la lámina completa, aunque el tejido
 se procese como miles de parches que no tienen una etiqueta diagnóstica
-individual. El aprendizaje de instancias múltiples (MIL, por sus siglas en
-inglés) representa esta situación mediante una bolsa de instancias y una sola
+individual. El MIL representa esta situación mediante una bolsa de instancias y una sola
 etiqueta para la bolsa. En el MIL de atención, cada parche se transforma en un
 vector y una función invariante a permutaciones aprende cuánto aporta a la
 representación global~\cite{ilse_attention_2018}. En patología computacional,
-CLAM complementa esa agregación con agrupamiento de instancias y supervisión
-débil~\cite{lu_dataefficient_2021}, mientras DSMIL combina evidencia de una
+el MIL con atención y restricciones de agrupamiento
+(\emph{Clustering-constrained Attention Multiple Instance Learning}, CLAM)
+complementa esa agregación con agrupamiento de instancias y supervisión
+débil~\cite{lu_dataefficient_2021}, mientras el MIL de doble flujo
+(\emph{Dual-stream Multiple Instance Learning}, DSMIL) combina evidencia de una
 instancia crítica con una representación agregada de la bolsa
 ~\cite{li_dualstream_2021}.
+\par\endgroup
 
-Un transformador (\emph{Transformer}) actualiza cada elemento de una secuencia
+Un transformador (\emph{Transformer}) actualiza cada elemento (\emph{token}) de una secuencia
 recuperando información de otros elementos mediante atención. Para ello,
 representa qué información busca mediante una consulta (\emph{query}), qué
 información ofrece cada elemento mediante una clave (\emph{key}) y qué contenido
@@ -185,9 +519,9 @@ se recupera mediante un valor (\emph{value}). La similitud entre una query y las
 keys determina los pesos con que se combinan los values. Así, cada elemento
 puede incorporar contexto sin recorrer la secuencia de manera recurrente.
 La operación central es la atención de producto punto
-escalado~\cite{vaswani_attention_2017}. Sean una secuencia de consultas
-\(\mathbf X_q\in\mathbb R^{n_q\times d}\) y una secuencia que aporta claves y
-valores \(\mathbf X_{kv}\in\mathbb R^{n_k\times d}\). Para una cabeza de
+escalado~\cite{vaswani_attention_2017}. Sean una secuencia de queries
+\(\mathbf X_q\in\mathbb R^{n_q\times d}\) y una secuencia que aporta keys y
+values \(\mathbf X_{kv}\in\mathbb R^{n_k\times d}\). Para una cabeza de
 atención, tres transformaciones afines producen las matrices de queries
 \(\mathbf Q\), keys \(\mathbf K\) y values \(\mathbf V\):
 
@@ -206,8 +540,8 @@ atención, tres transformaciones afines producen las matrices de queries
 donde, por ejemplo, \(\mathbf W_Q\in\mathbb R^{d\times d_k}\) y
 \(\mathbf b_Q\in\mathbb R^{d_k}\). La atención propia toma
 \(\mathbf X_q=\mathbf X_{kv}\); la atención cruzada conserva las dos secuencias
-distintas. Cada fila de \(\mathbf Q\mathbf K^{\mathsf T}\) compara una consulta
-con todas las claves. La normalización exponencial (\emph{softmax}) convierte
+distintas. Cada fila de \(\mathbf Q\mathbf K^{\mathsf T}\) compara una query
+con todas las keys. La normalización exponencial (\emph{softmax}) convierte
 estas puntuaciones en una distribución de pesos: sus componentes son no
 negativas y suman uno. Para un vector \(\mathbf s\in\mathbb R^{m}\), se define
 como
@@ -242,7 +576,7 @@ La matriz \(\mathbf M\in(\mathbb R\cup\{-\infty\})^{n_q\times n_k}\)
 permite añadir sesgos o excluir conexiones: después de \emph{softmax}, una
 entrada con valor \(-\infty\) recibe peso cero. El factor \(\sqrt{d_k}\)
 controla la escala de los productos internos. En atención de múltiples cabezas
-(MHA, \emph{multi-head attention}), cada cabeza \(h\in\{1,\ldots,H\}\)
+(\emph{multi-head attention}, MHA), cada cabeza \(h\in\{1,\ldots,H\}\)
 posee proyecciones propias y calcula \(\mathbf A_h\) mediante la
 Ecuación~\eqref{eq:atencion-producto-punto}. Sus salidas se concatenan y se
 mezclan con una proyección final:
@@ -262,12 +596,13 @@ ancho \(Hd_h=d\), \(\mathbf W_O\in\mathbb R^{d\times d}\) y
 
 El bloque Transformer contiene dos ramas residuales consecutivas. La primera
 mezcla información entre tokens mediante MHA; la segunda transforma el contenido
-de cada token mediante una red con compuerta SwiGLU. Cada rama suma su resultado
+de cada token mediante una unidad lineal con compuerta Swish
+(\emph{Swish-gated linear unit}, SwiGLU)~\cite{shazeer_glu_2020}. Cada rama suma su resultado
 al estado que recibió. En la variante pre-normalizada, la normalización se
 aplica antes de MHA o de SwiGLU~\cite{xiong_layernorm_2020}.
 
-La normalización por capas (LN, \emph{layer normalization}) se aplica a cada
-elemento de la secuencia (\emph{token}) por separado~\cite{ba_layernorm_2016}. Para la fila
+La normalización por capas (\emph{layer normalization}, LN) se aplica a cada
+token por separado~\cite{ba_layernorm_2016}. Para la fila
 \(\mathbf x_i\in\mathbb R^d\),
 
 \begin{equation}
@@ -284,9 +619,8 @@ elemento de la secuencia (\emph{token}) por separado~\cite{ba_layernorm_2016}. P
 Los vectores \(\boldsymbol\gamma\) y \(\boldsymbol\beta\) son aprendidos y
 \(\epsilon>0\) evita dividir por cero. La salida normalizada alimenta la
 operación de la rama; es el resultado de esa operación el que se suma al estado
-anterior. La segunda rama emplea una unidad lineal con compuerta Swish
-(SwiGLU)~\cite{shazeer_glu_2020}, basada en la unidad lineal ponderada por
-sigmoide (SiLU, \emph{sigmoid-weighted linear unit})
+anterior. La segunda rama emplea SwiGLU~\cite{shazeer_glu_2020}, basada en la unidad lineal ponderada por
+sigmoide (\emph{sigmoid-weighted linear unit}, SiLU)
 ~\cite{elfwing_silu_2018}. Si
 \(\mathbf Z=\operatorname{LN}(\mathbf U)\in\mathbb R^{n\times d}\), esta
 unidad se define como
@@ -329,14 +663,17 @@ proyecciones de atención y los dos caminos cortos.
     suma recibe tanto la salida de su rama como el estado anterior.}
     \label{fig:bloque-transformer}
 \end{figure}
+\FloatBarrier
 
+\begingroup\clubpenalty=10000
 Cuando no se
 agregan posiciones absolutas y todas las filas se permutan conjuntamente, la
-atención es equivariante a esa permutación. Una o varias consultas aprendidas
+atención es equivariante a esa permutación. Una o varias queries aprendidas
 pueden entonces resumir el conjunto en un número fijo de vectores, idea
-relacionada con el agrupamiento por atención del Set
+relacionada con el agrupamiento mediante atención multicabeza (\emph{pooling by multihead attention}) del Set
 Transformer~\cite{lee_settransformer_2019}. Esto permite tratar una WSI como
 una bolsa cuyo número de parches varía entre láminas.
+\par\endgroup
 
 Tratar la WSI únicamente como un conjunto elimina, sin embargo, la vecindad que
 existe entre parches contiguos. La atención sobre grafos permite restringir las
@@ -356,21 +693,27 @@ En atención por ventanas se particiona la cuadrícula en conjuntos disjuntos
     \label{eq:mascara-window-attention}
 \end{equation}
 
-Por tanto, la matriz de atención es diagonal por bloques y su costo es
+Al agrupar los índices por ventana, la matriz de atención es diagonal por
+bloques y su costo es
 \(\sum_r|\Omega_r|^2=nw\) cuando el tamaño de ventana es fijo, en vez de
 \(n^2\). Swin desplaza la partición entre bloques para comunicar ventanas
 adyacentes, mientras Neighborhood Attention centra una vecindad móvil en cada
-consulta. La Figura~\ref{fig:atencion-ventanas-mapa} muestra la diferencia
+query. La Figura~\ref{fig:atencion-ventanas-mapa} muestra la diferencia
 entre la matriz global y la máscara local.
 
 \begin{figure}[htbp]
     \centering
     \resizebox{0.92\textwidth}{!}{\input{figures/architecture/transformer_window_attention}}
     \caption{Atención global y atención por ventanas. Cada fila de la matriz
-    representa una consulta y cada columna una clave; el color representa el
-    peso después de \emph{softmax}. Al restringir la atención, las entradas
+    representa una query y cada columna una key; el color representa el
+    peso después de \emph{softmax}. Los índices de las filas y columnas
+    corresponden a los subíndices de los tokens \(x_i\) de la cuadrícula.
+    En ambas matrices, estos índices siguen el orden
+    \(1,2,5,6\mid3,4,7,8\), que agrupa primero los tokens de la ventana
+    izquierda y después los de la derecha. La barra separa ambas ventanas.
+    Al restringir la atención, las entradas
     fuera de la ventana reciben \(-\infty\) antes de normalizar y quedan en
-    cero. La consulta marcada en la cuadrícula solo combina los valores de su
+    cero. La query marcada en la cuadrícula solo combina los values de su
     región local.}
     \label{fig:atencion-ventanas-mapa}
 \end{figure}
@@ -389,179 +732,19 @@ dominios y destaca la necesidad de estabilizar su masa inicial
 ~\cite{ramapuram_sigmoid_2025}. Esta distinción resulta relevante para bolsas
 de WSI cuyo número de parches puede variar en varios órdenes de magnitud.
 
-\section{Redes neuronales convolucionales equivariantes}
-
-Una convolución ordinaria comparte el mismo núcleo en todas las posiciones y,
-salvo efectos de borde o submuestreo, es equivariante a traslaciones. Si una
-entrada se desplaza, el mapa de características se desplaza de la misma forma;
-la salida no permanece necesariamente fija~\cite{cohen_group_2016,lim_what_2022}.
-Rotaciones y reflexiones son acciones diferentes y una CNN ordinaria no es
-equivariante a ellas por construcción. La Figura~\ref{fig:cat} muestra estas
-transformaciones en una imagen natural y en un recorte histológico.
-\begin{figure}[h!]
-\includegraphics[width=1\textwidth]{transformaciones_gato_wsi.png}
-\caption{Ejemplos de traslación, rotación y reflexión aplicadas a una imagen
-natural y a un recorte histológico.}
-\label{fig:cat}
-\end{figure}
-
-La salida deseada determina si la transformación debe producir invariancia o
-equivarianza. En clasificación, la clase puede permanecer fija; en
-segmentación, la máscara debe transformarse junto con la entrada, como se
-resume en la Figura~\ref{fig:cat_segmentation}.
-
-\begin{figure}[h!]
-\centering
-\subcaptionbox{Invarianza}{\includegraphics[width=0.35\linewidth]{fig2.jpg}}
-\quad
-\subcaptionbox{Equivarianza}{\includegraphics[width=0.55
-\linewidth]{fig3.jpg}}
-\caption{En \textbf{(a)} se muestra cómo la clasificación puede ser invariante.
-    En \textbf{(b)} se muestra cómo la segmentación puede ser equivariante.}
-\label{fig:cat_segmentation}
-\end{figure}
-
-En histopatología, la clase del tejido no depende de un ángulo fijo de
-observación de sus estructuras microscópicas. Esta observación ha motivado modelos que comparten
-filtros entre rotaciones y reflexiones en tareas histológicas
-~\cite{veeling_rotation_2018}. No toda imagen presenta esta simetría: los
-dígitos \(6\) y \(9\), por ejemplo, pueden intercambiar su identidad al rotarse
-\(180^\circ\), como ilustra la Figura~\ref{fig:69}.
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.3\textwidth]{6.jpg}
-    \includegraphics[width=0.3\textwidth]{9.jpg}
-    \caption{Ejemplo de una tarea que no posee invariancia rotacional: una
-    rotación de \(180^\circ\) puede intercambiar los dígitos 6 y 9.}
-    \label{fig:69}
-\end{figure}
-Como en las CNN usuales, aprovechar una simetría introduce un sesgo inductivo
-y permite compartir parámetros sobre las transformaciones consideradas
-~\cite{cesa_program_2021}. El aumento de datos
-ofrece otra forma de exponer el modelo a transformaciones geométricas. Bajo
-supuestos específicos sobre la distribución, la función objetivo y la clase
-de modelos, se han demostrado beneficios de generalización para imponer
-equivarianza directamente~\cite{elesedy_provably_2021}.
-\paragraph{Grupos y acciones.}
-
-Un grupo \(G\) es un conjunto dotado de una operación interna. Para
-\(a,b,c\in G\), esta operación es asociativa, existe una identidad \(e\) y
-cada elemento posee un inverso~\cite{hall_lie_groups_2015}:
-
-\begin{equation}
-    (ab)c=a(bc),\qquad ea=ae=a,\qquad a^{-1}a=aa^{-1}=e.
-    \label{eq:axiomas-grupo}
-\end{equation}
-
-Una acción especifica cómo cada \(g\in G\) transforma un espacio. En espacios
-vectoriales se representa mediante operadores lineales invertibles
-\(\rho(g)\), con \(\rho(e)=\mathbf I\) y
-\(\rho(g_1g_2)=\rho(g_1)\rho(g_2)\). En este trabajo, el grupo incorporado es
-el de rotaciones continuas del plano,
-
-\begin{equation}
-    \mathrm{SO}(2)=\left\{\mathbf R_\theta=
-    \begin{bmatrix}\cos\theta&-\sin\theta\\
-                    \sin\theta& \cos\theta\end{bmatrix}:
-    \theta\in[0,2\pi)\right\}.
-    \label{eq:definicion-so2}
-\end{equation}
-
-No se incorporaron reflexiones. Una red equivariante codifica esta acción en
-sus capas; el aumento de datos, en cambio, presenta ejemplos transformados
-durante el ajuste.
-
-\paragraph{Mapas equivariantes.}
-
-Sean \(X\) y \(Y\) los espacios de entrada y salida, con representaciones
-posiblemente distintas \(\rho_X\) y \(\rho_Y\). Una función
-\(F:X\rightarrow Y\) es equivariante a \(G\) si
-
-\begin{equation}
-    F\!\left(\rho_X(g)\mathbf x\right)
-    =\rho_Y(g)F(\mathbf x),
-    \qquad \forall g\in G,\ \mathbf x\in X.
-    \label{eq:definicion-equivarianza}
-\end{equation}
-
-Las dos rutas de la Ecuación~\eqref{eq:definicion-equivarianza} forman el
-diagrama conmutativo de la Figura~\ref{fig:equivarianza-rotacional}.
-Cuando la salida contiene campos vectoriales, la acción de rotación debe
-transformar tanto las posiciones espaciales como las componentes de cada
-vector.
-
-\begin{figure}[htbp]
-    \centering
-    \input{figures/architecture/rotation_equivariance}
-    \caption[Las dos rutas de un mapa equivariante a rotaciones.]{Las dos
-    rutas de un mapa equivariante a rotaciones. Rotar la entrada antes de
-    aplicar \(F\) produce el mismo resultado que aplicar la acción de salida
-    a \(F(\mathbf x)\). Esquema conceptual de la rotación de las posiciones
-    y las componentes de un campo vectorial.}
-    \label{fig:equivarianza-rotacional}
-\end{figure}
-\paragraph{Convolución en grupos.}
-
-La convolución puede extenderse a señales definidas sobre un grupo. Sean
-\(\mathbf f:G\rightarrow\mathbb R^{c_{in}}\) una señal y
-\(\boldsymbol\psi:G\rightarrow
-\mathbb R^{c_{out}\times c_{in}}\) un núcleo. Se define
-
-\begin{equation}
-    (\mathbf f*\boldsymbol\psi)(x)
-    =\int_G \boldsymbol\psi(y^{-1}x)\,\mathbf f(y)\,d\lambda(y)
-    \in\mathbb R^{c_{out}},
-    \label{eq:convolucion-grupo}
-\end{equation}
-
-donde \(d\lambda\) es una medida de Haar invariante por la izquierda:
-\(\lambda(hA)=\lambda(A)\). En grupos compactos puede normalizarse para que
-\(\lambda(G)=1\); en un grupo discreto, la integral se convierte en una suma.
-Si \([L_h\mathbf f](x)=\mathbf f(h^{-1}x)\), entonces
-
-\begin{equation}
-    L_h(\mathbf f*\boldsymbol\psi)
-      =(L_h\mathbf f)*\boldsymbol\psi,
-    \label{eq:equivarianza-convolucion-grupo}
-\end{equation}
-
-que expresa equivarianza a la acción regular izquierda. Para grupos compactos
-y bajo restricciones naturales sobre las capas lineales, Kondor y Trivedi
-caracterizan la estructura convolucional como condición necesaria y suficiente
-para equivarianza~\cite{kondor_generalization_2018}. La
-Figura~\ref{fig:conv_equivariant} ilustra las dos rutas equivalentes.
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.45\textwidth]{aplicacion_en_f.jpg}
-    \includegraphics[width=0.45\textwidth]{aplicacion_en_fg.jpg}
-    \caption{Equivarianza de una convolución respecto de una rotación de
-    \(60^\circ\): transformar la entrada antes de la operación produce el
-    mismo resultado que transformar la salida.}
-    \label{fig:conv_equivariant}
-\end{figure}
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.5\textwidth]{hexagono.jpg}
-    \caption{Diagrama ilustrativo de la
-    Ecuación~\eqref{eq:equivarianza-convolucion-grupo} para el grupo discreto
-    de rotaciones de un hexágono.}
-    \label{fig:convdiagram}
-\end{figure}
+\FloatBarrier
 
 \section{Trabajos relacionados}
 
 Los trabajos relacionados pueden agruparse en tres líneas: convoluciones
-equivariantes generales, aplicaciones en imágenes médicas y regularización de
-espacios latentes. Cohen y Welling introdujeron redes convolucionales sobre
+equivariantes generales, aplicaciones en imágenes médicas y autoencodificadores
+con simetrías. Cohen y Welling introdujeron redes convolucionales sobre
 grupos discretos y reportaron errores de 2,28\% en rotated-MNIST y de 4,19\% y
-6,46\% en CIFAR-10 con y sin aumento de datos, respectivamente
-~\cite{cohen_group_2016}. Posteriormente formularon las CNN direccionables,
+6,46\% en CIFAR-10 con y sin \emph{data augmentation}, respectivamente
+~\cite{cohen_group_2016}. Posteriormente formularon las CNN \emph{steerable},
 en las cuales la restricción de equivarianza se impone sobre el espacio de
-núcleos~\cite{cohen_steerable_2016}. Esta línea se apoya en la teoría clásica
-de filtros orientables de Freeman y Adelson~\cite{freeman_design_1991}.
+kernels~\cite{cohen_steerable_2016}. Esta línea se apoya en la teoría clásica
+de filtros \emph{steerable} de Freeman y Adelson~\cite{freeman_design_1991}.
 
 Por otra parte, Elesedy y Zaidi estudian garantías teóricas de generalización
 para modelos lineales y caracterizan condiciones bajo las cuales la proyección
@@ -571,19 +754,10 @@ restringido~\cite{elesedy_provably_2021}. En imágenes, la
 equivarianza traslacional conduce a la estructura de las convoluciones
 usuales.
 
-La relación entre equivarianza y organización del espacio latente también ha
-sido estudiada en autoencodificadores. Kouzelis et al. propusieron EQ-VAE, una
-regularización aplicada a autoencodificadores preentrenados para favorecer que
-transformaciones semánticamente conservativas, entre ellas la rotación, tengan
-una respuesta más sencilla en el latente~\cite{kouzelis_eqvae_2025}. Su método emplea regularización sobre un autoencodificador preentrenado
-y su objetivo final es acelerar modelos generativos. Su hipótesis de que un latente equivariante puede tener una
-geometría menos compleja motivó parte de las visualizaciones y mediciones
-geométricas utilizadas en este trabajo.
-
-Weiler y Cesa obtuvieron soluciones analíticas para espacios de núcleos
-equivariantes a \(E(2)\) y las implementaron en una biblioteca de PyTorch
+Weiler y Cesa obtuvieron soluciones analíticas para espacios de kernels
+equivariantes al grupo \(E(2)\) y las implementaron en una biblioteca de PyTorch
 ~\cite{weiler_general_2019}. Cesa et al. extendieron el teorema de
-Wigner--Eckart para parametrizar núcleos direccionables sobre espacios de
+Wigner--Eckart para parametrizar kernels \emph{steerable} sobre espacios de
 grupos compactos y reunieron estas construcciones en el programa
 \texttt{escnn}~\cite{cesa_program_2021}. En una dirección complementaria,
 Weiler et al. presentaron una formulación libre de coordenadas para
@@ -599,24 +773,57 @@ compararon varias discretizaciones angulares y mostraron el efecto de aumentar
 la resolución del muestreo de rotaciones. Veeling et al. evaluaron redes
 equivariantes al grupo \(p4m\), que incorpora rotaciones de múltiplos de
 \(90^\circ\) y reflexiones, para detectar metástasis en parches de ganglio
-linfático; frente a su línea base reportaron mejor exactitud y eficiencia de
-parámetros~\cite{veeling_rotation_2018}. Li et al. combinaron filtros dinámicos
+linfático. En clasificación supervisada sobre PatchCamelyon, su modelo
+P4M-DenseNet alcanzó una exactitud (\emph{accuracy}) de 89,8\% y un área bajo la
+curva de característica operativa del receptor
+(\emph{area under the receiver operating characteristic curve}, ROC-AUC) de
+96,3\%, frente a 87,6\% y 95,5\%, respectivamente, para una DenseNet
+convencional~\cite{veeling_rotation_2018}. Li et al. combinaron filtros dinámicos
 con convoluciones equivariantes y reportaron mejoras frente a las líneas base
 consideradas en tareas de imagen médica~\cite{li_dynamic_2020}.
-La equivarianza también se ha estudiado en autoencodificadores. Nasiri y
-Bepler formularon TARGET-VAE, cuyo codificador equivariante a traslaciones y
+
+\begingroup\brokenpenalty=10000
+La equivarianza también se ha estudiado en autoencodificadores. Lafarge et al.
+incorporaron convoluciones de grupo en el codificador y el decodificador de un
+VAE para histopatología. Su implementación utilizó ocho orientaciones discretas
+y un latente organizado por orientación; además, estudiaron la separación
+entre variables isotrópicas y angulares~\cite{lafarge_orientation_2020}.
+Kuzina et al. también construyeron un VAE con ambas ramas equivariantes a
+rotaciones discretas, utilizado como modelo generativo para recuperar imágenes
+a partir de mediciones incompletas~\cite{kuzina_equivariant_2022}.
+\par\endgroup
+
+Otra estrategia es modificar el entrenamiento. Kouzelis et al. propusieron
+EQ-VAE, que favorece la equivarianza mediante una modificación de la función
+de pérdida de un autoencodificador preentrenado, sin incorporarla directamente
+en sus capas~\cite{kouzelis_eqvae_2025}.
+
+Nasiri y Bepler formularon TARGET-VAE, cuyo codificador equivariante a traslaciones y
 rotaciones infiere la posición, la pose y una representación semántica del
 objeto; un generador espacialmente equivariante permite reconstruirlo
-~\cite{nasiri_target_2022}. Burgess et al. introdujeron O2-VAE
+~\cite{nasiri_target_2022}. En MNIST con rotaciones uniformes y traslaciones,
+la variante \(P_{16}\), con 16 orientaciones discretas y una representación
+semántica de dos componentes, alcanzó una exactitud de agrupamiento de
+63,4\%, frente a 12,8\% para un VAE convencional~\cite{nasiri_target_2022}.
+Burgess et al. introdujeron O2-VAE
 para perfilar la forma de células y orgánulos. Su codificador combina
-operaciones equivariantes con agrupamiento espacial para obtener una
+operaciones equivariantes con \emph{pooling} espacial para obtener una
 representación invariante a la orientación, y el entrenamiento alinea la
-entrada con la reconstrucción~\cite{burgess_orientation_2024}. Ambos modelos
+entrada con la reconstrucción~\cite{burgess_orientation_2024}. En el conjunto
+sintético \emph{Profiling Cell Shape and Texture} (PCST), el agrupamiento
+mediante \(k\)-medias (\emph{k-means}), con \(k=10\), asignó una imagen y su
+copia rotada a grupos diferentes en el 7,4\% de los casos con O2-VAE, frente
+al 58\% con un VAE convencional. Esta medida evalúa la consistencia del
+agrupamiento ante rotaciones~\cite{burgess_orientation_2024}. Ambos modelos
 aprenden representaciones sin supervisión: TARGET-VAE separa contenido y pose,
 mientras O2-VAE obtiene invariancia a la orientación.
 
-En esta tesis se estudió la utilidad de un mapa latente espacial mediante
-reconstrucción, segmentación a resolución de parche, diagnóstico de WSI y
-análisis de su respuesta a rotaciones. Las tareas supervisadas utilizaron las
-representaciones obtenidas durante el entrenamiento de los VAE, cuyos pesos
-permanecieron congelados.
+En esta tesis se incorporaron convoluciones \emph{steerable} equivariantes al
+grupo \(\mathrm{SO}(2)\) en el codificador y el decodificador de un VAE,
+conservando un mapa latente espacial. A diferencia de los enfoques que separan
+explícitamente contenido y pose u obtienen un vector invariante a la
+orientación, ese mapa conserva la organización espacial de las
+características. La comparación con un VAE base evaluó conjuntamente la
+reconstrucción, la utilidad de las representaciones para el diagnóstico de
+WSI mediante MIL y la segmentación de tejido a resolución de parche, además
+de su respuesta a transformaciones rotacionales.

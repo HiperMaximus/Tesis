@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 from pathlib import Path
 
 import numpy as np
@@ -67,7 +68,7 @@ def _render_paired_wsi(csv_path: Path, path: Path) -> None:
 
     draw.text(
         (left, 35),
-        "MAE media pareada por WSI en la prueba sellada",
+        "Comparación pareada de la media del MAE por WSI",
         fill=ink,
         font=_font(48, bold=True),
     )
@@ -126,6 +127,77 @@ def _render_paired_wsi(csv_path: Path, path: Path) -> None:
     image.save(path, optimize=True)
 
 
+def _render_reconstruction_distributions(summary_path: Path, output_dir: Path) -> None:
+    """Draw stored quartiles and min/max with a shared numeric axis per metric."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import to_rgba
+    from matplotlib.ticker import FuncFormatter, MaxNLocator
+
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    metrics = (
+        ("mae_norm", "mae", "MAE", "Error absoluto medio (dominio normalizado)"),
+        ("mse_norm", "mse", "MSE", "Error cuadrático medio (dominio normalizado)"),
+        ("psnr_img", "psnr", "PSNR", "PSNR (dB)"),
+        ("ssim_img", "ssim", "SSIM", "Índice de similitud estructural (adimensional)"),
+    )
+    for key, suffix, title, axis_label in metrics:
+        distributions = [
+            summary["branches"][branch]["patch_distribution"][key]
+            for branch in ("normal", "so2")
+        ]
+        stats = [
+            {"q1": row["q1"], "med": row["median"], "q3": row["q3"],
+             "whislo": row["min"], "whishi": row["max"]}
+            for row in distributions
+        ]
+        fig, ax = plt.subplots(figsize=(7.4, 3.0))
+        fig.subplots_adjust(left=0.21, right=0.97, bottom=0.28, top=0.80)
+        artists = ax.bxp(stats, positions=(2, 1), widths=0.34,
+                         orientation="horizontal", patch_artist=True,
+                         showfliers=False, manage_ticks=False,
+                         medianprops={"linewidth": 2.0},
+                         whiskerprops={"linewidth": 1.5},
+                         capprops={"linewidth": 1.5})
+        for index, color in enumerate(("#2563eb", "#e85d0f")):
+            artists["boxes"][index].set(facecolor=to_rgba(color, 0.14),
+                                         edgecolor=color, linewidth=1.8)
+            artists["medians"][index].set_color(color)
+            for name in ("whiskers", "caps"):
+                for line in artists[name][2 * index:2 * index + 2]:
+                    line.set_color(color)
+        low = min(row["min"] for row in distributions)
+        high = max(row["max"] for row in distributions)
+        padding = 0.05 * (high - low)
+        if key == "ssim_img":
+            ax.set_xlim(0, 1)
+        elif key in ("mae_norm", "mse_norm"):
+            ax.set_xlim(0, high + padding)
+        else:
+            ax.set_xlim(low - padding, high + padding)
+        ax.set_ylim(0.5, 2.5)
+        ax.set_yticks((2, 1), ("VAE base", "VAE-SO(2)"), fontsize=12)
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=6))
+        decimals = 2 if key == "mse_norm" else 0 if key == "psnr_img" else 1
+        ax.xaxis.set_major_formatter(FuncFormatter(
+            lambda value, position, places=decimals:
+            f"{value:.{places}f}".replace(".", ",")
+        ))
+        ax.tick_params(axis="x", labelsize=12)
+        ax.tick_params(axis="y", length=0, pad=10)
+        ax.set_xlabel(axis_label, fontsize=12, labelpad=10)
+        ax.set_title(title, loc="left", fontsize=14, fontweight="bold", pad=12)
+        ax.grid(axis="x", color="#dbe3ec", linewidth=0.8)
+        ax.set_axisbelow(True)
+        for name in ("top", "right", "left"):
+            ax.spines[name].set_visible(False)
+        ax.spines["bottom"].set_color("#64748b")
+        fig.savefig(output_dir / f"vae_test_patch_{suffix}.png", dpi=360)
+        plt.close(fig)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--research-root", type=Path, required=True)
@@ -158,16 +230,10 @@ def main() -> None:
         _save_crop(mil, (1100, 140, 2200, 720), output_dir / "mil_training_loss.png")
         _save_crop(mil, (300, 830, 1900, 1200), output_dir / "tissue_training_f1.png")
 
-    # The four reconstruction summaries are legible on screen as a dashboard,
-    # but their labels become too small when the complete 2x2 raster is placed
-    # on a thesis page.  Export each accepted panel without resampling so LaTeX
-    # can give it the full text width.
-    reconstruction_metrics = output_dir / "vae_test_patch_metrics.png"
-    with Image.open(reconstruction_metrics).convert("RGB") as metrics:
-        _save_crop(metrics, (42, 82, 584, 369), output_dir / "vae_test_patch_mae.png")
-        _save_crop(metrics, (616, 82, 1159, 369), output_dir / "vae_test_patch_mse.png")
-        _save_crop(metrics, (42, 397, 584, 690), output_dir / "vae_test_patch_psnr.png")
-        _save_crop(metrics, (616, 397, 1159, 690), output_dir / "vae_test_patch_ssim.png")
+    _render_reconstruction_distributions(
+        research_root / "runs/local/vae_test_reconstruction_scored_v1/metrics/overall_summary.json",
+        output_dir,
+    )
 
     _render_paired_wsi(
         research_root

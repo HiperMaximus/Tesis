@@ -11,37 +11,37 @@ explorar biomarcadores morfológicos~\cite{verghese_computational_2023}.
 Una dificultad central es la disponibilidad de etiquetas. Las anotaciones
 histológicas detalladas requieren tiempo de especialistas y su costo aumenta con
 el tamaño de la lámina, la complejidad de la estructura y la resolución espacial
-solicitada. En un corpus anotado de colon y piel se observaron tiempos entre 45
-segundos y más de 360 minutos por WSI, según la tarea
-~\cite{lindman_annotations_2019}. En consecuencia, es común disponer de muchas
+solicitada~\cite{lindman_annotations_2019}. En consecuencia, es común disponer de muchas
 regiones de tejido que pueden utilizarse para aprender una representación, pero
 de un número menor de regiones con etiquetas apropiadas para entrenar y evaluar
 un clasificador.
 
-Las redes neuronales profundas aprenden representaciones mediante composiciones
+Las redes neuronales profundas (\emph{deep neural networks}) aprenden
+representaciones mediante composiciones
 de transformaciones parametrizadas y no requieren que las características se
 definan manualmente de antemano~\cite{goodfellow_deep_2016}. Para imágenes, las
-redes neuronales convolucionales (CNN, \emph{convolutional neural networks})
-aprovechan la localidad y la compartición espacial de pesos: un mismo núcleo
+redes neuronales convolucionales (\emph{convolutional neural networks}, CNN)
+aprovechan la localidad y el \emph{parameter sharing} espacial: un mismo núcleo (\emph{kernel})
 se aplica en diferentes posiciones, lo que reduce el número de parámetros frente
 a una capa densa de dimensiones comparables y produce equivarianza traslacional
-en la operación convolucional. Esta propiedad no implica invariancia completa de
-la red y puede verse afectada por bordes, muestreo, agrupamiento y pasos mayores
+en la operación convolucional. Esta propiedad no implica invariancia (\emph{invariance}) completa de
+la red y puede verse afectada por bordes, muestreo, agrupamiento (\emph{pooling}) y pasos mayores
 que uno~\cite{cohen_group_2016}.
 
 Las rotaciones constituyen una simetría adicional relevante en histopatología,
 pues una orientación distinta de una región no debería cambiar su contenido
-diagnóstico. El aumento de datos mediante rotaciones expone al modelo a ejemplos
+diagnóstico. El aumento de datos (\emph{data augmentation}) mediante rotaciones
+expone al modelo a ejemplos
 transformados, pero no garantiza una respuesta exactamente equivariante y añade
 un costo que depende de cuántas transformaciones se evalúen. Las convoluciones
 equivariantes incorporan la relación geométrica en la arquitectura mediante
-compartición restringida de parámetros~\cite{veeling_rotation_2018}. Esta restricción puede reducir la complejidad estadística bajo supuestos
+\emph{parameter sharing} restringido~\cite{veeling_rotation_2018}. Esta restricción puede reducir la complejidad estadística bajo supuestos
 adecuados~\cite{elesedy_provably_2021}.
 
 Por tal motivo, este trabajo estudia redes neuronales convolucionales
 equivariantes como parte de un esquema semisupervisado. Primero se entrenaron,
 sin consultar las etiquetas de las tareas posteriores, un VAE convencional y un
-VAE con equivarianza continua a \(\mathrm{SO}(2)\). Después se congelaron ambos
+VAE con equivarianza continua respecto al grupo \(\mathrm{SO}(2)\). Después se congelaron ambos
 codificadores y se comparó la utilidad de sus representaciones mediante
 clasificación diagnóstica a nivel de WSI y segmentación de la WSI sobre una
 cuadrícula cuya unidad es un parche de \(256\times256\) píxeles. Esta última
@@ -51,6 +51,6 @@ anotación no se trataron como una clase negativa.
 Esto conduce a la siguiente pregunta de investigación:
 
 ¿En qué medida las representaciones aprendidas por un VAE con equivarianza
-continua a \(\mathrm{SO}(2)\), comparadas con las de un VAE convolucional base,
+continua respecto al grupo \(\mathrm{SO}(2)\), comparadas con las de un VAE convolucional base,
 resultan útiles para la clasificación a nivel de WSI y la segmentación de WSI a
 resolución de parche cuando se dispone de anotaciones limitadas?

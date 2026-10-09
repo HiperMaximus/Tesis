@@ -16,13 +16,15 @@
 \node[operation,right=9mm of input] (conv1) {Convolución\\normalización + compuerta};
 \node[operation,right=8mm of conv1] (conv2) {Convolución\\normalización};
 \node[sum,right=10mm of conv2] (sum) {\(+\)};
-\node[operation,right=9mm of sum] (output) {Salida\\\(\mathbf{y}\)};
+\node[operation,right=8mm of sum,fill=green!12] (gate) {Compuerta de salida\\\(\Phi\)};
+\node[operation,right=8mm of gate] (output) {Salida\\\(\mathbf{y}\)};
 \node[skip,below=13mm of conv1] (skip) {Identidad o proyección\\si cambia forma/resolución};
 
 \draw[flow] (input) -- (conv1);
-\draw[flow] (conv1) -- node[above,font=\sffamily\scriptsize] {$\mathcal{F}(\mathbf{x})$} (conv2);
-\draw[flow] (conv2) -- (sum);
-\draw[flow] (sum) -- (output);
+\draw[flow] (conv1) -- (conv2);
+\draw[flow] (conv2) -- node[above,font=\sffamily\scriptsize] {$\mathcal{F}(\mathbf{x})$} (sum);
+\draw[flow] (sum) -- (gate);
+\draw[flow] (gate) -- (output);
 \draw[flow] (input.south) |- (skip.west);
 \draw[flow] (skip.east) -| node[pos=0.72,right,font=\sffamily\scriptsize] {$W_s\mathbf{x}$} (sum.south);
 

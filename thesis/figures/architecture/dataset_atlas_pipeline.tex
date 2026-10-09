@@ -16,7 +16,7 @@
 \node[source] (mask) at (0,-1.25) {Máscara RGB suplementaria\\anotación incompleta};
 \node[process] (thumb) at (4.0,1.25) {Miniatura\\HSV + Otsu en saturación};
 \node[process] (fractions) at (4.0,-1.25) {Lectura por franjas\\fracciones por clase};
-\node[output] (atlas) at (8.1,0) {Atlas de coordenadas\\grilla de $256\times256$};
+\node[output, font=\footnotesize, text width=3.6cm, minimum height=1.55cm] (atlas) at (8.1,0) {Atlas de coordenadas\\cuadrícula de $256\times256$};
 \node[output] (split) at (12.1,0) {Partición fija por WSI\\106 / 23 / 23};
 
 \draw[flow] (wsi) -- (thumb);

@@ -21,8 +21,8 @@ en la segmentación dispersa a resolución de parche, el área bajo la curva de
 eficiencia de etiquetas fue mayor para la rama equivariante, aunque su
 intervalo simultáneo tampoco excluyó cero.
 
-Por tanto, la hipótesis inicial de una mejora estadísticamente concluyente en
-las tareas posteriores no quedó validada. La
+En conjunto, los resultados no mostraron una mejora general estadísticamente
+concluyente en las tareas posteriores. La
 prueba sellada incluyó 23 WSI, algunas clases estuvieron representadas por solo
 dos o cinco láminas y cada rama supervisada se entrenó una sola vez. Los
 intervalos reflejan el remuestreo de WSI observadas; la variación entre
@@ -34,7 +34,7 @@ los 25 parches del conjunto fijo. En cuartos de vuelta, la razón de acción
 descendió de 0,709453 a \(2,18\times10^{-6}\), y las reconstrucciones del
 modelo base mostraron artefactos que no aparecieron en la rama equivariante.
 Para rotaciones interpoladas cada cinco grados, las medianas de acción y
-canonización también disminuyeron. Estos resultados muestran una regularidad rotacional verificable
+realineación del latente también disminuyeron. Estos resultados muestran una regularidad rotacional verificable
 al transformar el latente y decodificar. En la comparación continua de extremo
 a extremo, que también incluye al codificador, el error fue menor para el VAE
 base.
@@ -46,7 +46,7 @@ debe conservarse al cambiar su orientación.
 
 \section{Comparación entre representaciones}
 
-La reconstrucción revela un primer compromiso. Restringir los núcleos redujo
+La reconstrucción revela un primer compromiso. Restringir los kernels redujo
 el número de parámetros libres, pero amplió sus soportes y aumentó el costo de
 convolución estimado. Graham et al. mantuvieron números similares de parámetros en
 comparaciones de clasificadores histológicos equivariantes
@@ -61,26 +61,20 @@ En diagnóstico, la diferencia puntual de macro-F1 fue de 0,095 a favor del
 VAE-\(\mathrm{SO}(2)\), pero con un intervalo amplio. En tejido, la rama
 equivariante obtuvo mayor macro-F1 con 250, 500, \(1\,000\) y \(2\,500\)
 etiquetas por clase; solo en el presupuesto de 500 el intervalo simultáneo
-excluyó cero. Con todas las \(5\,671\) etiquetas disponibles, la estimación
+excluyó cero. Con \(5\,671\) etiquetas por clase, la estimación
 puntual se invirtió y favoreció al VAE base. La secuencia es compatible con la
 posibilidad de que el sesgo geométrico ayude en un régimen de supervisión muy
 escasa y pierda importancia cuando el predictor dispone de más ejemplos. Esta
 interpretación permanece como hipótesis, dada la secuencia no monótona, la
 amplitud de los intervalos y la única inicialización evaluada.
 
-La relación entre sesgo geométrico y cantidad de etiquetas puede discutirse
-a partir de la lección amarga (\emph{Bitter Lesson}) de
-Sutton~\cite{sutton_bitter_lesson_2019}. Su argumento histórico es
-que, a largo plazo, los métodos generales capaces de aprovechar más cómputo y
-datos suelen superar soluciones que incorporan conocimiento humano específico.
-La equivarianza empleada en esta tesis constituye un sesgo
-incorporado, pues restringe de antemano cuáles transformaciones puede aprender
-cada capa. La desaparición de la ventaja puntual al usar todas las etiquetas es
-compatible con esa tensión. La comparación se realizó a una escala fija de
-modelo, cómputo y volumen de preentrenamiento y, en patología, la disponibilidad
-de etiquetas expertas no crece necesariamente al ritmo del cómputo. En un régimen fijo y pequeño, un sesgo adecuado todavía puede ser
-útil; determinar cuándo deja de serlo exige curvas de escalamiento diseñadas
-para responder esa pregunta.
+La lección amarga (\emph{Bitter Lesson}) de Sutton
+~\cite{sutton_bitter_lesson_2019} plantea que, a largo plazo, los métodos
+generales capaces de aprovechar más cómputo tienden a superar las soluciones
+basadas en conocimiento específico. Esta perspectiva motiva estudiar cómo
+cambia la utilidad de la equivarianza al aumentar los datos, el tamaño del
+modelo y el cómputo de entrenamiento. En histopatología, este análisis debe
+considerar también el costo de las etiquetas expertas.
 
 \section{Relación con trabajos previos}
 
@@ -90,12 +84,25 @@ cuando rota la entrada. Una representación equivariante permite que el vector
 cambie, pero exige que lo haga mediante una acción conocida. Elphick et al.
 evaluaron la invariancia a rotaciones de doce modelos fundacionales de
 patología mediante vecinos mutuos y distancia coseno, y encontraron mayor
-invariancia en los modelos que habían usado aumento por rotación durante el
+invariancia en los modelos que habían usado \emph{data augmentation} por rotación durante el
 preentrenamiento~\cite{elphick_rotation_2024}. Ese estudio y esta tesis no
 miden la misma propiedad: allí se compara la alineación entre representaciones
 globales; aquí se transforma explícitamente un mapa latente y se comprueba su
 decodificación. En ambos trabajos, la medición directa de la respuesta a la
 orientación complementa la evaluación del desempeño final.
+
+Los VAE con simetrías también difieren en la organización de sus
+representaciones. Lafarge et al. estudiaron un latente organizado por
+orientaciones discretas y la separación entre variables isotrópicas y
+angulares~\cite{lafarge_orientation_2020}; TARGET-VAE separa contenido y pose
+~\cite{nasiri_target_2022}, mientras O2-VAE obtiene un vector invariante a la
+orientación~\cite{burgess_orientation_2024}. En esta tesis se conservó un mapa
+latente espacial en una arquitectura con convoluciones \emph{steerable}
+equivariantes al grupo continuo \(\mathrm{SO}(2)\). Este mapa permitió
+estudiar una acción rotacional explícita sobre el latente y emplear sus
+características en clasificadores de tejido y WSI. La comparación aborda así
+tanto la respuesta rotacional como la utilidad predictiva de las
+representaciones.
 
 La disminución del error de acción y la estabilidad visual del
 VAE-\(\mathrm{SO}(2)\) aportan evidencia complementaria a
@@ -103,7 +110,7 @@ EQ-VAE~\cite{kouzelis_eqvae_2025}. En ambos casos se estudia si una transformaci
 semánticamente conservativa adquiere una estructura más regular en el espacio
 latente. EQ-VAE induce esa propiedad mediante regularización sobre un
 autoencodificador preentrenado; en esta tesis se incorporó mediante el espacio
-de núcleos direccionables desde el inicio del entrenamiento.
+de kernels \emph{steerable} desde el inicio del entrenamiento.
 
 La geometría local ofrece una señal más débil. Con pasos de un grado, la medida
 corregida disminuyó 7,38\% y favoreció al modelo equivariante en los 25 parches,

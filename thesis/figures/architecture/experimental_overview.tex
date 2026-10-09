@@ -1,0 +1,60 @@
+\begin{tikzpicture}[
+    font=\sffamily\small,
+    >={Latex[length=2.5mm]},
+    box/.style={draw=black!55,rounded corners=2pt,align=center,
+        text width=3.55cm,minimum height=1.05cm,inner sep=2mm},
+    data/.style={box,fill=black!3},
+    learned/.style={box,fill=blue!7,draw=blue!55!black},
+    frozen/.style={box,fill=orange!12,draw=orange!65!black},
+    target/.style={box,fill=green!8,draw=green!45!black},
+    flow/.style={->,thick,draw=black!65},
+    supervision/.style={->,thick,dashed,draw=green!45!black},
+    stage/.style={draw=black!35,dashed,rounded corners=3pt,inner sep=4mm}
+]
+% Both representations follow this same experimental route independently.
+\node[data] (unlabelled) at (0,0) {Parches sin etiquetas};
+\node[learned] (vae) at (4.6,0) {Entrenar VAE base\\y VAE-$\mathrm{SO}(2)$};
+\node[target] (reconstruction) at (9.2,0) {Reconstrucción\\de los parches};
+\draw[flow] (unlabelled) -- (vae);
+\draw[flow] (vae) -- (reconstruction);
+\node[stage,fit=(unlabelled)(vae)(reconstruction),
+    label={[font=\sffamily\small\bfseries]above:
+    1. Aprender representaciones sin etiquetas}] {};
+
+\node[frozen] (freeze) at (4.6,-2.05) {Congelar los\\VAE entrenados};
+\draw[flow] (vae) -- (freeze);
+
+\begin{scope}[yshift=-5mm]
+\node[data] (supervised_data) at (0,-4.1)
+    {Parches de desarrollo\\supervisado};
+\node[frozen] (encoder) at (4.6,-4.1) {Codificadores\\congelados};
+\node[frozen] (latent) at (4.6,-5.85) {Representaciones\\de cada VAE};
+\node[target] (tissue_labels) at (0,-5.85) {Etiquetas de tejido};
+\node[target] (wsi_labels) at (9.2,-5.85) {Etiquetas de lámina};
+\node[learned] (tissue) at (0,-7.9) {Clasificador de tejido};
+\node[learned] (mil) at (9.2,-7.9) {Agregación MIL\\y clasificador de WSI};
+\node[target] (tissue_output) at (0,-9.7) {Tumor / estroma\\/ necrosis};
+\node[target] (wsi_output) at (9.2,-9.7) {Diagnóstico\\de lámina};
+
+\draw[flow] (freeze) -- (encoder);
+\draw[flow] (supervised_data) -- (encoder);
+\draw[flow] (encoder) -- (latent);
+\coordinate (branch) at (4.6,-6.85);
+\draw[thick,draw=black!65] (latent.south) -- (branch);
+\draw[flow] (branch) -- (2.25,-6.85) -- (2.25,-7.9) -- (tissue.east);
+\draw[flow] (branch) -- (6.95,-6.85) -- (6.95,-7.9) -- (mil.west);
+\draw[supervision] (tissue_labels) -- (tissue);
+\draw[supervision] (wsi_labels) -- (mil);
+\draw[flow] (tissue) -- (tissue_output);
+\draw[flow] (mil) -- (wsi_output);
+\node[stage,fit=(supervised_data)(encoder)(latent)(tissue_labels)(wsi_labels)
+    (tissue)(mil)(tissue_output)(wsi_output),
+    label={[font=\sffamily\small\bfseries,fill=white,inner sep=2pt]above:
+    2. Entrenar predictores supervisados}] {};
+
+\node[box,fill=purple!6,draw=purple!50!black,text width=12.7cm]
+    at (4.6,-11.6) {\textbf{Evaluación comparativa}\\
+    Reconstrucción $\cdot$ tejido $\cdot$ diagnóstico de lámina
+    $\cdot$ respuesta a rotaciones};
+\end{scope}
+\end{tikzpicture}

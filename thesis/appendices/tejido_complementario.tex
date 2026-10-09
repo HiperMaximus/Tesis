@@ -1,0 +1,91 @@
+% !TEX root = ../main.tex
+\chapter{Resultados complementarios de segmentación}
+\label{app:tejido-complementario}
+
+Este apéndice completa los resultados de segmentación de WSI a resolución de
+parche. Todos los modelos se evaluaron sobre las mismas \(31\,572\) celdas
+de 23 WSI, con soportes de \(21\,796\) para tumor, \(8\,500\) para estroma
+y \(1\,276\) para necrosis. Las tablas y matrices conservan los resultados
+de cada presupuesto de etiquetas; el presupuesto completo se presenta en las
+Tablas~\ref{tab:tejido-metricas-secundarias} y
+\ref{tab:tejido-clases-completo}, y en la
+Figura~\ref{fig:tejido-confusion-completo} del capítulo de resultados.
+
+\section{Resultados por clase}
+
+Las Tablas~\ref{tab:tejido-clases-250-500} y
+\ref{tab:tejido-clases-1000-2500} presentan precisión, sensibilidad y F1 de
+los cuatro presupuestos menores. La precisión indica qué proporción de las
+predicciones de una clase corresponde a ella; la sensibilidad indica qué
+proporción de las celdas de referencia de esa clase fue recuperada. F1 combina
+ambas mediante su media armónica. El soporte conserva el número de celdas de
+referencia y permite interpretar las diferencias entre clases.
+
+\input{tables/tissue_classes_250-500}
+\input{tables/tissue_classes_1000-2500}
+
+\clearpage
+
+\section{Intervalos de las métricas secundarias}
+
+La Tabla~\ref{tab:tejido-secundarias-intervalos} presenta los intervalos
+percentiles de las diferencias de exactitud, exactitud balanceada y entropía
+cruzada. Se calcularon con \(10\,000\) réplicas de bootstrap pareado,
+estratificado por el soporte de tejido de las WSI, con semilla 3901. Una
+diferencia positiva favorece al VAE base en exactitud y exactitud balanceada;
+en entropía cruzada, una diferencia negativa favorece a esa rama. Los
+intervalos son puntuales y exploratorios. La familia primaria de macro-F1 y
+área bajo la curva mantiene los intervalos simultáneos descritos en
+metodología.
+
+\input{tables/tissue_secondary_intervals}
+
+\clearpage
+
+\section{Matrices de confusión}
+
+Las Figuras~\ref{fig:tejido-confusion-250},
+\ref{fig:tejido-confusion-500}, \ref{fig:tejido-confusion-1000} y
+\ref{fig:tejido-confusion-2500} muestran ambos modelos en los cuatro
+presupuestos menores. Cada fila corresponde a la clase de referencia y cada
+columna a la clase predicha. Se presentan el conteo y el porcentaje de la
+fila, usando una escala de color común de 0 a 100\%. Así se pueden comparar
+las proporciones de aciertos y las confusiones aun cuando las clases tengan
+soportes distintos.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{tissue_confusion_budget_250.png}
+    \caption[Matrices de confusión de tejido: 250 etiquetas por clase.]{Matrices
+    de confusión de segmentación con 250 etiquetas por clase. Conteos y
+    porcentajes dentro de la clase de referencia, sobre las mismas celdas de
+    prueba en ambas ramas.}
+    \label{fig:tejido-confusion-250}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{tissue_confusion_budget_500.png}
+    \caption[Matrices de confusión de tejido: 500 etiquetas por clase.]{Matrices
+    de confusión de segmentación con 500 etiquetas por clase. Conteos y
+    porcentajes dentro de la clase de referencia.}
+    \label{fig:tejido-confusion-500}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{tissue_confusion_budget_1000.png}
+    \caption[Matrices de confusión de tejido: 1 000 etiquetas por clase.]{Matrices
+    de confusión de segmentación con \(1\,000\) etiquetas por clase. Conteos y
+    porcentajes dentro de la clase de referencia.}
+    \label{fig:tejido-confusion-1000}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{tissue_confusion_budget_2500.png}
+    \caption[Matrices de confusión de tejido: 2 500 etiquetas por clase.]{Matrices
+    de confusión de segmentación con \(2\,500\) etiquetas por clase. Conteos y
+    porcentajes dentro de la clase de referencia.}
+    \label{fig:tejido-confusion-2500}
+\end{figure}

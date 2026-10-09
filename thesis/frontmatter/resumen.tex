@@ -4,64 +4,72 @@
 
 \textbf{Título:} \Title.\footnote{Trabajo de grado.}
 
-\textbf{Autor:} \Author.\footnote{\FacultyName. \SchoolName. Director: \DirectorName, \DirectorDegree.}
+\textbf{Autor:} \Author.\footnote{\FacultyName. \SchoolName. Director: \DirectorName, \DirectorDegree}
 
-\textbf{Palabras clave:} redes neuronales convolucionales equivariantes, imágenes histopatológicas, procesamiento de imágenes, aprendizaje semi-supervisado.
+\textbf{Palabras clave:} redes neuronales convolucionales equivariantes, imágenes histopatológicas, procesamiento de imágenes, aprendizaje semisupervisado.
 
 \textbf{Descripción:}
 
 \begingroup\small
 
-La patología digital permite conservar y analizar computacionalmente imágenes
+La patología digital (\emph{digital pathology}) permite conservar y analizar computacionalmente imágenes
 histopatológicas, cuya información morfológica es fundamental para caracterizar tejidos
 y estudiar enfermedades como el cáncer. El desarrollo de modelos para este análisis
 depende de anotaciones que requieren tiempo y conocimiento especializado de los
-patólogos. Su disponibilidad limitada motiva el aprendizaje semisupervisado, que
+patólogos. Su disponibilidad limitada motiva el aprendizaje semisupervisado
+(\emph{semi-supervised learning}), que
 aprovecha regiones sin etiquetas para construir representaciones utilizadas
-posteriormente en tareas supervisadas. A escala microscópica, una misma estructura
+posteriormente en tareas de aprendizaje supervisado (\emph{supervised learning}). A escala microscópica, una misma estructura
 celular puede aparecer en distintas orientaciones. Aprovechar esta simetría mediante la
-compartición de parámetros permite aprender características comunes a esas orientaciones
+compartición de parámetros (\emph{parameter sharing}) permite aprender características comunes a esas orientaciones
 con menos parámetros, lo que motiva estudiar su utilidad cuando las anotaciones son
-escasas. Esta investigación estudió cómo la equivarianza a rotaciones continuas modifica
-la reconstrucción, la utilidad predictiva y la organización del espacio latente de un
-autoencodificador variacional.
+escasas. Esta investigación estudió cómo la equivarianza (\emph{equivariance})
+a rotaciones continuas modifica
+la reconstrucción, la utilidad predictiva y la organización del espacio latente
+(\emph{latent space}) de un
+autoencodificador variacional (\emph{variational autoencoder}, VAE).
 
-Se compararon dos autoencodificadores variacionales (\emph{variational autoencoders},
-VAE) residuales: un VAE convolucional ordinario y un VAE con convoluciones
-direccionables (\emph{steerable convolutions}) restringidas al grupo \(\mathrm{SO}(2)\),
-con campos escalares y vectoriales. Ambos recibieron los mismos parches RGB de
-\(256\times256\) píxeles, compartieron la estructura general y produjeron mapas latentes
-de \(16\times32\times32\). El entrenamiento utilizó 300.000 parches sin etiquetas de
-UBC-OCEAN y 60.000 actualizaciones por modelo. La función objetivo combinó error
-absoluto medio (MAE), similitud estructural y regularización variacional. Las
-perturbaciones de color y ruido se aplicaron a la entrada, mientras el parche limpio
-permaneció como objetivo de reconstrucción. El modelo equivariante empleó un 70,2 \%
-menos de parámetros aprendidos, pero tuvo mayor costo convolucional estimado.
+Se compararon dos VAE residuales: el VAE base, con convoluciones ordinarias, y el
+VAE-\(\mathrm{SO}(2)\), con convoluciones direccionables
+(\emph{steerable convolutions}) equivariantes al grupo \(\mathrm{SO}(2)\).
+Ambos compartieron la estructura general y se entrenaron
+con los mismos 300.000 parches (\emph{patches}) de UBC-OCEAN. El modelo equivariante utilizó
+un 70,2 \% menos de parámetros aprendidos y tuvo un mayor costo convolucional
+estimado.
 
-Las 513 imágenes de lámina completa (WSI) se separaron en poblaciones disjuntas para
-desarrollo no supervisado, desarrollo supervisado y prueba. Una vez entrenados los VAE,
+Las 513 imágenes de lámina completa (\emph{whole-slide images}, WSI) se separaron en poblaciones disjuntas para
+desarrollo con aprendizaje no supervisado (\emph{unsupervised learning}),
+desarrollo supervisado y prueba. Una vez entrenados los VAE,
 sus parámetros se congelaron y se ajustaron clasificadores de la misma arquitectura
-sobre la media posterior. Se evaluaron el diagnóstico de cinco subtipos de carcinoma de
-ovario mediante aprendizaje de instancias múltiples y la segmentación de tumor, estroma
-y necrosis sobre una cuadrícula de parches. Esta última se evaluó en regiones anotadas
+sobre la media posterior (\emph{posterior mean}). Se evaluaron el diagnóstico de cinco subtipos de carcinoma de
+ovario mediante aprendizaje de instancias múltiples (\emph{multiple-instance learning}, MIL) y la segmentación de tumor, estroma
+y necrosis sobre una cuadrícula (\emph{grid}) de parches. Esta última se evaluó en regiones anotadas
 de alta pureza, con cinco presupuestos de etiquetas por clase. Se evaluó una
 inicialización por modelo y clasificador. La prueba compartida incluyó 23 WSI; los
-intervalos de confianza se estimaron mediante remuestreo pareado por lámina.
+intervalos de confianza (\emph{confidence intervals}, IC) se estimaron mediante remuestreo con reemplazo (\emph{bootstrap}) pareado por lámina.
 
-El VAE base obtuvo un MAE medio de 0,0629, frente a 0,0642 del modelo equivariante. En
-diagnóstico, los valores de macro-F1 fueron 0,389 y 0,483, respectivamente. Los
+\begin{samepage}
+El error absoluto medio (\emph{mean absolute error}, MAE) fue, en promedio,
+0,0629 para el VAE base y 0,0642 para el modelo equivariante. En
+diagnóstico, los valores de la puntuación F1 (\emph{F1 score}) promediada por clase
+(macro-F1) fueron 0,389 y 0,483, respectivamente. Los
 intervalos del 95 \% para ambas diferencias incluyeron cero. En segmentación, la
 representación equivariante alcanzó mayor macro-F1 en cuatro de los cinco presupuestos;
 el intervalo simultáneo excluyó cero únicamente con 500 etiquetas por clase. Al utilizar
 todas las etiquetas disponibles, la estimación puntual favoreció al VAE base.
+\par\end{samepage}
 
-El análisis latente utilizó 25 parches fijos de validación y distinguió entre
-transformar el latente y decodificar, canonizar su orientación y evaluar el
-autoencodificador completo. Para cuartos de vuelta exactos, la mediana de la razón de
-error de acción disminuyó de 0,709453 a \(2,18\times10^{-6}\) en el modelo equivariante.
-Las rotaciones interpoladas también produjeron menores errores de acción y canonización
-en esa rama, mientras la comparación continua de extremo a extremo favoreció al VAE
-base. Las proyecciones PCA y las medidas de geometría local complementaron esta
+El análisis latente utilizó 25 parches fijos de validación y distinguió tres
+pruebas: rotar el latente y decodificarlo; codificar una imagen rotada, deshacer
+la rotación en el latente y decodificarlo; y reconstruir una imagen rotada con
+el codificador (\emph{encoder}) y el decodificador (\emph{decoder}) en conjunto. Para cuartos de vuelta exactos,
+la mediana de la razón de error al rotar el latente y decodificarlo fue 0,709
+en el VAE base y \(2,18\times10^{-6}\) en el VAE-\(\mathrm{SO}(2)\).
+Las rotaciones interpoladas también produjeron menores errores en las dos
+primeras pruebas para esa rama, mientras la comparación del autoencodificador
+completo con rotaciones continuas favoreció al VAE base. Las proyecciones mediante
+análisis de componentes principales (\emph{principal component analysis}, PCA)
+y las medidas de geometría local complementaron esta
 caracterización. El resultado más claro fue una respuesta rotacional más consistente al
 transformar y decodificar el latente. La utilidad predictiva varió según la tarea y la
 cantidad de etiquetas.

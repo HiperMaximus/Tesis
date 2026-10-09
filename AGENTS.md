@@ -12,6 +12,20 @@ Read `docs/thesis_structure.md` before changing chapter order or scope.
   preserve its Spanish expository voice and terminology, while correcting
   grammar, technical imprecision, obsolete proposal tense and unsupported
   claims. Prefer revising an existing passage over replacing it from scratch.
+- Introduce each technical term at its first Spanish-language mention with
+  its Spanish name followed by the English name in parentheses. Thereafter,
+  choose one name, Spanish or English according to established usage in the
+  relevant literature, and use it consistently in prose, captions, tables,
+  and diagrams. Do not alternate translations for the same concept or repeat
+  the bilingual introduction throughout the document. Preserve original titles
+  in bibliographic entries. For this review, introduce "convoluciones
+  direccionables (steerable convolutions)" and then use "convoluciones
+  steerable", applying the same naming choice to kernels, filters, and CNNs.
+  The Spanish Resumen counts as the first mention: VAE and steerable
+  convolutions are already introduced there; do not redefine them in
+  Introduction. Use "kernel"/"kernels" in the subsequent prose, introducing
+  "núcleo (kernel)" at its first mention when the deferred terminology review
+  is performed. Say "equivariante al grupo ..." when naming the group.
 - Preserve the plan's continuous expository form: use substantial connected
   paragraphs, keep heading depth normally at section or subsection, and avoid
   fragmenting one argument into microsections or presentation-style bullets.

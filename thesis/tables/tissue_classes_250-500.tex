@@ -1,0 +1,24 @@
+\begin{table}[htbp]
+    \centering
+    \caption[Resultados por clase: presupuestos 250 y 500.]{Resultados por clase con \(250\) y \(500\) etiquetas por clase. Los soportes son los mismos para todos los modelos y presupuestos.}
+    \label{tab:tejido-clases-250-500}
+    \small
+    \begin{tabular}{@{}rllrrrr@{}}
+        \toprule
+        Etiquetas/clase & Modelo & Clase & Precisión & Sensibilidad & F1 & Soporte \\
+        \midrule
+        \(250\) & VAE base & Tumor & 0,881 & 0,636 & 0,739 & \(21\,796\) \\
+        \(250\) & VAE base & Estroma & 0,418 & 0,612 & 0,497 & \(8\,500\) \\
+        \(250\) & VAE base & Necrosis & 0,198 & 0,527 & 0,288 & \(1\,276\) \\
+        \(250\) & VAE-SO(2) & Tumor & 0,863 & 0,746 & 0,800 & \(21\,796\) \\
+        \(250\) & VAE-SO(2) & Estroma & 0,494 & 0,517 & 0,505 & \(8\,500\) \\
+        \(250\) & VAE-SO(2) & Necrosis & 0,175 & 0,526 & 0,263 & \(1\,276\) \\
+        \(500\) & VAE base & Tumor & 0,873 & 0,687 & 0,769 & \(21\,796\) \\
+        \(500\) & VAE base & Estroma & 0,446 & 0,532 & 0,485 & \(8\,500\) \\
+        \(500\) & VAE base & Necrosis & 0,181 & 0,610 & 0,279 & \(1\,276\) \\
+        \(500\) & VAE-SO(2) & Tumor & 0,888 & 0,697 & 0,781 & \(21\,796\) \\
+        \(500\) & VAE-SO(2) & Estroma & 0,481 & 0,670 & 0,560 & \(8\,500\) \\
+        \(500\) & VAE-SO(2) & Necrosis & 0,285 & 0,589 & 0,384 & \(1\,276\) \\
+        \bottomrule
+    \end{tabular}
+\end{table}

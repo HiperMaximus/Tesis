@@ -20,18 +20,20 @@ un portaobjetos y un patólogo examina sus características microscópicas~\cite
 histopatológica tampoco es completamente uniforme. En carcinoma de ovario, la
 comparación entre el grado consignado en registros poblacionales y una revisión
 central de 664 tumores produjo un coeficiente kappa de 0,25
-~\cite{matsuno_agreement_2013}. En cuatro ensayos del \emph{Cooperative Breast
+~\cite{matsuno_agreement_2013}. Este coeficiente es una medida de concordancia
+que descuenta el acuerdo esperado por azar. En cuatro ensayos del \emph{Cooperative Breast
 Cancer Tissue Resource}, con tamaños de muestra de 10, 10, 19 y 10 casos, la
 reproducibilidad del grado fue moderada, con valores kappa entre 0,50 y
 0,59~\cite{meyer_breast_2005}. En próstata, la reevaluación de biopsias de 350
 pacientes coincidió completamente con el informe inicial en el 76,9\% de los
 puntajes de Gleason y modificó decisiones de evaluación o tratamiento en una
-fracción de los pacientes~\cite{berg_prostate_2011}. Estos resultados ilustran
+fracción de los pacientes~\cite{berg_prostate_2011}. El puntaje de Gleason es
+una escala que gradúa el cáncer de próstata según su aspecto microscópico.
+Estos resultados ilustran
 que la variabilidad de interpretación debe considerarse al diseñar y evaluar
 herramientas de apoyo.
 
-El análisis computacional de una imagen de lámina completa
-(\emph{whole-slide image}, WSI) presenta, además, dificultades de escala.
+El análisis computacional de una WSI presenta, además, dificultades de escala.
 Una sola lámina puede aproximarse a \(100\,000\times100\,000\) píxeles, por lo
 que no suele procesarse como una imagen convencional en memoria
 ~\cite{wang_managing_2012}. A la vez, la evidencia relevante puede ocupar solo
@@ -40,38 +42,41 @@ dividen las láminas en parches, aprenden representaciones locales y agregan la
 información necesaria para producir una predicción global
 ~\cite{niazi_digital_2019,song_artificial_2023}.
 
+\begingroup
+\widowpenalty=10000
 El entrenamiento supervisado de estos sistemas requiere anotaciones producidas
 por especialistas. Su costo depende de la tarea y del nivel de detalle; en un
 proyecto de anotación exhaustiva de 200 WSI de colon y piel se registraron
-tiempos desde 45 segundos hasta más de 360 minutos por lámina
+tiempos desde 45 segundos hasta 360 minutos por lámina
 ~\cite{lindman_annotations_2019}. La disponibilidad simultánea de numerosas
 imágenes sin anotación y un subconjunto menor con etiquetas motiva entonces un
 esquema semisupervisado: primero se aprende una representación sin utilizar las
 etiquetas diagnósticas y después se evalúa esa representación mediante tareas
 supervisadas con anotaciones limitadas.
+\par\endgroup
 
-Para estudiar si una restricción geométrica puede mejorar ese aprendizaje, este
-trabajo compara un autoencodificador variacional (\emph{variational autoencoder},
-VAE) convolucional base con un
-modelo que emplea convoluciones direccionables para rotaciones continuas del
-plano, descritas por el grupo \(\mathrm{SO}(2)\). A bajo aumento, la orientación puede ser relevante
-para describir la arquitectura del tejido; a alto aumento, los patrones
-celulares no tienen una orientación fija en la imagen. En esta escala, rotar
-un parche cambia su orientación de observación, pero conserva la identidad del
-tejido y su información diagnóstica. Esta regularidad motiva el uso de la
-simetría rotacional como sesgo inductivo en el aprendizaje de representaciones
-~\cite{veeling_rotation_2018}. Su utilidad se evaluó mediante
-la comparación experimental de ambos modelos. El estudio se centró en
-rotaciones continuas del plano, sin incorporar reflexiones.
+\begingroup
+\clubpenalty=10000
+A bajo aumento, la orientación puede ser relevante para interpretar la
+arquitectura del tejido. A escala celular, las mismas estructuras pueden
+observarse en distintas orientaciones conservando su morfología
+~\cite{veeling_rotation_2018}. Como los parches utilizados contienen detalle
+celular, se estudió si aprovechar esta simetría rotacional favorecía el
+aprendizaje de representaciones útiles. Para ello, se comparó un VAE
+convolucional convencional con otro que emplea convoluciones \emph{steerable}
+equivariantes al grupo \(\mathrm{SO}(2)\), que describe las rotaciones continuas
+del plano.
+\par\endgroup
 
-Los dos modelos se implementaron y evaluaron bajo un protocolo pareado. La
-comparación incluyó reconstrucción, segmentación de WSI
-a resolución de parche, clasificación a nivel de WSI y respuesta del espacio latente
-a rotaciones continuas. La segmentación no se interpreta como una cobertura
-exhaustiva de la lámina porque las máscaras disponibles contienen regiones sin
-anotar que no pueden utilizarse como etiquetas negativas.
+Se desarrolló una implementación propia de ambos VAE en PyTorch, incluidas las
+convoluciones \emph{steerable} y las operaciones de normalización y activación
+del modelo equivariante.
 
-El VAE base obtuvo estimaciones puntuales ligeramente mejores en reconstrucción.
-La representación equivariante alcanzó mayor macro-F1 en cuatro de los cinco
-presupuestos de etiquetas de tejido y en diagnóstico de WSI; la mayoría de los
-intervalos principales incluyó cero.
+La contribución de esta tesis consiste en comparar un VAE base y un VAE
+equivariante al grupo \(\mathrm{SO}(2)\), con datos y presupuestos de
+entrenamiento compartidos, mediante reconstrucción, segmentación de tejido a
+resolución de parche y diagnóstico de WSI. Las tareas supervisadas utilizan
+clasificadores entrenados sobre las representaciones latentes
+(\emph{embeddings}) generadas por ambos VAE congelados; el diagnóstico de WSI
+emplea MIL para agregar la información de los parches. Esta comparación se
+complementa con el análisis de la respuesta rotacional del espacio latente.

@@ -268,7 +268,7 @@ def approved_annotation_views() -> None:
                     axes[row, col].set_yticks([])
                     for spine in axes[row, col].spines.values():
                         spine.set_visible(False)
-                label = 'Base' if branch == 'normal_vae' else 'SO(2)'
+                label = 'VAE base' if branch == 'normal_vae' else 'VAE-SO(2)'
                 axes[row, 0].set_ylabel(f'{angle}°\n{label}', fontsize=11)
             for ax, title in zip(axes[0], ['Entrada rotada', 'Rotar entrada\ny reconstruir', 'Transformar latente\ny decodificar']):
                 ax.set_title(title, fontsize=11, pad=10)
@@ -278,7 +278,7 @@ def approved_annotation_views() -> None:
     summary = json.loads((p / 'decoded_latent_transform_summary.json').read_text())
     for filename, exact in [('latent_population_ratios.png', False), ('latent_exact_d4.png', True)]:
         fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.25), constrained_layout=True)
-        for ax, key, title in zip(axes, ['action', 'canonical'], ['Acción sobre el latente', 'Canonización del latente']):
+        for ax, key, title in zip(axes, ['action', 'canonical'], ['Acción sobre el latente', 'Realineación del latente']):
             for x, branch, color, label in [(0, 'normal_vae', BASE, 'Base'), (1, 'so2_vae', SO2, 'SO(2)')]:
                 d = summary['branches'][branch]
                 values = np.array(d['exact_quarter_aggregate'][f'{key}_ratio_per_patch'] if exact else [v[f'{key}_ratio'] for v in d['per_patch']])
@@ -335,7 +335,7 @@ def approved_annotation_views() -> None:
     delta = b - a
     ax.bar(np.arange(25), delta, color=np.where(delta < 0, SO2, BASE))
     ax.axhline(0, c='#26343c', lw=0.8)
-    ax.set(xlabel='Índice del parche fijo', ylabel='Diferencia SO(2) − base', xticks=[0, 4, 8, 12, 16, 20, 24])
+    ax.set(xlabel='Índice del parche fijo', ylabel='Diferencia VAE-SO(2) − VAE base', xticks=[0, 4, 8, 12, 16, 20, 24])
     ax.grid(axis='y', color=GRID, lw=0.6)
     ax.set_axisbelow(True)
     fig.savefig(OUT / 'latent_spatial_pca_delta.png', dpi=300, bbox_inches='tight')

@@ -23,9 +23,8 @@
 \draw[flow,green!55!black] (alpham) -- (basism);
 
 \node[card,minimum width=34mm,minimum height=55mm] (sum) at (8.2,0.5)
-    {$K_{ba}(\mathbf u)$\\[1mm]
-     $=\displaystyle\sum_{m=1}^{M}$\\[-1mm]
-     $\alpha_{ba,m}B_m(\mathbf u)$\\[2mm]
+    {$K_{ba}(\mathbf u)$\\[2mm]
+     $=\displaystyle\sum_{m=1}^{M}\alpha_{ba,m}B_m(\mathbf u)$\\[3mm]
      \textcolor{black!60}{un bloque denso}\\
      \textcolor{black!60}{$d_o\times d_i\times k\times k$}};
 \draw[flow] (basis1.east) -- ++(5mm,0) |- (sum.west);
@@ -50,14 +49,14 @@
     0.6/1.2/0.10/0.25,1.2/1.2/0.22/0.22}
     \draw[-{Latex[length=1.4mm]},line width=0.9pt,purple!70!black]
       (\x,\y) -- ++(\dx,\dy);
-  \node[font=\sffamily\scriptsize\bfseries] at (0,2.1) {núcleo expandido};
+  \node[font=\sffamily\scriptsize\bfseries] at (0,2.1) {kernel expandido};
   \node[labelbox] at (0,2.75) {\texttt{reshape} y empaque de canales};
 \end{scope}
 \draw[flow] (sum.east) -- (10.0,0.5);
 
 \node[labelbox,text width=12.5cm] at (5.8,-3.35)
     {Un color identifica un coeficiente: el mismo valor multiplica todos los
-     píxeles y componentes de su plantilla. Los píxeles del núcleo no son
+     píxeles y componentes de su plantilla. Los píxeles del kernel no son
      parámetros independientes. La figura muestra tres términos de una suma
      de $M$ bases; la implementación usa todos los términos admitidos.};
 \end{tikzpicture}

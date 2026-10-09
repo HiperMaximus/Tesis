@@ -3,11 +3,12 @@
 
 La primera extensión científica consiste en expandir el análisis funcional
 del espacio latente. Además de las razones de error ya calculadas, conviene
-medir la consistencia de una misma acción entre contenidos, la separación
-entre contenido y orientación, la dimensión tangente de las órbitas y su
-topología local. Las medidas de vecinos mutuos y distancia coseno empleadas por
+medir la consistencia de una misma acción entre contenidos y la separación
+entre contenido y orientación, ampliar el análisis de subespacios tangentes a
+más parches y contenidos, y caracterizar su topología local. Las medidas de
+vecinos mutuos y distancia coseno empleadas por
 Elphick et al.~\cite{elphick_rotation_2024} también podrían adaptarse después
-de canonizar la orientación.
+de alinear la orientación.
 
 Una segunda extensión consiste en aumentar la potencia de la comparación. Se
 requieren múltiples inicializaciones del VAE y de cada cabeza supervisada, de
@@ -27,7 +28,7 @@ Para distinguir el efecto de la simetría de otras diferencias arquitectónicas,
 convendría realizar comparaciones que igualen por separado parámetros,
 operaciones y soporte espacial. Entre las pruebas pertinentes se
 encuentran convoluciones ordinarias de \(7\times7\) y \(9\times9\), una
-variante equivariante solo a cuartos de vuelta, aumento explícito por rotaciones
+variante equivariante solo a cuartos de vuelta, \emph{data augmentation} explícito por rotaciones
 y modelos ordinarios con capacidad o costo equiparados. Así podría distinguirse
 el efecto de la simetría del efecto producido por un campo receptivo o un
 presupuesto computacional diferente.

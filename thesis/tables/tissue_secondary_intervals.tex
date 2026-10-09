@@ -1,0 +1,27 @@
+\begin{table}[htbp]
+    \centering
+    \caption[Diferencias e intervalos exploratorios de métricas secundarias.]{Diferencias VAE base menos VAE-\(\mathrm{SO}(2)\) e intervalos percentiles puntuales del 95\% para métricas secundarias. Se obtuvieron con el mismo bootstrap pareado y estratificado por WSI de la comparación primaria. Son intervalos exploratorios sin ajuste simultáneo.}
+    \label{tab:tejido-secundarias-intervalos}
+    \small
+    \begin{tabular}{@{}rlrr@{}}
+        \toprule
+        Etiquetas/clase & Métrica & Diferencia & IC puntual 95\% \\
+        \midrule
+        \(250\) & Exactitud & \(-0,050\) & \([-0,085;-0,021]\) \\
+        \(250\) & Exactitud balanceada & \(-0,005\) & \([-0,039;0,025]\) \\
+        \(250\) & Entropía cruzada & \(0,051\) & \([0,009;0,093]\) \\
+        \(500\) & Exactitud & \(-0,044\) & \([-0,075;-0,009]\) \\
+        \(500\) & Exactitud balanceada & \(-0,043\) & \([-0,096;0,021]\) \\
+        \(500\) & Entropía cruzada & \(0,088\) & \([0,016;0,150]\) \\
+        \(1\,000\) & Exactitud & \(-0,047\) & \([-0,077;-0,019]\) \\
+        \(1\,000\) & Exactitud balanceada & \(0,006\) & \([-0,027;0,043]\) \\
+        \(1\,000\) & Entropía cruzada & \(0,454\) & \([0,293;0,634]\) \\
+        \(2\,500\) & Exactitud & \(-0,020\) & \([-0,043;0,001]\) \\
+        \(2\,500\) & Exactitud balanceada & \(0,040\) & \([-0,002;0,098]\) \\
+        \(2\,500\) & Entropía cruzada & \(0,121\) & \([0,044;0,205]\) \\
+        \(5\,671\) & Exactitud & \(0,013\) & \([-0,009;0,035]\) \\
+        \(5\,671\) & Exactitud balanceada & \(0,024\) & \([0,005;0,045]\) \\
+        \(5\,671\) & Entropía cruzada & \(-0,189\) & \([-0,345;-0,066]\) \\
+        \bottomrule
+    \end{tabular}
+\end{table}

@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+    \centering
+    \caption[Métricas secundarias de segmentación por presupuesto.]{Métricas secundarias de segmentación en las mismas \(31\,572\) celdas de prueba. La exactitud es la fracción de aciertos; la exactitud balanceada es el promedio de la sensibilidad de las tres clases. La entropía cruzada es el promedio no ponderado por parche y mejora al disminuir; las otras dos medidas mejoran al aumentar.}
+    \label{tab:tejido-metricas-secundarias}
+    \small
+    \begin{tabular}{@{}rlrrr@{}}
+        \toprule
+        Etiquetas/clase & Modelo & Exactitud & Exactitud bal. & Entropía cruzada \\
+        \midrule
+        \(250\) & VAE base & 0,625 & 0,592 & 0,806 \\
+        \(250\) & VAE-SO(2) & 0,676 & 0,596 & 0,756 \\
+        \(500\) & VAE base & 0,642 & 0,609 & 0,862 \\
+        \(500\) & VAE-SO(2) & 0,686 & 0,652 & 0,774 \\
+        \(1\,000\) & VAE base & 0,674 & 0,701 & 1,161 \\
+        \(1\,000\) & VAE-SO(2) & 0,720 & 0,695 & 0,707 \\
+        \(2\,500\) & VAE base & 0,774 & 0,789 & 0,653 \\
+        \(2\,500\) & VAE-SO(2) & 0,794 & 0,749 & 0,532 \\
+        \(5\,671\) & VAE base & 0,818 & 0,837 & 0,499 \\
+        \(5\,671\) & VAE-SO(2) & 0,805 & 0,813 & 0,688 \\
+        \bottomrule
+    \end{tabular}
+\end{table}

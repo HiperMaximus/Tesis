@@ -22,7 +22,7 @@
 \node[common] (mu) {Codificador VAE congelado\\
     \(\boldsymbol{\mu}:16\times32\times32\) por parche};
 
-\node[patch,right=11mm of mu,yshift=10mm] (tconv) {Conv + GN + GELU\\
+\node[patch,right=11mm of mu,yshift=10mm] (tconv) {Conv + GroupNorm + GELU\\
     \(16\to32\to64\to128\)};
 \node[patch,right=7mm of tconv] (tpool) {Promedio espacial\\
     + lineal \(128\to3\)};
@@ -40,7 +40,7 @@
     \circ&\circ&\circ&\circ&\circ
     \end{smallmatrix}\)\quad
     \begin{tabular}{c}2 bloques locales\\radio 2, 6 cabezas\end{tabular}};
-\node[mil,right=7mm of local] (summary) {CLS + 16 registros\\
+\node[mil,right=7mm of local] (summary) {CLS + 16 REG\\
     lectura sigmoidal\\\(\sigma(qk/\sqrt{32}+b-\log N)\)};
 \node[mil,below=7mm of summary] (cls) {Atención \emph{softmax}\\
     CLS sobre 17 tokens};
